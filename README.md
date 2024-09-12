@@ -1,32 +1,38 @@
 # real-time-chat
-## Основні можливості
+## Project Overview
 
-- **Миттєвий обмін повідомленнями:** Користувачі можуть відправляти і отримувати повідомлення в реальному часі без затримок.
-- **Багатокористувацька підтримка:** Чат підтримує одночасну участь великої кількості користувачів.
-- **Групові та приватні чати:** Можливість створювати групові чати або вести приватні розмови між двома користувачами.
-- **Підтримка медіафайлів:** Відправка зображень, відео, аудіо та документів.
-- **Історія повідомлень:** Збереження історії повідомлень на сервері, можливість їх перегляду в будь-який момент.
-- **Сповіщення про нові повідомлення:** Отримання push-сповіщень про нові повідомлення навіть при неактивному вікні чату.
-- **Аутентифікація та авторизація користувачів:** Безпечний вхід через email та пароль, а також через OAuth (наприклад, Google або Facebook).
+This project is a real-time chat application that enables users to exchange messages instantly. The chat is built on a client-server architecture using WebSocket for bidirectional communication, ensuring rapid data transmission without needing to reload the page.
 
-## Технічні вимоги
+The main goal of this project is to create a platform for instant messaging, suitable for both personal and business use.
 
-- **Frontend:** React.js з використанням бібліотеки для управління стану (Redux), а також Socket.IO для комунікації з сервером.
-- **Backend:** Node.js з Express.js для обробки запитів та Socket.IO для встановлення WebSocket з'єднань.
-- **База даних:** MongoDB для зберігання інформації про користувачів, історії повідомлень та інші дані.
-- **Хостинг:** Проект може бути розгорнутий на будь-якій платформі, яка підтримує Node.js.
+## Key Features
 
-## Архітектура
+- **Instant Messaging:** Users can send and receive messages in real-time without delays.
+- **Multi-User Support:** The chat supports multiple users simultaneously.
+- **Group and Private Chats:** Ability to create group chats or have private conversations between two users.
+- **Media File Support:** Send images, videos, audio, and documents.
+- **Message History:** Store message history on the server, allowing users to view past conversations at any time.
+- **Notifications for New Messages:** Receive push notifications for new messages even when the chat window is inactive.
+- **User Authentication and Authorization:** Secure login via email and password, as well as OAuth (e.g., Google or Facebook).
 
-1. **Клієнтська частина (Frontend):** 
-   - Розроблена на React.js з інтеграцією Socket.IO для підключення до сервера.
-   - Відображає інтерфейс користувача, включаючи список користувачів, список повідомлень, форму для введення нових повідомлень та інші елементи UI.
-   - Управління станом компонентів за допомогою Redux для підтримки односторінкових додатків (SPA).
+## Technical Requirements
 
-2. **Серверна частина (Backend):**
-   - Сервер, розроблений на Node.js з використанням Express.js для обробки HTTP-запитів.
-   - Socket.IO для управління реальними з'єднаннями з клієнтами.
-   - MongoDB використовується для зберігання інформації про користувачів та історію повідомлень.
+- **Frontend:** React.js with state management libraries (Redux) and Socket.IO for server communication.
+- **Backend:** Node.js with Express.js to handle requests and Socket.IO for WebSocket connections.
+- **Database:** MongoDB to store user information, message history, and other data.
+- **Hosting:** The project can be deployed on any platform that supports Node.js.
 
-3. **База даних:**
-   - MongoDB: NoSQL база даних, що дозволяє ефективно зберігати та обробляти великі обсяги даних, таких як повідомлення чату, медіафайли та дані користувачів.
+## Architecture
+
+1. **Client Side (Frontend):** 
+   - Built with React.js integrated with Socket.IO to connect to the server.
+   - Displays the user interface, including the user list, message list, input form for new messages, and other UI elements.
+   - State management using Redux to support single-page applications (SPA).
+
+2. **Server Side (Backend):**
+   - Server developed using Node.js with Express.js for handling HTTP requests.
+   - Socket.IO for managing real-time connections with clients.
+   - MongoDB is used to store user information and message history.
+
+3. **Database:**
+   - MongoDB: A NoSQL database that efficiently stores and handles large amounts of data, such as chat messages, media files, and user data.
