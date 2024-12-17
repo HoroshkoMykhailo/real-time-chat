@@ -1,0 +1,66 @@
+{
+  "name": "real-time-chat",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "20.11.x",
+    "npm": "10.2.x"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "_prettier": "prettier \"**/*.{js,ts,tsx,json,md,css,html}\"",
+    "git:hook:precommit": "lint-staged --cwd .",
+    "git:hook:commit": "npx @commitlint/cli --edit",
+    "build:shared": "npm run build -w packages/shared",
+    "build:frontend": "npm run build -w apps/frontend",
+    "build:backend": "npm run build -w apps/backend",
+    "lint:editorconfig": "editorconfig-checker",
+    "lint:fs": "ls-lint",
+    "lint:type": "npx tsc --noEmit",
+    "lint:js": "npx eslint . --max-warnings=0 --no-warn-ignored",
+    "lint:format": "npm run _prettier -- --check",
+    "lint:trash": "knip",
+    "format": "npm run _prettier -- --write",
+    "lint": "concurrently \"npm:lint:*\" && npm run lint --workspaces",
+    "ci:prepare": "simple-git-hooks"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "19.3.0",
+    "@commitlint/config-conventional": "19.2.2",
+    "@commitlint/types": "19.0.3",
+    "@eslint/js": "9.4.0",
+    "@ls-lint/ls-lint": "2.2.3",
+    "@types/eslint": "8.56.10",
+    "@types/eslint__js": "8.42.3",
+    "@types/lint-staged": "13.3.0",
+    "@typescript-eslint/eslint-plugin": "7.12.0",
+    "@typescript-eslint/parser": "7.12.0",
+    "concurrently": "8.2.2",
+    "editorconfig-checker": "5.1.8",
+    "eslint": "8.57.0",
+    "eslint-import-resolver-typescript": "3.6.1",
+    "eslint-plugin-import": "2.29.1",
+    "eslint-plugin-jsdoc": "48.2.9",
+    "eslint-plugin-perfectionist": "2.10.0",
+    "eslint-plugin-require-explicit-generics": "1.0.0",
+    "eslint-plugin-sonarjs": "1.0.3",
+    "eslint-plugin-unicorn": "53.0.0",
+    "globals": "15.4.0",
+    "knip": "5.18.2",
+    "lint-staged": "15.2.5",
+    "prettier": "3.3.1",
+    "simple-git-hooks": "2.11.1",
+    "stylelint": "16.6.1",
+    "stylelint-config-recess-order": "5.0.1",
+    "stylelint-config-standard": "36.0.0",
+    "tsc-alias": "1.8.10",
+    "typescript": "5.4.5"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run lint:type && npm run git:hook:precommit",
+    "commit-msg": "npm run git:hook:commit"
+  }
+}

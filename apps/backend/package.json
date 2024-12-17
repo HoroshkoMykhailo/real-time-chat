@@ -1,0 +1,42 @@
+{
+  "name": "@real-time-chat/backend",
+  "private": true,
+  "engines": {
+    "node": "20.11.x",
+    "npm": "10.2.x"
+  },
+  "type": "module",
+  "scripts": {
+    "start:dev": "tsx watch ./src/index.ts",
+    "lint:type": "npx tsc --noEmit",
+    "lint:js": "npx eslint . --max-warnings=0",
+    "lint": "concurrently \"npm:lint:*\"",
+    "build": "tsc && tsc-alias",
+    "pretest": "cross-env NODE_ENV=test npm run migrate:dev",
+    "test": "cross-env NODE_ENV=test node --experimental-vm-modules --expose-gc --no-compilation-cache ../../node_modules/jest/bin/jest.js --config jest.config.js --runInBand --forceExit --detectOpenHandles",
+    "test:auth": "npm run test -- --verbose --rootDir=tests/modules/auth/"
+  },
+  "dependencies": {
+    "@fastify/static": "7.0.4",
+    "@real-time-chat/shared": "*",
+    "convict": "6.2.4",
+    "dotenv": "16.4.5",
+    "fastify": "4.27.0",
+    "mongoose": "7.8.3",
+    "pino": "9.1.0",
+    "qs": "6.12.1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "8.4.1",
+    "@jest/globals": "29.7.0",
+    "@types/convict": "6.1.6",
+    "@types/jest": "29.5.12",
+    "@types/qs": "6.9.15",
+    "cross-env": "7.0.3",
+    "jest": "29.7.0",
+    "pino-pretty": "11.2.0",
+    "ts-jest": "29.1.4",
+    "ts-paths-esm-loader": "1.4.3",
+    "tsx": "4.15.1"
+  }
+}

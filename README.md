@@ -18,19 +18,19 @@ The main goal of this project is to create a platform for instant messaging, sui
 ## Technical Requirements
 
 - **Frontend:** React.js with state management libraries (Redux) and Socket.IO for server communication.
-- **Backend:** Node.js with Express.js to handle requests and Socket.IO for WebSocket connections.
+- **Backend:** Node.js with Fastify to handle requests and Socket.IO for WebSocket connections.
 - **Database:** MongoDB to store user information, message history, and other data.
 - **Hosting:** The project can be deployed on any platform that supports Node.js.
 
 ## Architecture
 
-1. **Client Side (Frontend):** 
+1. **Client Side (Frontend):**
    - Built with React.js integrated with Socket.IO to connect to the server.
    - Displays the user interface, including the user list, message list, input form for new messages, and other UI elements.
    - State management using Redux to support single-page applications (SPA).
 
 2. **Server Side (Backend):**
-   - Server developed using Node.js with Express.js for handling HTTP requests.
+   - Server developed using Node.js with Fastify for handling HTTP requests.
    - Socket.IO for managing real-time connections with clients.
    - MongoDB is used to store user information and message history.
 
