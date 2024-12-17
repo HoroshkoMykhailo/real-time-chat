@@ -1,1 +1,1 @@
-export { HTTPCode, HTTPMethod, HttpHeader } from '@real-time-chat/shared';
+export { HTTPCode, HTTPMethod, HttpHeader } from '@team-link/shared';

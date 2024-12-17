@@ -3,4 +3,4 @@ export { type AuthService } from './auth-service.type.js';
 export {
   type UserSignUpRequestDto,
   type UserSignUpResponseDto
-} from '@real-time-chat/shared';
+} from '@team-link/shared';

@@ -1,5 +1,5 @@
 {
-  "name": "@real-time-chat/backend",
+  "name": "@team-link/backend",
   "private": true,
   "engines": {
     "node": "20.11.x",
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@fastify/static": "7.0.4",
-    "@real-time-chat/shared": "*",
+    "@team-link/shared": "*",
     "convict": "6.2.4",
     "dotenv": "16.4.5",
     "fastify": "4.27.0",

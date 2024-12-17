@@ -1,1 +1,1 @@
-export { ValidationError } from '@real-time-chat/shared';
+export { ValidationError } from '@team-link/shared';

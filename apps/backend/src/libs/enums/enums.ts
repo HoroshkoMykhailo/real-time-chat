@@ -1,1 +1,1 @@
-export { APIPath, AppEnvironment, ServerErrorType } from '@real-time-chat/shared';
+export { APIPath, AppEnvironment, ServerErrorType } from '@team-link/shared';

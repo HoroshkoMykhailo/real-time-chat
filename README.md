@@ -1,9 +1,9 @@
-# real-time-chat
+# TeamLink
 ## Project Overview
 
-This project is a real-time chat application that enables users to exchange messages instantly. The chat is built on a client-server architecture using WebSocket for bidirectional communication, ensuring rapid data transmission without needing to reload the page.
+This project is a real-time chat application that enables users to exchange messages. The chat is built on a client-server architecture using WebSocket for bidirectional communication, ensuring rapid data transmission without needing to reload the page.
 
-The main goal of this project is to create a platform for instant messaging, suitable for both personal and business use.
+The main goal of this project is to create a platform for messaging, suitable for both personal and business use.
 
 ## Key Features
 
@@ -12,7 +12,6 @@ The main goal of this project is to create a platform for instant messaging, sui
 - **Group and Private Chats:** Ability to create group chats or have private conversations between two users.
 - **Media File Support:** Send images, videos, audio, and documents.
 - **Message History:** Store message history on the server, allowing users to view past conversations at any time.
-- **Notifications for New Messages:** Receive push notifications for new messages even when the chat window is inactive.
 - **User Authentication and Authorization:** Secure login via email and password, as well as OAuth (e.g., Google or Facebook).
 
 ## Technical Requirements

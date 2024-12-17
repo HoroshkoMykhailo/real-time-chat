@@ -1,5 +1,5 @@
 {
-  "name": "@real-time-chat/shared",
+  "name": "@team-link/shared",
   "private": true,
   "engines": {
     "node": "20.11.x",

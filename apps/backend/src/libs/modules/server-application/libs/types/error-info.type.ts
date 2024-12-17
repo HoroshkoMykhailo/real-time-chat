@@ -1,4 +1,4 @@
-import { type ServerErrorResponse } from '@real-time-chat/shared';
+import { type ServerErrorResponse } from '@team-link/shared';
 
 import { type HTTPCode } from '~/libs/modules/http/http.js';
 import { type ValueOf } from '~/libs/types/types.js';

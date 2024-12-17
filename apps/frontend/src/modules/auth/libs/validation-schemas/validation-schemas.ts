@@ -1,1 +1,1 @@
-export { signUp } from '@real-time-chat/shared';
+export { signUp } from '@team-link/shared';

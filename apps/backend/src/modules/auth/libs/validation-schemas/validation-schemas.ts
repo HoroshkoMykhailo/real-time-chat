@@ -1,1 +1,1 @@
-export { signUp as signUpValidationSchema } from '@real-time-chat/shared';
+export { signUp as signUpValidationSchema } from '@team-link/shared';

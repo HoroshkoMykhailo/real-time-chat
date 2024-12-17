@@ -2,4 +2,4 @@ export {
   UserPayloadKey,
   UserValidationMessage,
   UserValidationRule
-} from '@real-time-chat/shared';
+} from '@team-link/shared';

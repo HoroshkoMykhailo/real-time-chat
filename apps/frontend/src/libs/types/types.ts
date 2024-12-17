@@ -5,4 +5,4 @@ export {
   type ServerValidationErrorResponse,
   type ValidationSchema,
   type ValueOf
-} from '@real-time-chat/shared';
+} from '@team-link/shared';

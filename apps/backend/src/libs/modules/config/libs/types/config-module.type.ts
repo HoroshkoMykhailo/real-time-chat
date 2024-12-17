@@ -1,4 +1,4 @@
-import { type Configurable } from '@real-time-chat/shared';
+import { type Configurable } from '@team-link/shared';
 
 import { type EnvironmentSchema } from './types.js';
 

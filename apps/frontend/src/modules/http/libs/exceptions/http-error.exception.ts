@@ -1,4 +1,4 @@
-import { HTTPError as LibraryHTTPError } from '@real-time-chat/shared';
+import { HTTPError as LibraryHTTPError } from '@team-link/shared';
 
 import { type ServerErrorType } from '~/libs/enums/enums.js';
 import {

@@ -1,1 +1,1 @@
-export { ServerErrorType } from '@real-time-chat/shared';
+export { ServerErrorType } from '@team-link/shared';

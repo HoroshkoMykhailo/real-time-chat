@@ -1,1 +1,1 @@
-export { UserPayloadKey } from '@real-time-chat/shared';
+export { UserPayloadKey } from '@team-link/shared';

@@ -1,1 +1,1 @@
-export { AuthApiPath } from '@real-time-chat/shared';
+export { AuthApiPath } from '@team-link/shared';
