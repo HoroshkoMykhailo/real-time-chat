@@ -2,7 +2,6 @@
 ## Project Overview
 
 This project is a real-time chat application that enables users to exchange messages. The chat is built on a client-server architecture using WebSocket for bidirectional communication, ensuring rapid data transmission without needing to reload the page.
-
 The main goal of this project is to create a platform for messaging, suitable for both personal and business use.
 
 ## Key Features
