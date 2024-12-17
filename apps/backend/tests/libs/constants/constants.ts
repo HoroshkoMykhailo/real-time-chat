@@ -1,3 +1,0 @@
-const API_V1_VERSION_PREFIX = '/v1';
-
-export { API_V1_VERSION_PREFIX };

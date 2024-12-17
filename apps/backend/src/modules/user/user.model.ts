@@ -13,11 +13,15 @@ interface UserDocument extends AbstractDocument {
 
 const UserSchema = new Schema<UserDocument>({
   email: { required: true, type: String, unique: true },
-  password: { required: true, type: String },
+  password: { required: true, type: String }
 });
 
 UserSchema.add(AbstractSchema);
 
-const UserModel = model<UserDocument>('User', UserSchema, DatabaseCollectionName.USERS);
+const UserModel = model<UserDocument>(
+  'User',
+  UserSchema,
+  DatabaseCollectionName.USERS
+);
 
 export { type UserDocument, UserModel };

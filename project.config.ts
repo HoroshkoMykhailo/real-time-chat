@@ -13,7 +13,7 @@ const ProjectPrefix = {
     'test'
   ],
   ENVIRONMENTS: ['production', 'development'],
-  ISSUE_PREFIXES: ['rtc'],
+  ISSUE_PREFIXES: ['tlc'],
   SCOPES: {
     APPS: ['frontend', 'backend'],
     PACKAGES: ['shared']

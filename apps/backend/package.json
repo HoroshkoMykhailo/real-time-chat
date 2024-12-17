@@ -27,8 +27,6 @@
     "qs": "6.12.1"
   },
   "devDependencies": {
-    "@faker-js/faker": "8.4.1",
-    "@jest/globals": "29.7.0",
     "@types/convict": "6.1.6",
     "@types/jest": "29.5.12",
     "@types/qs": "6.9.15",

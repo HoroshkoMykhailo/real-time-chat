@@ -1,7 +1,9 @@
 # TeamLink
+
 ## Project Overview
 
 This project is a real-time chat application that enables users to exchange messages. The chat is built on a client-server architecture using WebSocket for bidirectional communication, ensuring rapid data transmission without needing to reload the page.
+
 The main goal of this project is to create a platform for messaging, suitable for both personal and business use.
 
 ## Key Features
@@ -23,11 +25,13 @@ The main goal of this project is to create a platform for messaging, suitable fo
 ## Architecture
 
 1. **Client Side (Frontend):**
+
    - Built with React.js integrated with Socket.IO to connect to the server.
    - Displays the user interface, including the user list, message list, input form for new messages, and other UI elements.
    - State management using Redux to support single-page applications (SPA).
 
 2. **Server Side (Backend):**
+
    - Server developed using Node.js with Fastify for handling HTTP requests.
    - Socket.IO for managing real-time connections with clients.
    - MongoDB is used to store user information and message history.

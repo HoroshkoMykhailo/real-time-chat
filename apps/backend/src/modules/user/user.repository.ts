@@ -14,7 +14,6 @@ class User
   }
 
   public async getByEmail(email: string): Promise<TUser | null> {
-
     const user = await this.model.findOne({ email }).exec();
 
     return user ? this.mapToBusinessLogic(user) : null;
@@ -22,13 +21,13 @@ class User
 
   protected mapAdditionalBusinessLogic(document: UserDocument): Partial<TUser> {
     return {
-      email: document.email,
+      email: document.email
     };
   }
 
   protected mapToDatabase(data: Partial<TUser>): Partial<UserDocument> {
     return {
-      email: data.email ?? '',
+      email: data.email ?? ''
     };
   }
 }

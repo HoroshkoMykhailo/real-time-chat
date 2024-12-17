@@ -1,3 +1,0 @@
-const VALIDATION_RULE_DELTA = 1;
-
-export { VALIDATION_RULE_DELTA };

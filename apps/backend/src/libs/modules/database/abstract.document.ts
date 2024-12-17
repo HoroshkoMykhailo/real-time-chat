@@ -5,9 +5,12 @@ interface AbstractDocument extends Document {
   updatedAt: Date;
 }
 
-const AbstractSchema = new Schema<AbstractDocument>({}, {
-  timestamps: true
-});
+const AbstractSchema = new Schema<AbstractDocument>(
+  {},
+  {
+    timestamps: true
+  }
+);
 
 interface AbstractModel {
   createdAt: string;
