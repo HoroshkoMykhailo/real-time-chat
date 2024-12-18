@@ -1,5 +1,6 @@
 export {
   UserPayloadKey,
+  UserRole,
   UserValidationMessage,
   UserValidationRule
 } from './libs/enums/enums.js';

@@ -3,6 +3,7 @@ import { type Encryption } from '~/libs/modules/encryption/encryption.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 
 import { type UserSignUpRequestDto } from '../auth/libs/types/types.js';
+import { UserRole } from './libs/enums/enums.js';
 import { type User as TUser, type UserService } from './libs/types/types.js';
 import { type UserDocument } from './user.model.js';
 import { type User as UserRepository } from './user.repository.js';
@@ -38,7 +39,8 @@ class User implements UserService {
 
     const user = {
       ...payload,
-      password: hashedPassword
+      password: hashedPassword,
+      role: UserRole.USER
     };
 
     return await this.#userRepository.create(user);
@@ -62,6 +64,7 @@ class User implements UserService {
       createdAt: document.createdAt.toDateString(),
       email: document.email,
       id: document.id as string,
+      role: document.role,
       updatedAt: document.updatedAt.toDateString()
     };
   }

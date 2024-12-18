@@ -17,6 +17,7 @@ export { AuthApiPath, signUp } from './modules/auth/auth.js';
 export {
   type User,
   UserPayloadKey,
+  UserRole,
   type UserSignInRequestDto,
   type UserSignInResponseDto,
   type UserSignUpRequestDto,

@@ -1,5 +1,6 @@
 import { AbstractRepository } from '~/libs/modules/database/database.js';
 
+import { UserRole } from './libs/enums/enums.js';
 import { type User as TUser, type UserRepository } from './libs/types/types.js';
 import { type UserDocument, type UserModel } from './user.model.js';
 
@@ -21,13 +22,15 @@ class User
 
   protected mapAdditionalBusinessLogic(document: UserDocument): Partial<TUser> {
     return {
-      email: document.email
+      email: document.email,
+      role: document.role
     };
   }
 
   protected mapToDatabase(data: Partial<TUser>): Partial<UserDocument> {
     return {
-      email: data.email ?? ''
+      email: data.email ?? '',
+      role: data.role ?? UserRole.USER
     };
   }
 }
