@@ -1,4 +1,4 @@
-import { Image } from '~/libs/components/components.js';
+import { Image, MyIcon } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
@@ -58,7 +58,9 @@ const Auth: React.FC = () => {
             isCircular
             src="http://s1.iconbird.com/ico/2013/8/428/w256h2561377930292cattied.png"
             width="75"
-          />
+          >
+            <MyIcon />
+          </Image>
           TeamLink
         </h2>
         {getScreen(pathname)}
