@@ -13,6 +13,8 @@ import { AuthApiPath } from './libs/enums/enums.js';
 import {
   type AuthController,
   type AuthService,
+  // type UserSignInRequestDto,
+  // type UserSignInResponseDto,
   type UserSignUpRequestDto,
   type UserSignUpResponseDto
 } from './libs/types/types.js';
@@ -38,6 +40,17 @@ class Auth extends Controller implements AuthController {
     };
   };
 
+  // public signIn = async (
+  //   options: ControllerAPIHandlerOptions<{
+  //     body: UserSignInRequestDto;
+  //   }>
+  // ): Promise<ControllerAPIHandlerResponse<UserSignInResponseDto>> => {
+  //   return {
+  //     payload: await this.#authService.signIn(options.body),
+  //     status: HTTPCode.OK
+  //   };
+  // };
+
   public constructor({ apiPath, authService, logger }: Constructor) {
     super({ apiPath, logger });
     this.#authService = authService;
@@ -50,6 +63,12 @@ class Auth extends Controller implements AuthController {
       },
       url: AuthApiPath.SIGN_UP
     });
+
+    // this.addRoute({
+    //   handler: this.signIn as ControllerAPIHandler,
+    //   method: HTTPMethod.POST,
+    //   url: AuthApiPath.SIGN_IN
+    // });
   }
 }
 

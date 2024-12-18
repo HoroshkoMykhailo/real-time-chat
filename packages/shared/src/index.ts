@@ -1,6 +1,7 @@
 export {
   APIPath,
   AppEnvironment,
+  ExceptionMessage,
   ServerErrorType
 } from './libs/enums/enums.js';
 export { HTTPError, ValidationError } from './libs/exceptions/exceptions.js';
@@ -15,7 +16,10 @@ export {
 export { AuthApiPath, signUp } from './modules/auth/auth.js';
 export {
   type User,
+  UserError,
   UserPayloadKey,
+  // type UserSignInRequestDto,
+  // type UserSignInResponseDto,
   type UserSignUpRequestDto,
   type UserSignUpResponseDto,
   UserValidationMessage,

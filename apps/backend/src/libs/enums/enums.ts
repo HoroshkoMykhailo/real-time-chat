@@ -1,1 +1,6 @@
-export { APIPath, AppEnvironment, ServerErrorType } from '@team-link/shared';
+export {
+  APIPath,
+  AppEnvironment,
+  ExceptionMessage,
+  ServerErrorType
+} from '@team-link/shared';

@@ -65,6 +65,46 @@ class Config implements ConfigModule {
           env: 'MONGO_URI',
           format: String
         }
+      },
+      ENCRYPTION: {
+        ALGORITHM: {
+          default: null,
+          doc: 'Data encryption algorithm',
+          env: 'ENCRYPTION_ALGORITHM',
+          format: String
+        },
+        SALT_ROUNDS: {
+          default: null,
+          doc: 'Data encryption salt rounds',
+          env: 'ENCRYPTION_SALT_ROUNDS',
+          format: Number
+        },
+        SECRET: {
+          default: null,
+          doc: 'Data encryption secret',
+          env: 'ENCRYPTION_SECRET',
+          format: String
+        }
+      },
+      JWT: {
+        ALGORITHM: {
+          default: null,
+          doc: 'JWT encryption algorithm',
+          env: 'JWT_ALGORITHM',
+          format: String
+        },
+        EXPIRATION_TIME: {
+          default: null,
+          doc: 'JWT expiration time',
+          env: 'JWT_EXPIRATION_TIME',
+          format: String
+        },
+        SECRET: {
+          default: null,
+          doc: 'JWT secret',
+          env: 'JWT_SECRET',
+          format: String
+        }
       }
     });
   }
