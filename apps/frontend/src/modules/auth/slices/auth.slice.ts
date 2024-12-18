@@ -4,7 +4,7 @@ import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { type UserSignUpResponseDto } from '~/modules/auth/auth.js';
 
-import { signUp } from './actions.js';
+import { signIn, signUp } from './actions.js';
 
 type State = {
   dataStatus: ValueOf<typeof DataStatus>;
@@ -27,6 +27,17 @@ const { actions, reducer } = createSlice({
         state.dataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(signUp.rejected), state => {
+        state.user = null;
+        state.dataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(signIn.pending), state => {
+        state.dataStatus = DataStatus.PENDING;
+      })
+      .addMatcher(isAnyOf(signIn.fulfilled), (state, action) => {
+        state.user = action.payload;
+        state.dataStatus = DataStatus.FULFILLED;
+      })
+      .addMatcher(isAnyOf(signIn.rejected), state => {
         state.user = null;
         state.dataStatus = DataStatus.REJECTED;
       });

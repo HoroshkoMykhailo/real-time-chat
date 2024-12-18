@@ -1,10 +1,10 @@
 import { ExceptionMessage } from '~/libs/enums/enums.js';
 import { type Encryption } from '~/libs/modules/encryption/encryption.js';
-import { HTTPCode } from '~/libs/modules/http/http.js';
+import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 
 import { type UserSignUpRequestDto } from '../auth/libs/types/types.js';
-import { UserError } from './libs/exceptions/exceptions.js';
 import { type User as TUser, type UserService } from './libs/types/types.js';
+import { type UserDocument } from './user.model.js';
 import { type User as UserRepository } from './user.repository.js';
 
 type Constructor = {
@@ -27,7 +27,7 @@ class User implements UserService {
     const existingUser = await this.#userRepository.getByEmail(email);
 
     if (existingUser) {
-      throw new UserError({
+      throw new HTTPError({
         message: ExceptionMessage.INVALID_CREDENTIALS,
         status: HTTPCode.CONFLICT
       });
@@ -42,6 +42,28 @@ class User implements UserService {
     };
 
     return await this.#userRepository.create(user);
+  }
+
+  public async getByEmail(email: string): Promise<UserDocument> {
+    const item = await this.#userRepository.getByEmail(email);
+
+    if (!item) {
+      throw new HTTPError({
+        message: ExceptionMessage.INVALID_CREDENTIALS,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    return item;
+  }
+
+  public mapUser(document: UserDocument): TUser {
+    return {
+      createdAt: document.createdAt.toDateString(),
+      email: document.email,
+      id: document.id as string,
+      updatedAt: document.updatedAt.toDateString()
+    };
   }
 }
 

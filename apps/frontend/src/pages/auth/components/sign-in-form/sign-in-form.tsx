@@ -1,21 +1,37 @@
 import { Button, Input, NavLink } from '~/libs/components/components.js';
-import { AppRoute, ButtonColor } from '~/libs/enums/enums.js';
-import { useAppForm } from '~/libs/hooks/hooks.js';
+import { AppRoute, ButtonColor, DataStatus } from '~/libs/enums/enums.js';
+import { useAppForm, useAppSelector } from '~/libs/hooks/hooks.js';
+import { type UserSignInRequestDto } from '~/modules/auth/auth.js';
 import { UserPayloadKey } from '~/modules/user/user.js';
 
 import { DEFAULT_SIGN_IN_PAYLOAD } from './libs/common/constants.js';
 import styles from './styles.module.scss';
 
-const SignInForm: React.FC = () => {
-  const { control, errors } = useAppForm({
+type Properties = {
+  onSubmit: (payload: UserSignInRequestDto) => void;
+};
+
+const SignInForm: React.FC<Properties> = ({ onSubmit }) => {
+  const { control, errors, handleSubmit, reset } = useAppForm({
     defaultValues: DEFAULT_SIGN_IN_PAYLOAD
   });
+
+  const authDataStatus = useAppSelector(({ auth }) => {
+    return auth.dataStatus;
+  });
+
+  const isLoading = authDataStatus === DataStatus.PENDING;
+
+  const handleFormSubmit = (values: UserSignInRequestDto): void => {
+    onSubmit(values);
+    reset();
+  };
 
   return (
     <>
       <h2 className={styles['title']}>Login to your account</h2>
-      <form name="loginForm">
-        <fieldset className={styles['fieldset']}>
+      <form name="loginForm" onSubmit={handleSubmit(handleFormSubmit)}>
+        <fieldset className={styles['fieldset']} disabled={isLoading}>
           <Input
             control={control}
             errors={errors}

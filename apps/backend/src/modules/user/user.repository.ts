@@ -13,10 +13,10 @@ class User
     super(userModel);
   }
 
-  public async getByEmail(email: string): Promise<TUser | null> {
+  public async getByEmail(email: string): Promise<UserDocument | null> {
     const user = await this.model.findOne({ email }).exec();
 
-    return user ? this.mapToBusinessLogic(user) : null;
+    return user ?? null;
   }
 
   protected mapAdditionalBusinessLogic(document: UserDocument): Partial<TUser> {
