@@ -63,19 +63,31 @@ class User implements UserService {
     return createdUser;
   }
 
-  public async getByEmail(email: string): Promise<UserDocument> {
-    const item = await this.#userRepository.getByEmail(email);
+  public async find(id: string): Promise<TUser> {
+    const user = await this.#userRepository.getById(id);
 
-    if (!item) {
+    if (!user) {
+      throw new HTTPError({
+        message: ExceptionMessage.USER_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    return user;
+  }
+
+  public async getByEmail(email: string): Promise<UserDocument> {
+    const user = await this.#userRepository.getByEmail(email);
+
+    if (!user) {
       throw new HTTPError({
         message: ExceptionMessage.INVALID_CREDENTIALS,
         status: HTTPCode.NOT_FOUND
       });
     }
 
-    return item;
+    return user;
   }
-
   public mapUser(document: UserDocument): TUser {
     return {
       createdAt: document.createdAt.toDateString(),

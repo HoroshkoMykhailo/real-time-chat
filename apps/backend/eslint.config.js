@@ -24,17 +24,6 @@ const overridesConfigs = [
     }
   },
   {
-    files: ['src/db/migrations/**/*.ts'],
-    rules: {
-      'unicorn/filename-case': [
-        'error',
-        {
-          case: 'kebabCase'
-        }
-      ]
-    }
-  },
-  {
     files: ['src/libs/modules/controller/controller.module.ts'],
     rules: {
       '@typescript-eslint/no-magic-numbers': ['off']

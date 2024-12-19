@@ -17,7 +17,10 @@ export { AuthApiPath, signUp } from './modules/auth/auth.js';
 export { type Profile, ProfileLanguage } from './modules/profile/profile.js';
 export {
   type User,
+  UserApiPath,
   UserPayloadKey,
+  type UserProfileCreationRequestDto,
+  type UserProfileCreationResponseDto,
   UserRole,
   type UserSignInRequestDto,
   type UserSignInResponseDto,

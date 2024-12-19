@@ -1,4 +1,5 @@
 export {
+  UserApiPath,
   UserPayloadKey,
   UserRole,
   UserValidationMessage,

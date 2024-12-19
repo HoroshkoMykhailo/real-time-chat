@@ -5,6 +5,7 @@ import { type User } from './types.js';
 
 type UserService = {
   create(payload: UserSignUpRequestDto): Promise<User>;
+  find(id: string): Promise<User>;
   getByEmail(email: string): Promise<UserDocument>;
   mapUser(document: UserDocument): User;
 };

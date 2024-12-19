@@ -4,7 +4,7 @@ import { type ProfileLanguage } from '../enums/enums.js';
 
 type Profile = {
   createdAt: string;
-  dataOfBirth?: Date;
+  dataOfBirth?: string;
   description?: string;
   id: string;
   language?: ValueOf<typeof ProfileLanguage>;
