@@ -26,6 +26,17 @@ const signUp = Joi.object({
       'string.empty': UserValidationMessage.PASSWORD_REQUIRE,
       'string.max': UserValidationMessage.PASSWORD_MAX_LENGTH,
       'string.min': UserValidationMessage.PASSWORD_MIN_LENGTH
+    }),
+  [UserPayloadKey.USERNAME]: Joi.string()
+    .trim()
+    .min(UserValidationRule.USERNAME_MIN_LENGTH)
+    .max(UserValidationRule.USERNAME_MAX_LENGTH)
+    .required()
+    .messages({
+      'any.required': UserValidationMessage.USERNAME_REQUIRE,
+      'string.empty': UserValidationMessage.USERNAME_REQUIRE,
+      'string.max': UserValidationMessage.USERNAME_MAX_LENGTH,
+      'string.min': UserValidationMessage.USERNAME_MIN_LENGTH
     })
 });
 

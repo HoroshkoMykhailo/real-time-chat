@@ -3,6 +3,7 @@ import { type Encryption } from '~/libs/modules/encryption/encryption.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 
 import { type UserSignUpRequestDto } from '../auth/libs/types/types.js';
+import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
 import { UserRole } from './libs/enums/enums.js';
 import { type User as TUser, type UserService } from './libs/types/types.js';
 import { type UserDocument } from './user.model.js';
@@ -10,20 +11,27 @@ import { type User as UserRepository } from './user.repository.js';
 
 type Constructor = {
   encryption: Encryption;
+  profileRepository: ProfileRepository;
   userRepository: UserRepository;
 };
 
 class User implements UserService {
   #encryption: Encryption;
+  #profileRepository: ProfileRepository;
   #userRepository: UserRepository;
 
-  public constructor({ encryption, userRepository }: Constructor) {
+  public constructor({
+    encryption,
+    profileRepository,
+    userRepository
+  }: Constructor) {
     this.#userRepository = userRepository;
+    this.#profileRepository = profileRepository;
     this.#encryption = encryption;
   }
 
   public async create(payload: UserSignUpRequestDto): Promise<TUser> {
-    const { email, password } = payload;
+    const { email, password, username } = payload;
 
     const existingUser = await this.#userRepository.getByEmail(email);
 
@@ -43,7 +51,16 @@ class User implements UserService {
       role: UserRole.USER
     };
 
-    return await this.#userRepository.create(user);
+    const createdUser = await this.#userRepository.create(user);
+
+    const profile = {
+      userId: createdUser.id,
+      username
+    };
+
+    await this.#profileRepository.create(profile);
+
+    return createdUser;
   }
 
   public async getByEmail(email: string): Promise<UserDocument> {

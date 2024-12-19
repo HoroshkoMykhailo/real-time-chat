@@ -14,6 +14,7 @@ export {
   type ValueOf
 } from './libs/types/types.js';
 export { AuthApiPath, signUp } from './modules/auth/auth.js';
+export { type Profile, ProfileLanguage } from './modules/profile/profile.js';
 export {
   type User,
   UserPayloadKey,

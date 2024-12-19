@@ -37,6 +37,13 @@ const SignUpForm: React.FC<Properties> = ({ onSubmit }) => {
           <Input
             control={control}
             errors={errors}
+            name={UserPayloadKey.USERNAME}
+            placeholder="Username"
+            type="text"
+          />
+          <Input
+            control={control}
+            errors={errors}
             name={UserPayloadKey.EMAIL}
             placeholder="Email"
             type="email"
