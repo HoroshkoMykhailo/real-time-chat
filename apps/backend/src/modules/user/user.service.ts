@@ -4,8 +4,13 @@ import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 
 import { type UserSignUpRequestDto } from '../auth/libs/types/types.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
-import { UserRole } from './libs/enums/enums.js';
-import { type User as TUser, type UserService } from './libs/types/types.js';
+import { ProfileLanguage, UserRole } from './libs/enums/enums.js';
+import {
+  type User as TUser,
+  type UserProfileCreationRequestDto,
+  type UserProfileCreationResponseDto,
+  type UserService
+} from './libs/types/types.js';
 import { type UserDocument } from './user.model.js';
 import { type User as UserRepository } from './user.repository.js';
 
@@ -54,6 +59,7 @@ class User implements UserService {
     const createdUser = await this.#userRepository.create(user);
 
     const profile = {
+      language: ProfileLanguage.ENGLISH,
       userId: createdUser.id,
       username
     };
@@ -96,6 +102,29 @@ class User implements UserService {
       role: document.role,
       updatedAt: document.updatedAt.toDateString()
     };
+  }
+  public async updateProfile(
+    sender: TUser,
+    id: string,
+    data: UserProfileCreationRequestDto
+  ): Promise<UserProfileCreationResponseDto> {
+    const profile = await this.#profileRepository.updateById(id, data);
+
+    if (!profile) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    if (sender.id !== profile.userId && sender.role !== UserRole.ADMIN) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    return profile;
   }
 }
 

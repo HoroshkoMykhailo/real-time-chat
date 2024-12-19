@@ -13,6 +13,7 @@ import { UserApiPath } from './libs/enums/enums.js';
 import {
   type User as TUser,
   type UserProfileCreationRequestDto,
+  type UserProfileCreationResponseDto,
   type UserService
 } from './libs/types/types.js';
 import { type UserController } from './libs/types/user-controller.type.js';
@@ -26,21 +27,21 @@ type Constructor = {
 class User extends Controller implements UserController {
   #userService: UserService;
 
-  public createProfile = async (
+  public updateProfile = async (
     options: ControllerAPIHandlerOptions<{
       body: UserProfileCreationRequestDto;
       params: {
-        userId: string;
+        id: string;
       };
       user: TUser;
     }>
-  ): Promise<ControllerAPIHandlerResponse<UserProfileCreationRequestDto>> => {
-    const user = await this.#userService.find(options.user.id);
-
+  ): Promise<ControllerAPIHandlerResponse<UserProfileCreationResponseDto>> => {
     return {
-      payload: {
-        username: user.email
-      },
+      payload: await this.#userService.updateProfile(
+        options.user,
+        options.params.id,
+        options.body
+      ),
       status: HTTPCode.OK
     };
   };
@@ -50,7 +51,7 @@ class User extends Controller implements UserController {
     this.#userService = userService;
 
     this.addRoute({
-      handler: this.createProfile as ControllerAPIHandler,
+      handler: this.updateProfile as ControllerAPIHandler,
       method: HTTPMethod.PUT,
       url: UserApiPath.$PROFILE_ID
     });

@@ -10,7 +10,7 @@ import { type ValueOf } from '~/libs/types/types.js';
 import { ProfileLanguage } from './libs/enums/enums.js';
 
 interface ProfileDocument extends AbstractDocument {
-  dataOfBirth?: Date;
+  dateOfBirth?: Date;
   description?: string;
   language: ValueOf<typeof ProfileLanguage>;
   profilePicture?: string;
@@ -19,7 +19,7 @@ interface ProfileDocument extends AbstractDocument {
 }
 
 const ProfileSchema = new Schema<ProfileDocument>({
-  dataOfBirth: { type: Date },
+  dateOfBirth: { type: Date },
   description: { type: String },
   language: {
     default: ProfileLanguage.ENGLISH,

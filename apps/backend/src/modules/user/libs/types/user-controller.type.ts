@@ -10,11 +10,11 @@ import {
 } from './types.js';
 
 type UserController = {
-  createProfile: (
+  updateProfile: (
     options: ControllerAPIHandlerOptions<{
       body: UserProfileCreationRequestDto;
       params: {
-        userId: string;
+        id: string;
       };
       user: User;
     }>

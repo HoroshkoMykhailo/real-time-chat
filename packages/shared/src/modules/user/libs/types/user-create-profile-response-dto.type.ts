@@ -2,7 +2,7 @@ import { type ValueOf } from '~/libs/types/types.js';
 import { type ProfileLanguage } from '~/modules/profile/profile.js';
 
 type UserProfileCreationResponseDto = {
-  dataOfBirth?: string;
+  dateOfBirth?: string;
   description?: string;
   language?: ValueOf<typeof ProfileLanguage>;
   username?: string;
