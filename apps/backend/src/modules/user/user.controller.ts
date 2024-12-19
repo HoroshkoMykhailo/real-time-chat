@@ -36,12 +36,10 @@ class User extends Controller implements UserController {
       user: TUser;
     }>
   ): Promise<ControllerAPIHandlerResponse<UserProfileCreationResponseDto>> => {
+    const { body, params, user } = options;
+
     return {
-      payload: await this.#userService.updateProfile(
-        options.user,
-        options.params.id,
-        options.body
-      ),
+      payload: await this.#userService.updateProfile(user, params.id, body),
       status: HTTPCode.OK
     };
   };

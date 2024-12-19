@@ -5,6 +5,7 @@ type UserProfileCreationResponseDto = {
   dateOfBirth?: string;
   description?: string;
   language?: ValueOf<typeof ProfileLanguage>;
+  profilePicture?: string;
   username?: string;
 };
 

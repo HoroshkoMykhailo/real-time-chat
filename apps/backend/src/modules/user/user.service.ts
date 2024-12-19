@@ -1,6 +1,7 @@
 import { ExceptionMessage } from '~/libs/enums/enums.js';
 import { type Encryption } from '~/libs/modules/encryption/encryption.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
+import { savePicture } from '~/libs/modules/server-application/libs/helpers/helpers.js';
 
 import { type UserSignUpRequestDto } from '../auth/libs/types/types.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
@@ -108,7 +109,7 @@ class User implements UserService {
     id: string,
     data: UserProfileCreationRequestDto
   ): Promise<UserProfileCreationResponseDto> {
-    const profile = await this.#profileRepository.updateById(id, data);
+    const profile = await this.#profileRepository.getById(id);
 
     if (!profile) {
       throw new HTTPError({
@@ -124,7 +125,28 @@ class User implements UserService {
       });
     }
 
-    return profile;
+    const { profilePicture, ...otherData } = data;
+
+    if (profilePicture) {
+      const fileName = await savePicture(profilePicture);
+      profile.profilePicture = fileName;
+    }
+
+    Object.assign(profile, otherData);
+
+    const updatedProfile = await this.#profileRepository.updateById(
+      id,
+      profile
+    );
+
+    if (!updatedProfile) {
+      throw new HTTPError({
+        message: ExceptionMessage.ERROR_UPDATING_PROFILE,
+        status: HTTPCode.INTERNAL_SERVER_ERROR
+      });
+    }
+
+    return updatedProfile;
   }
 }
 

@@ -53,6 +53,10 @@ class Profile extends AbstractRepository<ProfileDocument, TProfile> {
       result.username = data.username;
     }
 
+    if (data.profilePicture) {
+      result.profilePicture = data.profilePicture;
+    }
+
     return result;
   }
 }

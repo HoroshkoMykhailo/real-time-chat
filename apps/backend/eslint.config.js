@@ -5,7 +5,7 @@ let FlatConfig;
 
 /** @type {FlatConfig} */
 const ignoresConfig = {
-  ignores: ['build']
+  ignores: ['build', 'public']
 };
 
 /** @type {FlatConfig[]} */

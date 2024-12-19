@@ -1,3 +1,5 @@
+import { type MultipartFile } from '@fastify/multipart';
+
 import {
   type ControllerAPIHandlerOptions,
   type ControllerAPIHandlerResponse
@@ -13,6 +15,7 @@ type UserController = {
   updateProfile: (
     options: ControllerAPIHandlerOptions<{
       body: UserProfileCreationRequestDto;
+      files: AsyncIterableIterator<MultipartFile>;
       params: {
         id: string;
       };

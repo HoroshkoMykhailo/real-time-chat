@@ -1,11 +1,10 @@
+import fastifyMultipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import fastify, {
   type FastifyError,
   type FastifyInstance,
   type FastifyServerOptions
 } from 'fastify';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { ServerErrorType } from '~/libs/enums/enums.js';
 import { type ValidationError } from '~/libs/exceptions/exceptions.js';
@@ -18,6 +17,7 @@ import { type UserService } from '~/modules/user/user.js';
 
 import { type DatabaseModule } from '../database/database.js';
 import { type LoggerModule } from '../logger/logger.js';
+import { staticPath } from './libs/constants/constants.js';
 import { getErrorInfo } from './libs/helpers/helpers.js';
 import { type ServerApi } from './libs/types/types.js';
 
@@ -26,6 +26,7 @@ type Constructor = {
   config: ConfigModule;
   database: DatabaseModule;
   logger: LoggerModule;
+  maximumFileSize: number;
   options: FastifyServerOptions;
   services: {
     userService: UserService;
@@ -50,6 +51,14 @@ class ServerApp {
   #initPlugins = async (): Promise<void> => {
     const { userService } = this.#services;
 
+    await this.#app.register(fastifyMultipart, {
+      attachFieldsToBody: true,
+      limits: {
+        fileSize: this.#maximumFileSize
+      },
+      throwFileSizeLimit: true
+    });
+
     await this.#app.register(authorization, {
       token: this.#token,
       userService,
@@ -69,6 +78,8 @@ class ServerApp {
 
   #logger: LoggerModule;
 
+  #maximumFileSize: number;
+
   #registerRoutes = (): void => {
     const routers = this.#apis.flatMap(it => it.routes);
 
@@ -82,11 +93,6 @@ class ServerApp {
   };
 
   #registerServe = async (): Promise<void> => {
-    const staticPath = join(
-      dirname(fileURLToPath(import.meta.url)),
-      '../../../../public'
-    );
-
     await this.#app.register(fastifyStatic, {
       prefix: '/',
       root: staticPath
@@ -146,6 +152,7 @@ class ServerApp {
     config,
     database,
     logger,
+    maximumFileSize,
     options,
     services,
     token,
@@ -162,6 +169,8 @@ class ServerApp {
     this.#whiteRoutes = whiteRoutes;
 
     this.#services = services;
+
+    this.#maximumFileSize = maximumFileSize;
   }
 
   #initErrorHandler(): void {

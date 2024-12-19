@@ -7,7 +7,11 @@ import { userController, userService } from '~/modules/user/user.js';
 
 import { logger } from '../logger/logger.js';
 import { token } from '../token/token.js';
-import { WHITE_ROUTES } from './libs/constants/constants.js';
+import {
+  KILOBYTE,
+  MAXIMUM_MEGABYTE,
+  WHITE_ROUTES
+} from './libs/constants/constants.js';
 import { ServerApp } from './server-app.js';
 import { ServerAppApi } from './server-app-api.js';
 
@@ -21,6 +25,7 @@ const serverApp = new ServerApp({
   config,
   database,
   logger,
+  maximumFileSize: MAXIMUM_MEGABYTE * KILOBYTE * KILOBYTE,
   options: {
     ignoreTrailingSlash: true,
     logger: {
