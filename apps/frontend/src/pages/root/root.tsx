@@ -1,9 +1,15 @@
-import { Navigate } from 'react-router-dom';
-
-import { AppRoute } from '~/libs/enums/enums.js';
+import { RouterOutlet } from '~/libs/components/components.js';
+import { useAppDispatch, useEffect } from '~/libs/hooks/hooks.js';
+import { authActions } from '~/modules/auth/auth.js';
 
 const Root: React.FC = () => {
-  return <Navigate to={AppRoute.SIGN_IN} />;
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    void dispatch(authActions.getAuthenticatedUser());
+  }, [dispatch]);
+
+  return <RouterOutlet />;
 };
 
 export { Root };

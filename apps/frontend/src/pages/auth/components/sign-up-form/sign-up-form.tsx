@@ -10,7 +10,7 @@ import {
 } from '~/libs/hooks/hooks.js';
 import { type UserSignUpRequestDto } from '~/modules/auth/auth.js';
 import { signUp as signUpValidationSchema } from '~/modules/auth/libs/validation-schemas/validation-schemas.js';
-import { UserPayloadKey, profileActions } from '~/modules/profile/profile.js';
+import { UserPayloadKey } from '~/modules/profile/profile.js';
 
 import { DEFAULT_REGISTRATION_PAYLOAD } from './libs/common/constants.js';
 import styles from './styles.module.scss';
@@ -38,7 +38,6 @@ const SignUpForm: React.FC<Properties> = ({ onSubmit }) => {
 
   useEffect(() => {
     if (authenticatedUser) {
-      void dispatch(profileActions.getProfile());
       navigate(AppRoute.PROFILE);
     }
   }, [authenticatedUser, dispatch, navigate]);

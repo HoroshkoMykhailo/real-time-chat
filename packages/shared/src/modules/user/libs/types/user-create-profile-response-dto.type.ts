@@ -1,12 +1,5 @@
-import { type ValueOf } from '~/libs/types/types.js';
-import { type ProfileLanguage } from '~/modules/profile/profile.js';
+import { type Profile } from '~/modules/profile/profile.js';
 
-type UserProfileCreationResponseDto = {
-  dateOfBirth?: string;
-  description?: string;
-  language?: ValueOf<typeof ProfileLanguage>;
-  profilePicture?: string;
-  username?: string;
-};
+type UserProfileCreationResponseDto = Profile;
 
 export { type UserProfileCreationResponseDto };

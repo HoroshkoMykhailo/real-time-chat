@@ -11,6 +11,8 @@ import { useController } from '~/libs/hooks/hooks.js';
 
 import styles from './styles.module.scss';
 
+const Zero = 0;
+
 type InputProperties<T extends FieldValues> = {
   className?: string;
   control: Control<T>;
@@ -34,6 +36,7 @@ const Input = <T extends FieldValues>({
 }: InputProperties<T>): ReactElement => {
   const { field } = useController<T>({ control, name });
   const isTextarea = Boolean(rows);
+  const hasErrors = Object.keys(errors).length > Zero;
 
   return (
     <div className={styles['inputWrapper']}>
@@ -45,6 +48,7 @@ const Input = <T extends FieldValues>({
             name={name}
             placeholder={placeholder}
             rows={rows}
+            value={field.value}
           />
         ) : (
           <input
@@ -53,12 +57,15 @@ const Input = <T extends FieldValues>({
             disabled={disabled}
             placeholder={placeholder}
             type={type}
+            value={field.value}
           />
         )}
       </div>
-      <span className={styles['errorWrapper']}>
-        <ErrorMessage errors={errors} name={name} />
-      </span>
+      {hasErrors && (
+        <span className={styles['errorWrapper']}>
+          <ErrorMessage errors={errors} name={name} />
+        </span>
+      )}
     </div>
   );
 };

@@ -3,12 +3,12 @@ import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
-import { type UserProfileCreationResponseDto } from '../libs/types/types.js';
+import { type Profile } from '../libs/types/types.js';
 import { getProfile, updateOtherProfile, updateProfile } from './actions.js';
 
 type State = {
   dataStatus: ValueOf<typeof DataStatus>;
-  profile: UserProfileCreationResponseDto | null;
+  profile: Profile | null;
 };
 
 const initialState: State = {

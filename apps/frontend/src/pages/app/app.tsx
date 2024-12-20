@@ -1,8 +1,13 @@
-import { RouterProvider } from '~/libs/components/components.js';
+import {
+  ProtectedRoute,
+  RouterProvider
+} from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 
 import { Auth } from '../auth/auth.js';
+import { Main } from '../main/main.js';
 import { NotFound } from '../not-found/not-found.js';
+import { Profile } from '../profile/profile.js';
 import { Root } from '../root/root.js';
 
 const App: React.FC = () => {
@@ -12,8 +17,20 @@ const App: React.FC = () => {
         {
           children: [
             {
-              element: <Root />,
+              element: (
+                <ProtectedRoute>
+                  <Main />
+                </ProtectedRoute>
+              ),
               path: AppRoute.ROOT
+            },
+            {
+              element: (
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              ),
+              path: AppRoute.PROFILE
             },
             {
               element: <Auth />,
@@ -24,6 +41,7 @@ const App: React.FC = () => {
               path: AppRoute.SIGN_UP
             }
           ],
+          element: <Root />,
           path: AppRoute.ROOT
         },
         {

@@ -5,7 +5,7 @@ type UserProfileCreationRequestDto = {
   dateOfBirth?: string;
   description?: string;
   language?: ValueOf<typeof ProfileLanguage>;
-  profilePicture?: File;
+  profilePicture?: File | null;
   username?: string;
 };
 

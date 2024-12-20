@@ -1,4 +1,4 @@
-import { APIPath, ContentType } from '~/libs/enums/enums.js';
+import { APIPath } from '~/libs/enums/enums.js';
 import { convertToFormData } from '~/libs/helpers/helper.js';
 import { HTTPMethod } from '~/modules/http/libs/enums/enums.js';
 
@@ -43,7 +43,6 @@ class Profile implements ProfileApi {
     return this.#httpApi.load(
       `${this.#apiPath}${APIPath.USER}${UserApiPath.PROFILE}`,
       {
-        contentType: ContentType.FormData,
         hasAuth: true,
         method: HTTPMethod.PUT,
         payload: formData
@@ -63,7 +62,6 @@ class Profile implements ProfileApi {
         id
       )}`,
       {
-        contentType: ContentType.FormData,
         hasAuth: true,
         method: HTTPMethod.PUT,
         payload: formData
