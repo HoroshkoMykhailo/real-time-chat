@@ -2,6 +2,7 @@ import { RouterProvider } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 
 import { Auth } from '../auth/auth.js';
+import { NotFound } from '../not-found/not-found.js';
 import { Root } from '../root/root.js';
 
 const App: React.FC = () => {
@@ -24,6 +25,10 @@ const App: React.FC = () => {
             }
           ],
           path: AppRoute.ROOT
+        },
+        {
+          element: <NotFound />,
+          path: AppRoute.ANY
         }
       ]}
     />

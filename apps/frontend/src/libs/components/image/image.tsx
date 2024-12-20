@@ -8,7 +8,6 @@ import styles from './styles.module.scss';
 type ImageProperties = {
   alt: string;
   className?: string;
-  color?: string;
   height?: string;
   isCentered?: boolean;
   isCircular?: boolean;

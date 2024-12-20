@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 
 const staticPath = join(
   dirname(fileURLToPath(import.meta.url)),
-  '../../../../../../public'
+  '../../../../public'
 );
 
 export { staticPath };

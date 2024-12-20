@@ -33,6 +33,10 @@
     background-color: var(--teal);
   }
 
+  &__teal:hover {
+    background-color: var(--button-hover);
+  }
+
   &__blue {
     color: var(--white);
     background-color: var(--blue);

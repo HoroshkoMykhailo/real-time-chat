@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { Button, Input, NavLink } from '~/libs/components/components.js';
 import { AppRoute, ButtonColor, DataStatus } from '~/libs/enums/enums.js';
 import { useAppForm, useAppSelector } from '~/libs/hooks/hooks.js';
@@ -18,11 +21,20 @@ const SignUpForm: React.FC<Properties> = ({ onSubmit }) => {
     validationSchema: signUpValidationSchema
   });
 
-  const authDataStatus = useAppSelector(({ auth }) => {
-    return auth.dataStatus;
-  });
+  const { dataStatus: authDataStatus, user: authenticatedUser } =
+    useAppSelector(({ auth }) => {
+      return auth;
+    });
 
   const isLoading = authDataStatus === DataStatus.PENDING;
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (authenticatedUser) {
+      navigate(AppRoute.PROFILE);
+    }
+  }, [authenticatedUser, navigate]);
 
   const handleFormSubmit = (values: UserSignUpRequestDto): void => {
     onSubmit(values);
