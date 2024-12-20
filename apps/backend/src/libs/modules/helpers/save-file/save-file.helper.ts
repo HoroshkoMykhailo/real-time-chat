@@ -11,7 +11,7 @@ import { staticPath } from '../../constants/constants.js';
 const saveFile = async (
   file: MultipartFile,
   mimeType: string,
-  prefix: string = 'file_'
+  prefix: string = 'file-'
 ): Promise<string> => {
   const buffer = await file.toBuffer();
 

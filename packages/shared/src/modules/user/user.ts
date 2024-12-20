@@ -7,7 +7,6 @@ export {
 } from './libs/enums/enums.js';
 export {
   type User,
-  type UserProfileCreationRequestDto,
   type UserProfileCreationResponseDto,
   type UserSignInRequestDto,
   type UserSignInResponseDto,

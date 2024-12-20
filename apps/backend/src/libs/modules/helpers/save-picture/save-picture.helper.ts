@@ -15,7 +15,7 @@ const savePicture = async (file: MultipartFile): Promise<string> => {
     });
   }
 
-  return await saveFile(file, mimeType, 'image_');
+  return await saveFile(file, mimeType, 'image-');
 };
 
 export { savePicture };

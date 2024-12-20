@@ -23,6 +23,7 @@ class User
   protected mapAdditionalBusinessLogic(document: UserDocument): Partial<TUser> {
     return {
       email: document.email,
+      profileId: document.profileId.toString(),
       role: document.role
     };
   }

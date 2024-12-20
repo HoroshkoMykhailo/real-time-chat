@@ -10,7 +10,6 @@ type Profile = {
   language: ValueOf<typeof ProfileLanguage>;
   profilePicture?: string;
   updatedAt: string;
-  userId: string;
   username: string;
 };
 

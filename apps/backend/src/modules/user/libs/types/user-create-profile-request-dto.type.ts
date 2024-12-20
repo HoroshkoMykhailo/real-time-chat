@@ -1,8 +1,15 @@
-import { type MultipartFile } from '@fastify/multipart';
-import { type UserProfileCreationRequestDto as OriginalUserProfileCreationRequestDto } from '@team-link/shared';
+import { type MultipartFile, type MultipartValue } from '@fastify/multipart';
+
+import { type ValueOf } from '~/libs/types/types.js';
+
+import { type ProfileLanguage } from '../enums/enums.js';
 
 type UserProfileCreationRequestDto = {
+  dateOfBirth?: MultipartValue<string>;
+  description?: MultipartValue<string>;
+  language?: MultipartValue<ValueOf<typeof ProfileLanguage>>;
   profilePicture?: MultipartFile;
-} & OriginalUserProfileCreationRequestDto;
+  username?: MultipartValue<string>;
+};
 
 export { type UserProfileCreationRequestDto };

@@ -9,6 +9,7 @@ import fastify, {
 import { ServerErrorType } from '~/libs/enums/enums.js';
 import { type ValidationError } from '~/libs/exceptions/exceptions.js';
 import { type ConfigModule } from '~/libs/modules/config/config.js';
+import { staticPath } from '~/libs/modules/constants/constants.js';
 import { joinPath } from '~/libs/modules/path/path.js';
 import { authorization } from '~/libs/modules/plugins/authorization/authorization.plugin.js';
 import { type Token } from '~/libs/modules/token/token.js';
@@ -17,7 +18,6 @@ import { type UserService } from '~/modules/user/user.js';
 
 import { type DatabaseModule } from '../database/database.js';
 import { type LoggerModule } from '../logger/logger.js';
-import { staticPath } from './libs/constants/constants.js';
 import { getErrorInfo } from './libs/helpers/helpers.js';
 import { type ServerApi } from './libs/types/types.js';
 

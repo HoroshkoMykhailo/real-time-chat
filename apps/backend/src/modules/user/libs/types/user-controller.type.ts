@@ -1,5 +1,3 @@
-import { type MultipartFile } from '@fastify/multipart';
-
 import {
   type ControllerAPIHandlerOptions,
   type ControllerAPIHandlerResponse
@@ -12,13 +10,17 @@ import {
 } from './types.js';
 
 type UserController = {
-  updateProfile: (
+  updateMyProfile: (
     options: ControllerAPIHandlerOptions<{
       body: UserProfileCreationRequestDto;
-      files: AsyncIterableIterator<MultipartFile>;
-      params: {
-        id: string;
-      };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<UserProfileCreationResponseDto>>;
+
+  updateOtherProfile: (
+    options: ControllerAPIHandlerOptions<{
+      body: UserProfileCreationRequestDto;
+      params: { id: string };
       user: User;
     }>
   ) => Promise<ControllerAPIHandlerResponse<UserProfileCreationResponseDto>>;

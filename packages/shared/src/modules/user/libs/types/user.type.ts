@@ -6,6 +6,7 @@ type User = {
   createdAt: string;
   email: string;
   id: string;
+  profileId: string;
   role: ValueOf<typeof UserRole>;
   updatedAt: string;
 };

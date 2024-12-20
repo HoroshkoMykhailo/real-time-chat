@@ -48,9 +48,9 @@ class Abstract<T extends AbstractDocument, K extends AbstractModel>
 
   protected mapToBusinessLogic(document: T): K {
     return {
-      createdAt: document.createdAt.toDateString(),
+      createdAt: document.createdAt.toISOString(),
       id: document.id as string,
-      updatedAt: document.updatedAt.toDateString(),
+      updatedAt: document.updatedAt.toISOString(),
       ...this.mapAdditionalBusinessLogic(document)
     } as unknown as K;
   }

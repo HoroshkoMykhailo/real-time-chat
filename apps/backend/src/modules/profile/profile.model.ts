@@ -1,4 +1,4 @@
-import { Schema, type Types, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
 import {
   type AbstractDocument,
@@ -10,16 +10,15 @@ import { type ValueOf } from '~/libs/types/types.js';
 import { ProfileLanguage } from './libs/enums/enums.js';
 
 interface ProfileDocument extends AbstractDocument {
-  dateOfBirth?: Date;
+  dateOfBirth?: string;
   description?: string;
   language: ValueOf<typeof ProfileLanguage>;
   profilePicture?: string;
-  userId: Types.ObjectId;
   username: string;
 }
 
 const ProfileSchema = new Schema<ProfileDocument>({
-  dateOfBirth: { type: Date },
+  dateOfBirth: { type: String },
   description: { type: String },
   language: {
     default: ProfileLanguage.ENGLISH,
@@ -27,7 +26,6 @@ const ProfileSchema = new Schema<ProfileDocument>({
     type: String
   },
   profilePicture: { type: String },
-  userId: { ref: 'User', required: true, type: Schema.Types.ObjectId },
   username: { required: true, type: String }
 });
 

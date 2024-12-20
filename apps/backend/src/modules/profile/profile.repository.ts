@@ -15,12 +15,11 @@ class Profile extends AbstractRepository<ProfileDocument, TProfile> {
   ): Partial<TProfile> {
     let result: Partial<TProfile> = {
       language: document.language,
-      userId: document.userId.toString(),
       username: document.username
     };
 
     if (document.dateOfBirth) {
-      result.dateOfBirth = document.dateOfBirth.toDateString();
+      result.dateOfBirth = document.dateOfBirth;
     }
 
     if (document.description) {
@@ -38,7 +37,7 @@ class Profile extends AbstractRepository<ProfileDocument, TProfile> {
     const result: Partial<ProfileDocument> = {};
 
     if (data.dateOfBirth) {
-      result.dateOfBirth = new Date(data.dateOfBirth);
+      result.dateOfBirth = data.dateOfBirth;
     }
 
     if (data.description) {
