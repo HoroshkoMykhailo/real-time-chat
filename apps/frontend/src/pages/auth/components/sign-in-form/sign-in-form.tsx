@@ -2,7 +2,7 @@ import { Button, Input, NavLink } from '~/libs/components/components.js';
 import { AppRoute, ButtonColor, DataStatus } from '~/libs/enums/enums.js';
 import { useAppForm, useAppSelector } from '~/libs/hooks/hooks.js';
 import { type UserSignInRequestDto } from '~/modules/auth/auth.js';
-import { UserPayloadKey } from '~/modules/user/user.js';
+import { UserPayloadKey } from '~/modules/profile/profile.js';
 
 import { DEFAULT_SIGN_IN_PAYLOAD } from './libs/common/constants.js';
 import styles from './styles.module.scss';

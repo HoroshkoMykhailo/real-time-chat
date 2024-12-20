@@ -14,10 +14,8 @@ class Storage implements StorageApi {
     this.#storage = storage;
   }
 
-  public clear(): Promise<void> {
+  public clear(): void {
     this.#storage.clear();
-
-    return Promise.resolve();
   }
 
   public drop(key: ValueOf<typeof StorageKey>): void {

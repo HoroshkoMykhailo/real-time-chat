@@ -11,7 +11,9 @@ type UserService = {
   create(payload: UserSignUpRequestDto): Promise<User>;
   find(id: string): Promise<User>;
   getByEmail(email: string): Promise<UserDocument>;
+  getMyProfile(user: User): Promise<UserProfileCreationResponseDto>;
   mapUser(document: UserDocument): User;
+
   updateMyProfile(
     user: User,
     data: UserProfileCreationRequestDto

@@ -10,6 +10,18 @@ import {
 } from './types.js';
 
 type UserController = {
+  getMyProfile: (
+    options: ControllerAPIHandlerOptions<{
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<UserProfileCreationResponseDto>>;
+
+  getUser: (
+    options: ControllerAPIHandlerOptions<{
+      user: User;
+    }>
+  ) => ControllerAPIHandlerResponse<User>;
+
   updateMyProfile: (
     options: ControllerAPIHandlerOptions<{
       body: UserProfileCreationRequestDto;

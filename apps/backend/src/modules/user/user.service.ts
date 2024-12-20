@@ -138,6 +138,7 @@ class User implements UserService {
 
     return user;
   }
+
   public async getByEmail(email: string): Promise<UserDocument> {
     const user = await this.#userRepository.getByEmail(email);
 
@@ -150,6 +151,21 @@ class User implements UserService {
 
     return user;
   }
+  public async getMyProfile(
+    user: TUser
+  ): Promise<UserProfileCreationResponseDto> {
+    const profile = await this.#profileRepository.getById(user.profileId);
+
+    if (!profile) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    return profile;
+  }
+
   public mapUser(document: UserDocument): TUser {
     return {
       createdAt: document.createdAt.toISOString(),

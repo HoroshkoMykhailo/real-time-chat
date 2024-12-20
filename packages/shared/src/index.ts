@@ -19,6 +19,7 @@ export {
   type User,
   UserApiPath,
   UserPayloadKey,
+  type UserProfileCreationRequestDto,
   type UserProfileCreationResponseDto,
   UserRole,
   type UserSignInRequestDto,

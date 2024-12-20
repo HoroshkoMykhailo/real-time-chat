@@ -10,6 +10,7 @@ const authApi = new AuthApi({
 
 export { authApi };
 export {
+  type User,
   type UserSignInRequestDto,
   type UserSignInResponseDto,
   type UserSignUpRequestDto,

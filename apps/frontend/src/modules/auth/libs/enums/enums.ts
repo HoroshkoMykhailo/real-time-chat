@@ -1,1 +1,1 @@
-export { AuthApiPath } from '@team-link/shared';
+export { AuthApiPath, UserApiPath } from '@team-link/shared';

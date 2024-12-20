@@ -27,6 +27,26 @@ type Constructor = {
 class User extends Controller implements UserController {
   #userService: UserService;
 
+  public getMyProfile = async (
+    options: ControllerAPIHandlerOptions<{ user: TUser }>
+  ): Promise<ControllerAPIHandlerResponse<UserProfileCreationResponseDto>> => {
+    const { user } = options;
+
+    return {
+      payload: await this.#userService.getMyProfile(user),
+      status: HTTPCode.OK
+    };
+  };
+
+  public getUser = (
+    options: ControllerAPIHandlerOptions<{ user: TUser }>
+  ): ControllerAPIHandlerResponse<TUser> => {
+    return {
+      payload: options.user,
+      status: HTTPCode.OK
+    };
+  };
+
   public updateMyProfile = async (
     options: ControllerAPIHandlerOptions<{
       body: UserProfileCreationRequestDto;
@@ -74,6 +94,18 @@ class User extends Controller implements UserController {
       handler: this.updateOtherProfile as ControllerAPIHandler,
       method: HTTPMethod.PUT,
       url: UserApiPath.$PROFILE_ID
+    });
+
+    this.addRoute({
+      handler: this.getMyProfile as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: UserApiPath.PROFILE
+    });
+
+    this.addRoute({
+      handler: this.getUser as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: UserApiPath.ROOT
     });
   }
 }
