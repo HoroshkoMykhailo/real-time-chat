@@ -1,6 +1,9 @@
 :root {
-  --blue: #2185d0;
+  --blue: rgb(25 128 230);
   --teal: #00b5ad;
   --white: #ffffff;
   --light-shadow: rgba(34 36 38 / 15%);
+  --main-dark: rgb(14 20 27);
+  --main-white: rgb(248 250 252);
+  --input-bg: rgb(231 237 243);
 }

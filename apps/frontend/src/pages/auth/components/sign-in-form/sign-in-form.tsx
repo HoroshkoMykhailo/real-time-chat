@@ -51,7 +51,7 @@ const SignInForm: React.FC<Properties> = ({ onSubmit }) => {
           </Button>
         </fieldset>
       </form>
-      <div>
+      <div className={styles['signUpLink']}>
         <span>New to us?</span>
         <NavLink to={AppRoute.SIGN_UP}>Sign Up</NavLink>
       </div>

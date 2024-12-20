@@ -1,4 +1,5 @@
-import { Image, MyIcon } from '~/libs/components/components.js';
+import logoSrc from '~/assets/images/logo.svg';
+import { Image } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
@@ -54,13 +55,11 @@ const Auth: React.FC = () => {
         <h2 className={styles['logoWrapper']}>
           <Image
             alt="TeamLink logo"
-            height="75"
+            height="30"
             isCircular
-            src="http://s1.iconbird.com/ico/2013/8/428/w256h2561377930292cattied.png"
-            width="75"
-          >
-            <MyIcon />
-          </Image>
+            src={logoSrc}
+            width="40"
+          />
           TeamLink
         </h2>
         {getScreen(pathname)}

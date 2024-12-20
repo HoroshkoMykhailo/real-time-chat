@@ -7,8 +7,8 @@ import styles from './styles.module.scss';
 
 type ImageProperties = {
   alt: string;
-  children?: React.ReactNode;
   className?: string;
+  color?: string;
   height?: string;
   isCentered?: boolean;
   isCircular?: boolean;
@@ -19,7 +19,6 @@ type ImageProperties = {
 
 const Image: React.FC<ImageProperties> = ({
   alt,
-  children,
   className,
   height,
   isCentered,
@@ -28,24 +27,6 @@ const Image: React.FC<ImageProperties> = ({
   src,
   width
 }) => {
-  if (children) {
-    return (
-      <div
-        aria-label={alt}
-        className={clsx(
-          styles['image'],
-          isCircular && styles['circular'],
-          isCentered && styles['centered'],
-          size && styles[`imageSize__${size}`],
-          className
-        )}
-        style={{ height, width }}
-      >
-        {children}
-      </div>
-    );
-  }
-
   return (
     <img
       alt={alt}

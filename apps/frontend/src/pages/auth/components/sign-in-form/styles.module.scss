@@ -1,5 +1,6 @@
 .title {
-  color: #00b5ad;
+  color: var(--main-dark);
+  font-weight: 400;
 }
 
 .fieldset {
@@ -9,4 +10,12 @@
   padding: 0;
   gap: 10px;
   border: none;
+}
+
+.signUpLink {
+  color: var(--main-dark);
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }

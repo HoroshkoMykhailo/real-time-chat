@@ -4,8 +4,12 @@
 }
 
 .inputContainer {
-  display: inline-flex;
   position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 6px;
 }
 
 .icon {
@@ -18,12 +22,14 @@
 }
 
 .input {
-  background-color: var(--white);
+  background-color: var(--input-bg);
   box-shadow: none;
   font-weight: 400;
   outline: none;
   padding: 0.6rem 1rem;
   width: 100%;
+  border-width: 1px;
+  border-radius: inherit;
 
   &:disabled {
     opacity: 0.45;
