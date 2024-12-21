@@ -17,6 +17,7 @@ import {
   type UserService
 } from './libs/types/types.js';
 import { type UserController } from './libs/types/user-controller.type.js';
+import { profileValidationSchema } from './libs/validation-schemas/validation-schemas.js';
 
 type Constructor = {
   apiPath: ValueOf<typeof APIPath>;
@@ -87,12 +88,18 @@ class User extends Controller implements UserController {
     this.addRoute({
       handler: this.updateMyProfile as ControllerAPIHandler,
       method: HTTPMethod.PUT,
+      schema: {
+        body: profileValidationSchema
+      },
       url: UserApiPath.PROFILE
     });
 
     this.addRoute({
       handler: this.updateOtherProfile as ControllerAPIHandler,
       method: HTTPMethod.PUT,
+      schema: {
+        body: profileValidationSchema
+      },
       url: UserApiPath.$PROFILE_ID
     });
 

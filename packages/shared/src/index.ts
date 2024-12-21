@@ -13,8 +13,12 @@ export {
   type ValidationSchema,
   type ValueOf
 } from './libs/types/types.js';
-export { AuthApiPath, signUp } from './modules/auth/auth.js';
-export { type Profile, ProfileLanguage } from './modules/profile/profile.js';
+export { AuthApiPath, signIn, signUp } from './modules/auth/auth.js';
+export {
+  type Profile,
+  ProfileLanguage,
+  profile
+} from './modules/profile/profile.js';
 export {
   type User,
   UserApiPath,

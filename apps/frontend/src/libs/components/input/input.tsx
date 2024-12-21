@@ -7,11 +7,10 @@ import {
   type FieldValues
 } from 'react-hook-form';
 
+import { checkGreaterThanZero } from '~/libs/helpers/helper.js';
 import { useController } from '~/libs/hooks/hooks.js';
 
 import styles from './styles.module.scss';
-
-const Zero = 0;
 
 type InputProperties<T extends FieldValues> = {
   className?: string;
@@ -36,7 +35,7 @@ const Input = <T extends FieldValues>({
 }: InputProperties<T>): ReactElement => {
   const { field } = useController<T>({ control, name });
   const isTextarea = Boolean(rows);
-  const hasErrors = Object.keys(errors).length > Zero;
+  const hasErrors = checkGreaterThanZero(Object.keys(errors).length);
 
   return (
     <div className={styles['inputWrapper']}>

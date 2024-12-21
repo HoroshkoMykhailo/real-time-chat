@@ -1,6 +1,13 @@
+import { useNavigate } from 'react-router-dom';
+
 import { Button, Input, NavLink } from '~/libs/components/components.js';
 import { AppRoute, ButtonColor, DataStatus } from '~/libs/enums/enums.js';
-import { useAppForm, useAppSelector } from '~/libs/hooks/hooks.js';
+import {
+  useAppDispatch,
+  useAppForm,
+  useAppSelector,
+  useEffect
+} from '~/libs/hooks/hooks.js';
 import { type UserSignInRequestDto } from '~/modules/auth/auth.js';
 import { UserPayloadKey } from '~/modules/profile/profile.js';
 
@@ -16,11 +23,22 @@ const SignInForm: React.FC<Properties> = ({ onSubmit }) => {
     defaultValues: DEFAULT_SIGN_IN_PAYLOAD
   });
 
-  const authDataStatus = useAppSelector(({ auth }) => {
-    return auth.dataStatus;
-  });
+  const dispatch = useAppDispatch();
+
+  const { dataStatus: authDataStatus, user: authenticatedUser } =
+    useAppSelector(state => {
+      return state.auth;
+    });
 
   const isLoading = authDataStatus === DataStatus.PENDING;
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (authenticatedUser) {
+      navigate(AppRoute.ROOT);
+    }
+  }, [authenticatedUser, dispatch, navigate]);
 
   const handleFormSubmit = (values: UserSignInRequestDto): void => {
     onSubmit(values);

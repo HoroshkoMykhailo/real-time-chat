@@ -1,105 +1,49 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 
-import {
-  Button,
-  Icon,
-  Input,
-  Loader,
-  Navigate
-} from '~/libs/components/components.js';
-import { AppRoute, ButtonColor, DataStatus } from '~/libs/enums/enums.js';
+import { Loader, Navigate } from '~/libs/components/components.js';
+import { AppRoute, DataStatus } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
-  useAppForm,
-  useAppSelector
+  useAppSelector,
+  useCallback,
+  useEffect
 } from '~/libs/hooks/hooks.js';
-import { type UserProfileCreationRequestDto } from '~/modules/profile/libs/types/types.js';
-import { UserPayloadKey, profileActions } from '~/modules/profile/profile.js';
+import { profileActions } from '~/modules/profile/profile.js';
 
-import styles from './styles.module.scss';
+import { ProfileEdit } from './profile-edit.js';
 
 const Profile: React.FC = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const { dataStatus, profile } = useAppSelector(state => state.profile);
 
   useEffect(() => {
     void dispatch(profileActions.getProfile());
   }, [dispatch]);
 
-  const { dataStatus: profileDataStatus, profile } = useAppSelector(state => {
-    return state.profile;
-  });
+  const handleUpdate = useCallback(
+    (data: Record<string, unknown>): void => {
+      void dispatch(profileActions.updateProfile(data));
+    },
+    [dispatch]
+  );
 
-  const isLoading = profileDataStatus === DataStatus.PENDING;
-  const isRejected = profileDataStatus === DataStatus.REJECTED;
-
-  const { control, errors, handleSubmit, reset } = useAppForm({
-    defaultValues: {
-      username: profile?.username ?? ''
-    }
-  });
-
-  useEffect(() => {
-    if (profile) {
-      reset({
-        username: profile.username
-      });
-    }
-  }, [profile, reset]);
-
-  if (isLoading || !profile) {
+  if (dataStatus === DataStatus.PENDING || !profile) {
     return <Loader />;
-  } else if (isRejected) {
-    return <Navigate replace to={AppRoute.SIGN_IN} />;
   }
-
-  const handleFormSubmit = (values: UserProfileCreationRequestDto): void => {
-    void dispatch(profileActions.updateProfile(values));
-    reset();
-    navigate(AppRoute.ROOT);
-  };
 
   const ifNewProfile = profile.createdAt === profile.updatedAt;
 
-  return (
-    <div className={styles['profileForm']}>
-      {ifNewProfile ? (
-        <h2>Welcome! Please complete your profile to get started.</h2>
-      ) : (
-        <h2>Edit your profile details below:</h2>
-      )}
-      <form name="profileForm" onSubmit={handleSubmit(handleFormSubmit)}>
-        <fieldset className={styles['fieldset']} disabled={isLoading}>
-          <div className={styles['notImageGroup']}>
-            <div className={styles['formGroup']}>
-              <label
-                className={styles['label']}
-                htmlFor={UserPayloadKey.USERNAME}
-              >
-                Username
-              </label>
-              <Input
-                control={control}
-                errors={errors}
-                name={UserPayloadKey.USERNAME}
-                placeholder={profile.username}
-                type="text"
-              />
-            </div>
-            <div className={styles['buttonWrapper']}>
-              <Button color={ButtonColor.TEAL} isFluid isPrimary type="submit">
-                Save Changes
-              </Button>
-            </div>
-          </div>
-          <div className={styles['icon']}>
-            <Icon height={48} name="error" width={48} />
-          </div>
-        </fieldset>
-      </form>
-    </div>
-  );
+  if (ifNewProfile) {
+    return (
+      <ProfileEdit ifNewProfile onUpdate={handleUpdate} profile={profile} />
+    );
+  }
+
+  if (dataStatus === DataStatus.REJECTED) {
+    return <Navigate replace to={AppRoute.SIGN_IN} />;
+  }
+
+  return <ProfileEdit onUpdate={handleUpdate} profile={profile} />;
 };
 
 export { Profile };

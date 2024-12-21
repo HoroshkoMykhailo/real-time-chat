@@ -18,7 +18,10 @@ import {
   type UserSignUpRequestDto,
   type UserSignUpResponseDto
 } from './libs/types/types.js';
-import { signUpValidationSchema } from './libs/validation-schemas/validation-schemas.js';
+import {
+  signInValidationSchema,
+  signUpValidationSchema
+} from './libs/validation-schemas/validation-schemas.js';
 
 type Constructor = {
   apiPath: ValueOf<typeof APIPath>;
@@ -67,6 +70,9 @@ class Auth extends Controller implements AuthController {
     this.addRoute({
       handler: this.signIn as ControllerAPIHandler,
       method: HTTPMethod.POST,
+      schema: {
+        body: signInValidationSchema
+      },
       url: AuthApiPath.SIGN_IN
     });
   }
