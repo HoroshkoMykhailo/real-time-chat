@@ -1,0 +1,98 @@
+.profileView {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.profileContent {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  gap: 50px;
+  border: none;
+}
+
+.detailsContainer {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 310px;
+}
+
+.imageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.detailsGroup {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.detailsWrapper {
+  width: 200px;
+}
+
+.detailsBox {
+  padding: 8px 12px;
+  border: 1px solid var(--gray);
+  border-radius: 4px;
+  background-color: var(--white);
+  color: var(--main-dark);
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+
+  &:hover {
+    border-color: var(--gray-dark);
+  }
+}
+
+.profileImage {
+  align-self: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 144px;
+  height: 144px;
+  border-radius: 50%;
+  border: 1px solid var(--main-dark);
+  position: relative;
+}
+
+.cameraIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+
+  &.noImage {
+    color: var(--black);
+  }
+}
+
+.detailsLabel {
+  min-width: 100px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--main-dark);
+}
+
+.buttonsContainer {
+  display: flex;
+  gap: 150px;
+  margin-top: 20px;
+}
+
+.buttonsContainer > button {
+  width: 150px;
+}

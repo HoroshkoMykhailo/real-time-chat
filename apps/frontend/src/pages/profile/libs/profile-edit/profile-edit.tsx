@@ -112,7 +112,7 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
 
     onUpdate(updateProfile);
     reset();
-    navigate(AppRoute.ROOT);
+    navigate(AppRoute.PROFILE);
   };
 
   return (
