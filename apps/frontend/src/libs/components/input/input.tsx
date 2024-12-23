@@ -7,7 +7,7 @@ import {
   type FieldValues
 } from 'react-hook-form';
 
-import { checkGreaterThanZero } from '~/libs/helpers/helper.js';
+import { checkGreaterThanZero } from '~/libs/helpers/helpers.js';
 import { useController, useEffect, useRef } from '~/libs/hooks/hooks.js';
 
 import styles from './styles.module.scss';

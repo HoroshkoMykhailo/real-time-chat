@@ -6,13 +6,16 @@ import {
   DatePicker,
   Icon,
   Image,
-  Input
+  Input,
+  Select
 } from '~/libs/components/components.js';
 import { AppRoute, ButtonColor } from '~/libs/enums/enums.js';
 import { checkGreaterThanZero } from '~/libs/helpers/check-greater-than-zero.helper.js';
 import { useAppForm, useCallback, useEffect } from '~/libs/hooks/hooks.js';
+import { type ValueOf } from '~/libs/types/types.js';
 import {
   type Profile,
+  ProfileLanguage,
   type UserProfileCreationRequestDto
 } from '~/modules/profile/libs/types/types.js';
 import { UserPayloadKey } from '~/modules/profile/profile.js';
@@ -22,6 +25,7 @@ import styles from './styles.module.scss';
 type ProfileFormValues = {
   dateOfBirth?: string;
   description?: string;
+  language: ValueOf<typeof ProfileLanguage>;
   profilePicture: File | null;
   username: string;
 };
@@ -45,6 +49,7 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
       defaultValues: {
         dateOfBirth: profile.dateOfBirth ?? '',
         description: profile.description ?? '',
+        language: profile.language,
         profilePicture: null,
         username: profile.username
       }
@@ -54,6 +59,7 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
     reset({
       dateOfBirth: profile.dateOfBirth ?? '',
       description: profile.description ?? '',
+      language: profile.language,
       username: profile.username
     });
 
@@ -98,6 +104,10 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
 
     if (values.dateOfBirth && values.dateOfBirth !== profile.dateOfBirth) {
       updateProfile.dateOfBirth = values.dateOfBirth;
+    }
+
+    if (values.language !== profile.language) {
+      updateProfile.language = values.language;
     }
 
     onUpdate(updateProfile);
@@ -165,6 +175,25 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
                   errors={errors}
                   name={UserPayloadKey.DATE_OF_BIRTH}
                   placeholder="Select your date of birth"
+                />
+              </div>
+            </div>
+            <div className={styles['formGroup']}>
+              <label
+                className={styles['label']}
+                htmlFor={UserPayloadKey.LANGUAGE}
+              >
+                Language
+              </label>
+              <div className={styles['inputWrapper']}>
+                <Select
+                  control={control}
+                  name={UserPayloadKey.LANGUAGE}
+                  options={[
+                    { label: 'English', value: ProfileLanguage.ENGLISH },
+                    { label: 'Ukrainian', value: ProfileLanguage.UKRAINIAN }
+                  ]}
+                  placeholder="Select language"
                 />
               </div>
             </div>

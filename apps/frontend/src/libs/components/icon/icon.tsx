@@ -1,7 +1,7 @@
 import { type IconName } from '~/libs/types/types.js';
 
 import { iconNameToSvg } from './libs/maps/maps.js';
-import styles from './styles.module.css';
+import styles from './styles.module.scss';
 
 type Properties = {
   height: number;

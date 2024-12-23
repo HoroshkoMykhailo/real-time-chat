@@ -1,5 +1,5 @@
 import { APIPath } from '~/libs/enums/enums.js';
-import { convertToFormData } from '~/libs/helpers/helper.js';
+import { convertToFormData } from '~/libs/helpers/helpers.js';
 import { HTTPMethod } from '~/modules/http/libs/enums/enums.js';
 
 import { type HttpApi } from '../http/http.js';

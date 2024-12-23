@@ -1,3 +1,3 @@
-type IconName = 'camera' | 'error';
+type IconName = 'arrow' | 'camera' | 'error';
 
 export { type IconName };

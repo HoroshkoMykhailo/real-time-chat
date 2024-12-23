@@ -6,4 +6,5 @@ export { Input } from './input/input.js';
 export { Loader } from './loader/loader.js';
 export { ProtectedRoute } from './protected-route/protected-route.js';
 export { RouterProvider } from './router-provider/router-provider.js';
+export { Select } from './select/select.js';
 export { NavLink, Navigate, Outlet as RouterOutlet } from 'react-router-dom';
