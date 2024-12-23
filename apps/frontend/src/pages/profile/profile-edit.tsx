@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button, Icon, Image, Input } from '~/libs/components/components.js';
+import {
+  Button,
+  DatePicker,
+  Icon,
+  Image,
+  Input
+} from '~/libs/components/components.js';
 import { AppRoute, ButtonColor } from '~/libs/enums/enums.js';
 import { checkGreaterThanZero } from '~/libs/helpers/check-greater-than-zero.helper.js';
 import { useAppForm, useCallback, useEffect } from '~/libs/hooks/hooks.js';
@@ -14,6 +20,7 @@ import { UserPayloadKey } from '~/modules/profile/profile.js';
 import styles from './styles.module.scss';
 
 type ProfileFormValues = {
+  dateOfBirth?: string;
   description?: string;
   profilePicture: File | null;
   username: string;
@@ -36,6 +43,7 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
   const { control, errors, handleSubmit, reset, setValue } =
     useAppForm<ProfileFormValues>({
       defaultValues: {
+        dateOfBirth: profile.dateOfBirth ?? '',
         description: profile.description ?? '',
         profilePicture: null,
         username: profile.username
@@ -44,6 +52,7 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
 
   useEffect(() => {
     reset({
+      dateOfBirth: profile.dateOfBirth ?? '',
       description: profile.description ?? '',
       username: profile.username
     });
@@ -87,6 +96,10 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
       updateProfile.description = values.description;
     }
 
+    if (values.dateOfBirth && values.dateOfBirth !== profile.dateOfBirth) {
+      updateProfile.dateOfBirth = values.dateOfBirth;
+    }
+
     onUpdate(updateProfile);
     reset();
     navigate(AppRoute.ROOT);
@@ -102,20 +115,22 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
       <form name="profileForm" onSubmit={handleSubmit(handleFormSubmit)}>
         <fieldset className={styles['fieldset']}>
           <div className={styles['notImageGroup']}>
-            <div className={`${styles['formGroup']} ${styles['username']}`}>
+            <div className={`${styles['formGroup']}`}>
               <label
                 className={styles['label']}
                 htmlFor={UserPayloadKey.USERNAME}
               >
                 Username
               </label>
-              <Input
-                control={control}
-                errors={errors}
-                name={UserPayloadKey.USERNAME}
-                placeholder={profile.username}
-                type="text"
-              />
+              <div className={styles['inputWrapper']}>
+                <Input
+                  control={control}
+                  errors={errors}
+                  name={UserPayloadKey.USERNAME}
+                  placeholder={profile.username}
+                  type="text"
+                />
+              </div>
             </div>
             <div className={styles['formGroup']}>
               <label
@@ -124,14 +139,34 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
               >
                 Description
               </label>
-              <Input
-                control={control}
-                errors={errors}
-                isTextArea
-                name={UserPayloadKey.DESCRIPTION}
-                placeholder={profile.description ?? 'Please Enter Description'}
-                type="text"
-              />
+              <div className={styles['inputWrapper']}>
+                <Input
+                  control={control}
+                  errors={errors}
+                  isTextArea
+                  name={UserPayloadKey.DESCRIPTION}
+                  placeholder={
+                    profile.description ?? 'Please Enter Description'
+                  }
+                  type="text"
+                />
+              </div>
+            </div>
+            <div className={styles['formGroup']}>
+              <label
+                className={styles['label']}
+                htmlFor={UserPayloadKey.DATE_OF_BIRTH}
+              >
+                Date of Birth
+              </label>
+              <div className={styles['inputWrapper']}>
+                <DatePicker
+                  control={control}
+                  errors={errors}
+                  name={UserPayloadKey.DATE_OF_BIRTH}
+                  placeholder="Select your date of birth"
+                />
+              </div>
             </div>
             <div className={styles['buttonWrapper']}>
               <Button color={ButtonColor.TEAL} isFluid isPrimary type="submit">

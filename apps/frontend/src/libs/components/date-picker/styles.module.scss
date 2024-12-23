@@ -1,0 +1,41 @@
+.datePickerWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.datePicker {
+  background-color: var(--input-bg);
+  box-shadow: none;
+  font-weight: 400;
+  line-height: 1rem;
+  font-family: inherit;
+  outline: none;
+  padding: 0.6rem 1rem;
+  width: 100%;
+  border-width: 1px;
+  border-radius: 6px;
+
+  &::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.5;
+    padding: 0;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.45;
+  }
+}
+
+.errorWrapper {
+  font-size: 0.8rem;
+  line-height: 0.8rem;
+  margin-top: 3px;
+  min-height: calc(0.8rem + 3px);
+  color: #df1c3d;
+  align-self: flex-start;
+}

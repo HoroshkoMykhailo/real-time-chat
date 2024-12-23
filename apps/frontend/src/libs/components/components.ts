@@ -1,4 +1,5 @@
 export { Button } from './button/button.js';
+export { DatePicker } from './date-picker/date-picker.js';
 export { Icon } from './icon/icon.js';
 export { Image } from './image/image.js';
 export { Input } from './input/input.js';

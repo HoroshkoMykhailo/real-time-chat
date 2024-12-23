@@ -12,6 +12,8 @@ import { useController, useEffect, useRef } from '~/libs/hooks/hooks.js';
 
 import styles from './styles.module.scss';
 
+const TEXT_AREA_HEIGHT_ADJUSTMENT = 1.8;
+
 type InputProperties<T extends FieldValues> = {
   className?: string;
   control: Control<T>;
@@ -43,7 +45,7 @@ const Input = <T extends FieldValues>({
 
     if (textarea) {
       textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
+      textarea.style.height = `${textarea.scrollHeight + TEXT_AREA_HEIGHT_ADJUSTMENT}px`;
     }
   };
 
@@ -61,6 +63,7 @@ const Input = <T extends FieldValues>({
             name={name}
             placeholder={placeholder}
             ref={textareaReference}
+            rows={1}
             value={field.value}
           />
         ) : (
