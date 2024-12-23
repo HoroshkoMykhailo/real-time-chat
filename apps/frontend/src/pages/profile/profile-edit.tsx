@@ -5,12 +5,16 @@ import { Button, Icon, Image, Input } from '~/libs/components/components.js';
 import { AppRoute, ButtonColor } from '~/libs/enums/enums.js';
 import { checkGreaterThanZero } from '~/libs/helpers/check-greater-than-zero.helper.js';
 import { useAppForm, useCallback, useEffect } from '~/libs/hooks/hooks.js';
-import { type UserProfileCreationRequestDto } from '~/modules/profile/libs/types/types.js';
+import {
+  type Profile,
+  type UserProfileCreationRequestDto
+} from '~/modules/profile/libs/types/types.js';
 import { UserPayloadKey } from '~/modules/profile/profile.js';
 
 import styles from './styles.module.scss';
 
 type ProfileFormValues = {
+  description?: string;
   profilePicture: File | null;
   username: string;
 };
@@ -18,12 +22,7 @@ type ProfileFormValues = {
 type ProfileEditProperties = {
   ifNewProfile?: boolean;
   onUpdate: (data: UserProfileCreationRequestDto) => void;
-  profile: {
-    createdAt: string;
-    profilePicture?: null | string;
-    updatedAt: string;
-    username: string;
-  };
+  profile: Profile;
 };
 
 const ProfileEdit: React.FC<ProfileEditProperties> = ({
@@ -37,6 +36,7 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
   const { control, errors, handleSubmit, reset, setValue } =
     useAppForm<ProfileFormValues>({
       defaultValues: {
+        description: profile.description ?? '',
         profilePicture: null,
         username: profile.username
       }
@@ -44,6 +44,7 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
 
   useEffect(() => {
     reset({
+      description: profile.description ?? '',
       username: profile.username
     });
 
@@ -82,6 +83,10 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
       updateProfile.username = values.username;
     }
 
+    if (values.description && values.description !== profile.description) {
+      updateProfile.description = values.description;
+    }
+
     onUpdate(updateProfile);
     reset();
     navigate(AppRoute.ROOT);
@@ -97,7 +102,7 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
       <form name="profileForm" onSubmit={handleSubmit(handleFormSubmit)}>
         <fieldset className={styles['fieldset']}>
           <div className={styles['notImageGroup']}>
-            <div className={styles['formGroup']}>
+            <div className={`${styles['formGroup']} ${styles['username']}`}>
               <label
                 className={styles['label']}
                 htmlFor={UserPayloadKey.USERNAME}
@@ -112,44 +117,62 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
                 type="text"
               />
             </div>
+            <div className={styles['formGroup']}>
+              <label
+                className={styles['label']}
+                htmlFor={UserPayloadKey.DESCRIPTION}
+              >
+                Description
+              </label>
+              <Input
+                control={control}
+                errors={errors}
+                isTextArea
+                name={UserPayloadKey.DESCRIPTION}
+                placeholder={profile.description ?? 'Please Enter Description'}
+                type="text"
+              />
+            </div>
             <div className={styles['buttonWrapper']}>
               <Button color={ButtonColor.TEAL} isFluid isPrimary type="submit">
                 Save Changes
               </Button>
             </div>
           </div>
-          <label
-            className={styles['profilePicture']}
-            htmlFor={UserPayloadKey.PROFILE_PICTURE}
-          >
-            {imageUrl ? (
-              <>
-                <Image
-                  alt="Selected"
-                  height="144"
-                  isCircular
-                  src={imageUrl}
-                  width="144"
-                />
-                <div
-                  className={`${styles['cameraIcon']} ${styles['hasImage']}`}
-                >
+          <div className={styles['imageGroup']}>
+            <label
+              className={styles['profilePicture']}
+              htmlFor={UserPayloadKey.PROFILE_PICTURE}
+            >
+              {imageUrl ? (
+                <>
+                  <Image
+                    alt="Selected"
+                    height="144"
+                    isCircular
+                    src={imageUrl}
+                    width="144"
+                  />
+                  <div
+                    className={`${styles['cameraIcon']} ${styles['hasImage']}`}
+                  >
+                    <Icon height={48} name="camera" width={48} />
+                  </div>
+                </>
+              ) : (
+                <div className={`${styles['cameraIcon']} ${styles['noImage']}`}>
                   <Icon height={48} name="camera" width={48} />
                 </div>
-              </>
-            ) : (
-              <div className={`${styles['cameraIcon']} ${styles['noImage']}`}>
-                <Icon height={48} name="camera" width={48} />
-              </div>
-            )}
-            <input
-              accept="image/*"
-              id={UserPayloadKey.PROFILE_PICTURE}
-              onChange={handleImageChange}
-              style={{ display: 'none' }}
-              type="file"
-            />
-          </label>
+              )}
+              <input
+                accept="image/*"
+                id={UserPayloadKey.PROFILE_PICTURE}
+                onChange={handleImageChange}
+                style={{ display: 'none' }}
+                type="file"
+              />
+            </label>
+          </div>
         </fieldset>
       </form>
     </div>

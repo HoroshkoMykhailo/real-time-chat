@@ -1,6 +1,7 @@
 .inputWrapper {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .inputContainer {
@@ -25,6 +26,7 @@
   background-color: var(--input-bg);
   box-shadow: none;
   font-weight: 400;
+  font-family: inherit;
   outline: none;
   padding: 0.6rem 1rem;
   width: 100%;
@@ -37,16 +39,21 @@
 }
 
 .textArea {
-  color: rgba(0 0 0 / 87%);
-  font-family: sans-serif;
-  font-size: 100%;
-  background: var(--white);
+  background-color: var(--input-bg);
+  box-shadow: none;
+  font-weight: 400;
+  font-family: inherit;
+  outline: none;
+  padding: 0.6rem 1rem;
   width: 100%;
-  line-height: 1.29;
-  margin: 0 0 1rem;
-  padding: 0.75rem 1rem;
-  outline: 0;
-  resize: vertical;
+  border-width: 1px;
+  border-radius: inherit;
+  resize: none;
+  overflow: hidden;
+
+  &:disabled {
+    opacity: 0.45;
+  }
 }
 
 .errorWrapper {

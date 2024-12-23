@@ -14,17 +14,26 @@
 }
 
 .notImageGroup {
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
+.imageGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
 .formGroup {
-  margin-top: 50px;
   display: flex;
   gap: 20px;
   align-items: center;
   width: 100%;
+}
+
+.username {
+  gap: 30px;
 }
 
 .profilePicture {

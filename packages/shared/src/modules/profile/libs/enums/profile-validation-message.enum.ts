@@ -3,8 +3,8 @@ import { ProfileValidationRule } from './profile-validation-rule.enum.js';
 const ProfileValidationMessage = {
   DATE_OF_BIRTH_EMPTY: 'Date of birth cannot be empty.',
   DATE_OF_BIRTH_INVALID: 'Date of birth must be in the format dd.mm.yyyy.',
-  DESCRIPRION_EMPTY: 'Description cannot be empty.',
-  DESCRIPRION_MAX_LENGTH: `Description must not exceed ${ProfileValidationRule.DESCRIPTION_MAX_LENGTH} characters.`,
+  DESCRIPTION_EMPTY: 'Description cannot be empty.',
+  DESCRIPTION_MAX_LENGTH: `Description must not exceed ${ProfileValidationRule.DESCRIPTION_MAX_LENGTH} characters.`,
   EMPTY_BODY: 'At least one field must be provided.',
   LANGUAGE_EMPTY: 'Language cannot be empty.',
   LANGUAGE_INVALID: 'Language must be one of the predefined values.',
