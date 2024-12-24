@@ -26,11 +26,15 @@
   line-height: 1rem;
   text-align: center;
   text-decoration: none;
-  border-radius: 0.28rem;
+  border-radius: 0.75rem;
 
   &__teal {
     color: var(--white);
     background-color: var(--teal);
+  }
+
+  &__teal:hover {
+    background-color: var(--button-hover);
   }
 
   &__blue {

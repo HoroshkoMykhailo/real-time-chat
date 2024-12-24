@@ -12,6 +12,16 @@ type EnvironmentSchema = {
     MONGO_TEST_URI: string;
     MONGO_URI: string;
   };
+  ENCRYPTION: {
+    ALGORITHM: string;
+    SALT_ROUNDS: number;
+    SECRET: string;
+  };
+  JWT: {
+    ALGORITHM: string;
+    EXPIRATION_TIME: string;
+    SECRET: string;
+  };
 };
 
 export { type EnvironmentSchema };

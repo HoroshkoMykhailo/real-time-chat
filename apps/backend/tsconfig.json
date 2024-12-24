@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["**/*.ts", "**/*.js"],
+  "files": ["src/index.d.ts"],
   "exclude": ["node_modules", "build"],
   "compilerOptions": {
     "baseUrl": ".",

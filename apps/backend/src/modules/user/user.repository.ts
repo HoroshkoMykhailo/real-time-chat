@@ -1,5 +1,6 @@
 import { AbstractRepository } from '~/libs/modules/database/database.js';
 
+import { UserRole } from './libs/enums/enums.js';
 import { type User as TUser, type UserRepository } from './libs/types/types.js';
 import { type UserDocument, type UserModel } from './user.model.js';
 
@@ -13,21 +14,24 @@ class User
     super(userModel);
   }
 
-  public async getByEmail(email: string): Promise<TUser | null> {
+  public async getByEmail(email: string): Promise<UserDocument | null> {
     const user = await this.model.findOne({ email }).exec();
 
-    return user ? this.mapToBusinessLogic(user) : null;
+    return user ?? null;
   }
 
   protected mapAdditionalBusinessLogic(document: UserDocument): Partial<TUser> {
     return {
-      email: document.email
+      email: document.email,
+      profileId: document.profileId.toString(),
+      role: document.role
     };
   }
 
   protected mapToDatabase(data: Partial<TUser>): Partial<UserDocument> {
     return {
-      email: data.email ?? ''
+      email: data.email ?? '',
+      role: data.role ?? UserRole.USER
     };
   }
 }

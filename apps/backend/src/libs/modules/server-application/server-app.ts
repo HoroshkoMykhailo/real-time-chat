@@ -1,17 +1,20 @@
+import fastifyMultipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import fastify, {
   type FastifyError,
   type FastifyInstance,
   type FastifyServerOptions
 } from 'fastify';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { ServerErrorType } from '~/libs/enums/enums.js';
 import { type ValidationError } from '~/libs/exceptions/exceptions.js';
 import { type ConfigModule } from '~/libs/modules/config/config.js';
+import { staticPath } from '~/libs/modules/constants/constants.js';
 import { joinPath } from '~/libs/modules/path/path.js';
-import { type ValidationSchema } from '~/libs/types/types.js';
+import { authorization } from '~/libs/modules/plugins/authorization/authorization.plugin.js';
+import { type Token } from '~/libs/modules/token/token.js';
+import { type ValidationSchema, type WhiteRoute } from '~/libs/types/types.js';
+import { type UserService } from '~/modules/user/user.js';
 
 import { type DatabaseModule } from '../database/database.js';
 import { type LoggerModule } from '../logger/logger.js';
@@ -23,7 +26,13 @@ type Constructor = {
   config: ConfigModule;
   database: DatabaseModule;
   logger: LoggerModule;
+  maximumFileSize: number;
   options: FastifyServerOptions;
+  services: {
+    userService: UserService;
+  };
+  token: Token;
+  whiteRoutes: WhiteRoute[];
 };
 
 class ServerApp {
@@ -39,6 +48,24 @@ class ServerApp {
     return fastify(options);
   };
 
+  #initPlugins = async (): Promise<void> => {
+    const { userService } = this.#services;
+
+    await this.#app.register(fastifyMultipart, {
+      attachFieldsToBody: true,
+      limits: {
+        fileSize: this.#maximumFileSize
+      },
+      throwFileSizeLimit: true
+    });
+
+    await this.#app.register(authorization, {
+      token: this.#token,
+      userService,
+      whiteRoutes: this.#whiteRoutes
+    });
+  };
+
   #initValidationCompiler = (): void => {
     this.app.setValidatorCompiler<ValidationSchema>(({ schema }) => {
       return <T, R = ReturnType<ValidationSchema['validate']>>(data: T): R => {
@@ -51,12 +78,14 @@ class ServerApp {
 
   #logger: LoggerModule;
 
+  #maximumFileSize: number;
+
   #registerRoutes = (): void => {
     const routers = this.#apis.flatMap(it => it.routes);
 
     for (const it of routers) {
       const { url: path, ...parameters } = it;
-      this.app.route({
+      this.#app.route({
         url: joinPath([this.#config.ENV.APP.API_PATH, path]),
         ...parameters
       });
@@ -64,11 +93,6 @@ class ServerApp {
   };
 
   #registerServe = async (): Promise<void> => {
-    const staticPath = join(
-      dirname(fileURLToPath(import.meta.url)),
-      '../../../../public'
-    );
-
     await this.#app.register(fastifyStatic, {
       prefix: '/',
       root: staticPath
@@ -79,9 +103,18 @@ class ServerApp {
     });
   };
 
+  #services: {
+    userService: UserService;
+  };
+
+  #token: Token;
+
+  #whiteRoutes: WhiteRoute[];
+
   public initialize = async (): Promise<typeof this> => {
     this.#initValidationCompiler();
     await this.#registerServe();
+    await this.#initPlugins();
     this.#registerRoutes();
     this.#initErrorHandler();
 
@@ -114,7 +147,17 @@ class ServerApp {
     }
   };
 
-  public constructor({ apis, config, database, logger, options }: Constructor) {
+  public constructor({
+    apis,
+    config,
+    database,
+    logger,
+    maximumFileSize,
+    options,
+    services,
+    token,
+    whiteRoutes
+  }: Constructor) {
     this.#config = config;
     this.#logger = logger;
 
@@ -122,6 +165,12 @@ class ServerApp {
 
     this.#apis = apis;
     this.#database = database;
+    this.#token = token;
+    this.#whiteRoutes = whiteRoutes;
+
+    this.#services = services;
+
+    this.#maximumFileSize = maximumFileSize;
   }
 
   #initErrorHandler(): void {

@@ -1,6 +1,7 @@
 export {
   APIPath,
   AppEnvironment,
+  ExceptionMessage,
   ServerErrorType
 } from './libs/enums/enums.js';
 export { HTTPError, ValidationError } from './libs/exceptions/exceptions.js';
@@ -12,10 +13,21 @@ export {
   type ValidationSchema,
   type ValueOf
 } from './libs/types/types.js';
-export { AuthApiPath, signUp } from './modules/auth/auth.js';
+export { AuthApiPath, signIn, signUp } from './modules/auth/auth.js';
+export {
+  type Profile,
+  ProfileLanguage,
+  profile
+} from './modules/profile/profile.js';
 export {
   type User,
+  UserApiPath,
   UserPayloadKey,
+  type UserProfileCreationRequestDto,
+  type UserProfileCreationResponseDto,
+  UserRole,
+  type UserSignInRequestDto,
+  type UserSignInResponseDto,
   type UserSignUpRequestDto,
   type UserSignUpResponseDto,
   UserValidationMessage,

@@ -1,3 +1,4 @@
+import logoSrc from '~/assets/images/logo.svg';
 import { Image } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
@@ -5,7 +6,11 @@ import {
   useCallback,
   useLocation
 } from '~/libs/hooks/hooks.js';
-import { type UserSignUpRequestDto, authActions } from '~/modules/auth/auth.js';
+import {
+  type UserSignInRequestDto,
+  type UserSignUpRequestDto,
+  authActions
+} from '~/modules/auth/auth.js';
 
 import { SignInForm, SignUpForm } from './components/components.js';
 import styles from './styles.module.scss';
@@ -21,10 +26,17 @@ const Auth: React.FC = () => {
     [dispatch]
   );
 
+  const handleSignInSubmit = useCallback(
+    (payload: UserSignInRequestDto): void => {
+      void dispatch(authActions.signIn(payload));
+    },
+    [dispatch]
+  );
+
   const getScreen = (path: string): JSX.Element | null => {
     switch (path) {
       case AppRoute.SIGN_IN: {
-        return <SignInForm />;
+        return <SignInForm onSubmit={handleSignInSubmit} />;
       }
 
       case AppRoute.SIGN_UP: {
@@ -43,10 +55,10 @@ const Auth: React.FC = () => {
         <h2 className={styles['logoWrapper']}>
           <Image
             alt="TeamLink logo"
-            height="75"
+            height="30"
             isCircular
-            src="http://s1.iconbird.com/ico/2013/8/428/w256h2561377930292cattied.png"
-            width="75"
+            src={logoSrc}
+            width="40"
           />
           TeamLink
         </h2>

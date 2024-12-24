@@ -1,4 +1,4 @@
-import { UserPayloadKey } from '~/modules/user/enums/enums.js';
+import { UserPayloadKey } from '~/modules/profile/libs/enums/enums.js';
 
 const DEFAULT_SIGN_IN_PAYLOAD = {
   [UserPayloadKey.EMAIL]: '',

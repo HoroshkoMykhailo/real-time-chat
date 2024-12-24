@@ -12,7 +12,7 @@ type ImageProperties = {
   isCentered?: boolean;
   isCircular?: boolean;
   size?: ValueOf<typeof ImageSize>;
-  src: string;
+  src?: string;
   width?: string;
 };
 
@@ -25,20 +25,22 @@ const Image: React.FC<ImageProperties> = ({
   size,
   src,
   width
-}) => (
-  <img
-    alt={alt}
-    className={clsx(
-      styles['image'],
-      isCircular && styles['circular'],
-      isCentered && styles['centered'],
-      size && styles[`imageSize__${size}`],
-      className
-    )}
-    height={height}
-    src={src}
-    width={width}
-  />
-);
+}) => {
+  return (
+    <img
+      alt={alt}
+      className={clsx(
+        styles['image'],
+        isCircular && styles['circular'],
+        isCentered && styles['centered'],
+        size && styles[`imageSize__${size}`],
+        className
+      )}
+      height={height}
+      src={src}
+      width={width}
+    />
+  );
+};
 
 export { Image };

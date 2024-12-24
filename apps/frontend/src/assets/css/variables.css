@@ -1,6 +1,16 @@
 :root {
-  --blue: #2185d0;
+  --blue: rgb(25 128 230);
+  --button-hover: #1d4ed8;
   --teal: #00b5ad;
   --white: #ffffff;
+  --black: #000000;
+  --gray: #6b7280;
+  --gray-dark: #1e293b;
+  --border-layout: rgb(231 237 243);
   --light-shadow: rgba(34 36 38 / 15%);
+  --main-dark: rgb(14 20 27);
+  --main-white: rgb(248 250 252);
+  --input-bg: rgb(231 237 243);
+  --text-dark: #1e293b;
+  --box-shadow: 0px 0px 25px 0px #00000080;
 }

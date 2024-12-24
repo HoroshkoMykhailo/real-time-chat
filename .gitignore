@@ -82,3 +82,4 @@ dist
 .env.production.local
 
 apps/backend/public
+apps/frontend/.vite

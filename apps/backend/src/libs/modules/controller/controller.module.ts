@@ -42,12 +42,13 @@ class Controller implements ControllerModule {
   private mapRequest(
     request: Parameters<ControllerRouteParameters['handler']>[0]
   ): ControllerAPIHandlerOptions {
-    const { body, params, query } = request;
+    const { body, params, query, user } = request;
 
     return {
       body,
       params,
-      query
+      query,
+      user
     };
   }
 

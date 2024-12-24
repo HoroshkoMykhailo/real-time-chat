@@ -8,11 +8,11 @@ body {
   padding: 0;
   margin: 0;
   overflow-x: hidden;
-  font-family: Lato, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;
   font-size: 14px;
   line-height: 1.5;
   color: rgba(0 0 0 / 87%);
-  background-color: #f6f6f6;
+  background-color: var(--main-white);
 }
 
 html,

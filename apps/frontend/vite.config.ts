@@ -1,5 +1,7 @@
 import viteReactPlugin from '@vitejs/plugin-react';
+import { fileURLToPath } from 'node:url';
 import { type ConfigEnv, defineConfig, loadEnv } from 'vite';
+import svgr from 'vite-plugin-svgr';
 import tsConfigPathsPlugin from 'vite-tsconfig-paths';
 
 const config = ({ mode }: ConfigEnv): ReturnType<typeof defineConfig> => {
@@ -15,7 +17,21 @@ const config = ({ mode }: ConfigEnv): ReturnType<typeof defineConfig> => {
     build: {
       outDir: 'build'
     },
-    plugins: [tsConfigPathsPlugin(), viteReactPlugin()],
+    plugins: [
+      tsConfigPathsPlugin(),
+      viteReactPlugin(),
+      svgr({
+        include: '**/*.svg?react'
+      })
+    ],
+    resolve: {
+      alias: [
+        {
+          find: '~',
+          replacement: fileURLToPath(new URL('src', import.meta.url))
+        }
+      ]
+    },
     server: {
       host: VITE_APP_HOST as string,
       port: Number(VITE_APP_PORT),

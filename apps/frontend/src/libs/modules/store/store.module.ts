@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { AppEnvironment } from '~/libs/enums/enums.js';
 import { type ConfigModule } from '~/libs/modules/config/config.js';
 import { authApi, authReducer } from '~/modules/auth/auth.js';
+import { profileApi, profileReducer } from '~/modules/profile/profile.js';
 import { storageApi } from '~/modules/storage/storage.js';
 
 import {
@@ -25,7 +26,8 @@ class Store implements StoreModule {
         });
       },
       reducer: {
-        auth: authReducer
+        auth: authReducer,
+        profile: profileReducer
       }
     });
   }
@@ -33,6 +35,7 @@ class Store implements StoreModule {
   public get extraArguments(): ExtraArguments {
     return {
       authApi,
+      profileApi,
       storageApi
     };
   }

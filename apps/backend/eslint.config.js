@@ -5,7 +5,7 @@ let FlatConfig;
 
 /** @type {FlatConfig} */
 const ignoresConfig = {
-  ignores: ['build']
+  ignores: ['build', 'public']
 };
 
 /** @type {FlatConfig[]} */
@@ -21,17 +21,6 @@ const overridesConfigs = [
       '@typescript-eslint/no-unsafe-member-access': ['off'],
       '@typescript-eslint/no-unsafe-return': ['off'],
       'import/no-default-export': ['off']
-    }
-  },
-  {
-    files: ['src/db/migrations/**/*.ts'],
-    rules: {
-      'unicorn/filename-case': [
-        'error',
-        {
-          case: 'kebabCase'
-        }
-      ]
     }
   },
   {

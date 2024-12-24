@@ -7,18 +7,21 @@ import {
   type FieldValues
 } from 'react-hook-form';
 
-import { useController } from '~/libs/hooks/hooks.js';
+import { checkGreaterThanZero } from '~/libs/helpers/helpers.js';
+import { useController, useEffect, useRef } from '~/libs/hooks/hooks.js';
 
 import styles from './styles.module.scss';
+
+const TEXT_AREA_HEIGHT_ADJUSTMENT = 1.8;
 
 type InputProperties<T extends FieldValues> = {
   className?: string;
   control: Control<T>;
   disabled?: boolean;
   errors?: object;
+  isTextArea?: boolean;
   name: FieldPath<T>;
   placeholder: string;
-  rows?: number;
   type?: 'email' | 'password' | 'submit' | 'text';
 };
 
@@ -27,24 +30,41 @@ const Input = <T extends FieldValues>({
   control,
   disabled,
   errors = {},
+  isTextArea = false,
   name,
   placeholder,
-  rows,
   type = 'text'
 }: InputProperties<T>): ReactElement => {
   const { field } = useController<T>({ control, name });
-  const isTextarea = Boolean(rows);
+  const hasErrors = checkGreaterThanZero(Object.keys(errors).length);
+
+  const textareaReference = useRef<HTMLTextAreaElement | null>(null);
+
+  const adjustHeight = (): void => {
+    const textarea = textareaReference.current;
+
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight + TEXT_AREA_HEIGHT_ADJUSTMENT}px`;
+    }
+  };
+
+  useEffect(() => {
+    adjustHeight();
+  }, [field.value]);
 
   return (
     <div className={styles['inputWrapper']}>
       <div className={styles['inputContainer']}>
-        {isTextarea ? (
+        {isTextArea ? (
           <textarea
             {...field}
             className={clsx(styles['textArea'], className)}
             name={name}
             placeholder={placeholder}
-            rows={rows}
+            ref={textareaReference}
+            rows={1}
+            value={field.value}
           />
         ) : (
           <input
@@ -53,12 +73,15 @@ const Input = <T extends FieldValues>({
             disabled={disabled}
             placeholder={placeholder}
             type={type}
+            value={field.value}
           />
         )}
       </div>
-      <span className={styles['errorWrapper']}>
-        <ErrorMessage errors={errors} name={name} />
-      </span>
+      {hasErrors && (
+        <span className={styles['errorWrapper']}>
+          <ErrorMessage errors={errors} name={name} />
+        </span>
+      )}
     </div>
   );
 };

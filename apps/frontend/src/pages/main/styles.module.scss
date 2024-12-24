@@ -1,0 +1,18 @@
+.page {
+  --header-height: 73px;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  color: var(--color-text-primary);
+  background-color: var(--color-background-primary);
+}
+
+.page-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  height: var(--header-height);
+}
