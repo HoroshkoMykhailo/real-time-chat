@@ -44,6 +44,10 @@ const Profile: React.FC = () => {
     navigate(AppRoute.ROOT);
   }, [navigate]);
 
+  const onCancel = useCallback((): void => {
+    setIsEditing(false);
+  }, []);
+
   if (dataStatus === DataStatus.PENDING || !profile) {
     return <Loader />;
   }
@@ -52,7 +56,12 @@ const Profile: React.FC = () => {
 
   if (ifNewProfile) {
     return (
-      <ProfileEdit ifNewProfile onUpdate={handleUpdate} profile={profile} />
+      <ProfileEdit
+        ifNewProfile
+        onCancel={onCancel}
+        onUpdate={handleUpdate}
+        profile={profile}
+      />
     );
   }
 
@@ -61,7 +70,11 @@ const Profile: React.FC = () => {
   }
 
   return isEditing ? (
-    <ProfileEdit onUpdate={handleUpdate} profile={profile} />
+    <ProfileEdit
+      onCancel={onCancel}
+      onUpdate={handleUpdate}
+      profile={profile}
+    />
   ) : (
     <ProfileView onBack={onBackClick} onEdit={onEditClick} profile={profile} />
   );

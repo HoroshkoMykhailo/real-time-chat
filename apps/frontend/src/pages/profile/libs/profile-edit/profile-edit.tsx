@@ -32,12 +32,14 @@ type ProfileFormValues = {
 
 type ProfileEditProperties = {
   ifNewProfile?: boolean;
+  onCancel: () => void;
   onUpdate: (data: UserProfileCreationRequestDto) => void;
   profile: Profile;
 };
 
 const ProfileEdit: React.FC<ProfileEditProperties> = ({
   ifNewProfile = false,
+  onCancel,
   onUpdate,
   profile
 }) => {
@@ -123,121 +125,135 @@ const ProfileEdit: React.FC<ProfileEditProperties> = ({
         <h2>Edit your profile details below:</h2>
       )}
       <form name="profileForm" onSubmit={handleSubmit(handleFormSubmit)}>
-        <fieldset className={styles['fieldset']}>
-          <div className={styles['notImageGroup']}>
-            <div className={`${styles['formGroup']}`}>
-              <label
-                className={styles['label']}
-                htmlFor={UserPayloadKey.USERNAME}
-              >
-                Username
-              </label>
-              <div className={styles['inputWrapper']}>
-                <Input
-                  control={control}
-                  errors={errors}
-                  name={UserPayloadKey.USERNAME}
-                  placeholder={profile.username}
-                  type="text"
-                />
-              </div>
-            </div>
-            <div className={styles['formGroup']}>
-              <label
-                className={styles['label']}
-                htmlFor={UserPayloadKey.DESCRIPTION}
-              >
-                Description
-              </label>
-              <div className={styles['inputWrapper']}>
-                <Input
-                  control={control}
-                  errors={errors}
-                  isTextArea
-                  name={UserPayloadKey.DESCRIPTION}
-                  placeholder={
-                    profile.description ?? 'Please Enter Description'
-                  }
-                  type="text"
-                />
-              </div>
-            </div>
-            <div className={styles['formGroup']}>
-              <label
-                className={styles['label']}
-                htmlFor={UserPayloadKey.DATE_OF_BIRTH}
-              >
-                Date of Birth
-              </label>
-              <div className={styles['inputWrapper']}>
-                <DatePicker
-                  control={control}
-                  errors={errors}
-                  name={UserPayloadKey.DATE_OF_BIRTH}
-                  placeholder="Select your date of birth"
-                />
-              </div>
-            </div>
-            <div className={styles['formGroup']}>
-              <label
-                className={styles['label']}
-                htmlFor={UserPayloadKey.LANGUAGE}
-              >
-                Language
-              </label>
-              <div className={styles['inputWrapper']}>
-                <Select
-                  control={control}
-                  name={UserPayloadKey.LANGUAGE}
-                  options={[
-                    { label: 'English', value: ProfileLanguage.ENGLISH },
-                    { label: 'Ukrainian', value: ProfileLanguage.UKRAINIAN }
-                  ]}
-                  placeholder="Select language"
-                />
-              </div>
-            </div>
-            <div className={styles['buttonWrapper']}>
-              <Button color={ButtonColor.TEAL} isFluid isPrimary type="submit">
-                Save Changes
-              </Button>
-            </div>
-          </div>
-          <div className={styles['imageGroup']}>
-            <label
-              className={styles['profilePicture']}
-              htmlFor={UserPayloadKey.PROFILE_PICTURE}
-            >
-              {imageUrl ? (
-                <>
-                  <Image
-                    alt="Selected"
-                    height="144"
-                    isCircular
-                    src={imageUrl}
-                    width="144"
+        <div className={styles['formWrapper']}>
+          <fieldset className={styles['fieldset']}>
+            <div className={styles['notImageGroup']}>
+              <div className={`${styles['formGroup']}`}>
+                <label
+                  className={styles['label']}
+                  htmlFor={UserPayloadKey.USERNAME}
+                >
+                  Username
+                </label>
+                <div className={styles['inputWrapper']}>
+                  <Input
+                    control={control}
+                    errors={errors}
+                    name={UserPayloadKey.USERNAME}
+                    placeholder={profile.username}
+                    type="text"
                   />
+                </div>
+              </div>
+              <div className={styles['formGroup']}>
+                <label
+                  className={styles['label']}
+                  htmlFor={UserPayloadKey.DESCRIPTION}
+                >
+                  Description
+                </label>
+                <div className={styles['inputWrapper']}>
+                  <Input
+                    control={control}
+                    errors={errors}
+                    isTextArea
+                    name={UserPayloadKey.DESCRIPTION}
+                    placeholder={
+                      profile.description ?? 'Please Enter Description'
+                    }
+                    type="text"
+                  />
+                </div>
+              </div>
+              <div className={styles['formGroup']}>
+                <label
+                  className={styles['label']}
+                  htmlFor={UserPayloadKey.DATE_OF_BIRTH}
+                >
+                  Date of Birth
+                </label>
+                <div className={styles['inputWrapper']}>
+                  <DatePicker
+                    control={control}
+                    errors={errors}
+                    name={UserPayloadKey.DATE_OF_BIRTH}
+                    placeholder="Select your date of birth"
+                  />
+                </div>
+              </div>
+              <div className={styles['formGroup']}>
+                <label
+                  className={styles['label']}
+                  htmlFor={UserPayloadKey.LANGUAGE}
+                >
+                  Language
+                </label>
+                <div className={styles['inputWrapper']}>
+                  <Select
+                    control={control}
+                    name={UserPayloadKey.LANGUAGE}
+                    options={[
+                      { label: 'English', value: ProfileLanguage.ENGLISH },
+                      { label: 'Ukrainian', value: ProfileLanguage.UKRAINIAN }
+                    ]}
+                    placeholder="Select language"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className={styles['imageGroup']}>
+              <label
+                className={styles['profilePicture']}
+                htmlFor={UserPayloadKey.PROFILE_PICTURE}
+              >
+                {imageUrl ? (
+                  <>
+                    <Image
+                      alt="Selected"
+                      height="144"
+                      isCircular
+                      src={imageUrl}
+                      width="144"
+                    />
+                    <div
+                      className={`${styles['cameraIcon']} ${styles['hasImage']}`}
+                    >
+                      <Icon height={48} name="camera" width={48} />
+                    </div>
+                  </>
+                ) : (
                   <div
-                    className={`${styles['cameraIcon']} ${styles['hasImage']}`}
+                    className={`${styles['cameraIcon']} ${styles['noImage']}`}
                   >
                     <Icon height={48} name="camera" width={48} />
                   </div>
-                </>
-              ) : (
-                <div className={`${styles['cameraIcon']} ${styles['noImage']}`}>
-                  <Icon height={48} name="camera" width={48} />
-                </div>
-              )}
-              <input
-                accept="image/*"
-                id={UserPayloadKey.PROFILE_PICTURE}
-                onChange={handleImageChange}
-                style={{ display: 'none' }}
-                type="file"
-              />
-            </label>
+                )}
+                <input
+                  accept="image/*"
+                  id={UserPayloadKey.PROFILE_PICTURE}
+                  onChange={handleImageChange}
+                  style={{ display: 'none' }}
+                  type="file"
+                />
+              </label>
+            </div>
+          </fieldset>
+          <div className={styles['buttonsContainer']}>
+            <Button color={ButtonColor.TEAL} isFluid isPrimary type="submit">
+              Save Changes
+            </Button>
+            {!ifNewProfile && (
+              <Button
+                color={ButtonColor.GRAY}
+                isFluid
+                onClick={onCancel}
+                type="button"
+              >
+                Cancel
+              </Button>
+            )}
           </div>
-        </fieldset>
+        </div>
       </form>
     </div>
   );

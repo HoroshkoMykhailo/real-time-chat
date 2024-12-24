@@ -1,0 +1,19 @@
+.popover-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.popover-content-wrapper {
+  align-self: flex-end;
+}
+
+.popover-content {
+  position: absolute;
+  z-index: 999;
+  margin-top: 4px;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: var(--box-shadow);
+  transform: translateX(-100%);
+}

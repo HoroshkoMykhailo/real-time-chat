@@ -13,6 +13,11 @@
   border: none;
 }
 
+.formWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .notImageGroup {
   margin-top: 30px;
   display: flex;
@@ -73,6 +78,13 @@
   color: var(--main-dark);
 }
 
-.buttonWrapper {
+.buttonsContainer {
+  display: flex;
+  gap: 150px;
+  margin-top: 20px;
+}
+
+.buttonsContainer > button {
   width: 150px;
 }
+

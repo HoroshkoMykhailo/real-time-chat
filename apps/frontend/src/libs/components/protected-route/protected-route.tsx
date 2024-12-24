@@ -2,7 +2,7 @@ import { Loader, Navigate } from '~/libs/components/components.js';
 import { AppRoute, DataStatus } from '~/libs/enums/enums.js';
 import { useAppSelector } from '~/libs/hooks/hooks.js';
 
-import styles from './styles.module.css';
+import styles from './styles.module.scss';
 
 type Properties = {
   children: React.ReactNode;
