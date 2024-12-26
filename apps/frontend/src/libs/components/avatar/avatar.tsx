@@ -1,5 +1,6 @@
 import { getValidClassNames } from '~/libs/helpers/helpers.js';
 
+import { Image } from '../image/image.js';
 import styles from './styles.module.scss';
 
 type Properties = {
@@ -23,7 +24,13 @@ const Avatar = ({ name, picture }: Properties): JSX.Element => {
       )}
     >
       {hasImage ? (
-        <img alt={name} className={styles['avatar-image']} src={imageUrl} />
+        <Image
+          alt="Selected"
+          height="40"
+          isCircular
+          src={imageUrl}
+          width="40"
+        />
       ) : (
         <span className={styles['avatar-letter']}>{firstLetter}</span>
       )}

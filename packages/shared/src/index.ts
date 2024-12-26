@@ -15,6 +15,15 @@ export {
 } from './libs/types/types.js';
 export { AuthApiPath, signIn, signUp } from './modules/auth/auth.js';
 export {
+  type Chat,
+  ChatApiPath,
+  type ChatCreationResponseDto,
+  ChatType,
+  ChatValidationMessage,
+  ChatValidationRule,
+  chatCreation
+} from './modules/chats/chats.js';
+export {
   type Profile,
   ProfileLanguage,
   profile
