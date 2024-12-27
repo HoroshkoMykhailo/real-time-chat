@@ -21,5 +21,6 @@ const userController = new UserController({
 
 export { userController, userService };
 export { userRepository } from '../initializations/repositories.js';
+export { UserRole } from './libs/enums/enums.js';
 export { type User } from './libs/types/types.js';
 export { type User as UserService } from './user.service.js';

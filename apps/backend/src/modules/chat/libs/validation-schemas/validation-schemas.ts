@@ -1,1 +1,4 @@
-export { chatCreation as chatCreationValidationSchema } from '@team-link/shared';
+export {
+  addMembers as addMembersValidationSchema,
+  chatCreation as chatCreationValidationSchema
+} from '@team-link/shared';

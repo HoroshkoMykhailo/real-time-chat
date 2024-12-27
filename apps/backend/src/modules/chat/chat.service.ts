@@ -4,7 +4,7 @@ import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 
 import { type Message as MessageRepository } from '../message/message.repository.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
-import { type User } from '../user/user.js';
+import { type User, UserRole } from '../user/user.js';
 import { type Chat as ChatRepository } from './chat.repository.js';
 import { ChatType, ChatValidationRule } from './libs/enums/enums.js';
 import {
@@ -123,6 +123,67 @@ class Chat implements ChatService {
     return lastMessage;
   }
 
+  public async addMembers(
+    id: string,
+    user: User,
+    members: string[]
+  ): Promise<ChatGetResponseDto> {
+    const chat = await this.#chatRepository.getById(id);
+
+    if (!chat) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    if (chat.type === ChatType.PRIVATE) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_IS_PRIVATE,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const isUserMember = chat.members.includes(user.profileId);
+
+    if (!isUserMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.USER_NOT_IN_CHAT,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const newMembers = members.filter(member => !chat.members.includes(member));
+
+    if (newMembers.length !== members.length) {
+      throw new HTTPError({
+        message: ExceptionMessage.USER_ALREADY_IN_CHAT,
+        status: HTTPCode.BAD_REQUEST
+      });
+    }
+
+    const memberProfiles =
+      await this.#profileRepository.getProfilesByIds(newMembers);
+
+    if (memberProfiles.length !== newMembers.length) {
+      throw new HTTPError({
+        message: ExceptionMessage.USER_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const updatedMembers = [...chat.members, ...newMembers];
+
+    await this.#chatRepository.updateById(chat.id, { members: updatedMembers });
+
+    const profiles =
+      await this.#profileRepository.getProfilesByIds(updatedMembers);
+
+    return {
+      members: profiles,
+      ...(chat.adminId && { adminId: chat.adminId })
+    };
+  }
   public async create(
     user: User,
     data: ChatCreationRequestDto
@@ -247,6 +308,62 @@ class Chat implements ChatService {
     const chats = await this.#chatRepository.getByProfileId(userId);
 
     return await Promise.all(chats.map(chat => this.#formatChat(chat, userId)));
+  }
+  public async removeMember(
+    id: string,
+    user: User,
+    member: string
+  ): Promise<ChatGetResponseDto> {
+    const chat = await this.#chatRepository.getById(id);
+
+    if (!chat) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    if (user.profileId === member) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    if (chat.type === ChatType.PRIVATE) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_IS_PRIVATE,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    if (chat.adminId !== user.profileId && user.role !== UserRole.ADMIN) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const isMember = chat.members.includes(member);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.USER_NOT_IN_CHAT,
+        status: HTTPCode.CONFLICT
+      });
+    }
+
+    chat.members = chat.members.filter(memberId => memberId !== member);
+    await this.#chatRepository.updateById(id, chat);
+
+    const profiles = await this.#profileRepository.getProfilesByIds(
+      chat.members
+    );
+
+    return {
+      members: profiles,
+      ...(chat.adminId && { adminId: chat.adminId })
+    };
   }
 }
 

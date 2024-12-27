@@ -19,7 +19,10 @@ import {
   type ChatGetResponseDto,
   type ChatsResponseDto
 } from './libs/types/types.js';
-import { chatCreationValidationSchema } from './libs/validation-schemas/validation-schemas.js';
+import {
+  addMembersValidationSchema,
+  chatCreationValidationSchema
+} from './libs/validation-schemas/validation-schemas.js';
 
 type Constructor = {
   apiPath: ValueOf<typeof APIPath>;
@@ -29,6 +32,25 @@ type Constructor = {
 
 class Chat extends Controller implements ChatController {
   #chatService: ChatService;
+
+  public addMembers = async (
+    options: ControllerAPIHandlerOptions<{
+      body: { members: string[] };
+      params: { id: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<ChatGetResponseDto>> => {
+    const {
+      body: { members },
+      params: { id },
+      user
+    } = options;
+
+    return {
+      payload: await this.#chatService.addMembers(id, user, members),
+      status: HTTPCode.OK
+    };
+  };
 
   public createChat = async (
     options: ControllerAPIHandlerOptions<{
@@ -72,6 +94,23 @@ class Chat extends Controller implements ChatController {
     };
   };
 
+  public removeMember = async (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string; memberId: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<ChatGetResponseDto>> => {
+    const {
+      params: { id, memberId },
+      user
+    } = options;
+
+    return {
+      payload: await this.#chatService.removeMember(id, user, memberId),
+      status: HTTPCode.OK
+    };
+  };
+
   public constructor({ apiPath, chatService, logger }: Constructor) {
     super({ apiPath, logger });
     this.#chatService = chatService;
@@ -95,6 +134,21 @@ class Chat extends Controller implements ChatController {
       handler: this.getMyChats as ControllerAPIHandler,
       method: HTTPMethod.GET,
       url: ChatApiPath.MY_GROUPS
+    });
+
+    this.addRoute({
+      handler: this.addMembers as ControllerAPIHandler,
+      method: HTTPMethod.PUT,
+      schema: {
+        body: addMembersValidationSchema
+      },
+      url: `${ChatApiPath.MEMBERS}${ChatApiPath.$CHAT_ID}`
+    });
+
+    this.addRoute({
+      handler: this.removeMember as ControllerAPIHandler,
+      method: HTTPMethod.DELETE,
+      url: `${ChatApiPath.MEMBERS}${ChatApiPath.$CHAT_ID}${ChatApiPath.$MEMBER_ID}`
     });
   }
 }

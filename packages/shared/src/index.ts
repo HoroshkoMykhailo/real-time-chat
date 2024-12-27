@@ -23,6 +23,7 @@ export {
   ChatValidationMessage,
   ChatValidationRule,
   type ChatsResponseDto,
+  addMembers,
   chatCreation
 } from './modules/chat/chat.js';
 export {

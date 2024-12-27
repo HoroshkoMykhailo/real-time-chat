@@ -1,4 +1,5 @@
 const ExceptionMessage = {
+  CHAT_IS_PRIVATE: 'Chat is private.',
   CHAT_NOT_FOUND: 'Chat not found.',
   EMAIL_USED: 'Email address is already in use.',
   ERROR_SAVING_IMAGE: 'Error saving image.',
@@ -18,6 +19,7 @@ const ExceptionMessage = {
   NOTIFICATION_NOT_FOUND: 'Notification not found.',
   PROFILE_NOT_FOUND: 'Profile not found.',
   TOKEN_EXPIRED: 'Token is expired.',
+  USER_ALREADY_IN_CHAT: 'User is already in chat.',
   USER_NOT_FOUND: 'User not found.',
   USER_NOT_IN_CHAT: 'User is not in chat.'
 } as const;

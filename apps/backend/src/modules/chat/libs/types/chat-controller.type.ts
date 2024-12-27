@@ -12,6 +12,14 @@ import {
 } from './types.js';
 
 type ChatController = {
+  addMembers: (
+    options: ControllerAPIHandlerOptions<{
+      body: { members: string[] };
+      params: { id: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<ChatGetResponseDto>>;
+
   createChat: (
     options: ControllerAPIHandlerOptions<{
       body: ChatCreationRequestDto;
@@ -31,6 +39,13 @@ type ChatController = {
       user: User;
     }>
   ) => Promise<ControllerAPIHandlerResponse<ChatsResponseDto>>;
+
+  removeMember: (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string; memberId: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<ChatGetResponseDto>>;
 };
 
 export { type ChatController };
