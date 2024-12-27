@@ -14,7 +14,10 @@ import { ChatApiPath } from './libs/enums/enums.js';
 import { type ChatController } from './libs/types/chat-controller.type.js';
 import { type ChatCreationRequestDto } from './libs/types/chat-creation-request-dto.type.js';
 import { type ChatService } from './libs/types/chat-service.type.js';
-import { type ChatCreationResponseDto } from './libs/types/types.js';
+import {
+  type ChatCreationResponseDto,
+  type ChatsResponseDto
+} from './libs/types/types.js';
 import { chatCreationValidationSchema } from './libs/validation-schemas/validation-schemas.js';
 
 type Constructor = {
@@ -40,6 +43,17 @@ class Chat extends Controller implements ChatController {
     };
   };
 
+  public getMyChats = async (
+    options: ControllerAPIHandlerOptions<{ user: TUser }>
+  ): Promise<ControllerAPIHandlerResponse<ChatsResponseDto>> => {
+    const { user } = options;
+
+    return {
+      payload: await this.#chatService.getMyChats(user),
+      status: HTTPCode.OK
+    };
+  };
+
   public constructor({ apiPath, chatService, logger }: Constructor) {
     super({ apiPath, logger });
     this.#chatService = chatService;
@@ -51,6 +65,12 @@ class Chat extends Controller implements ChatController {
         body: chatCreationValidationSchema
       },
       url: ChatApiPath.ROOT
+    });
+
+    this.addRoute({
+      handler: this.getMyChats as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: ChatApiPath.MY_GROUPS
     });
   }
 }

@@ -3,7 +3,7 @@ import { type ParsedQs, parse } from 'qs';
 import { config } from '~/libs/modules/config/config.js';
 import { database } from '~/libs/modules/database/database.js';
 import { authController } from '~/modules/auth/auth.js';
-import { chatController } from '~/modules/chats/chat.js';
+import { chatController } from '~/modules/chat/chat.js';
 import { messageController } from '~/modules/message/message.js';
 import { userController, userService } from '~/modules/user/user.js';
 

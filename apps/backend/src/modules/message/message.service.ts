@@ -1,3 +1,4 @@
+import { type Chat as ChatRepository } from '../chat/chat.repository.js';
 import { type User } from '../user/user.js';
 import { MessageStatus, MessageType } from './libs/enums/enums.js';
 import {
@@ -8,13 +9,16 @@ import {
 import { type Message as MessageRepository } from './message.repository.js';
 
 type Constructor = {
+  chatRepository: ChatRepository;
   messageRepository: MessageRepository;
 };
 
 class Message implements MessageService {
+  #chatRepository: ChatRepository;
   #messageRepository: MessageRepository;
 
-  public constructor({ messageRepository }: Constructor) {
+  public constructor({ chatRepository, messageRepository }: Constructor) {
+    this.#chatRepository = chatRepository;
     this.#messageRepository = messageRepository;
   }
 
@@ -27,7 +31,7 @@ class Message implements MessageService {
 
     const text = data.content;
 
-    return await this.#messageRepository.create({
+    const message = await this.#messageRepository.create({
       chatId,
       content: text,
       isPinned: false,
@@ -35,6 +39,10 @@ class Message implements MessageService {
       status: MessageStatus.SENT,
       type: MessageType.TEXT
     });
+
+    await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    return message;
   }
 }
 

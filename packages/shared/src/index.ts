@@ -21,6 +21,7 @@ export {
   ChatType,
   ChatValidationMessage,
   ChatValidationRule,
+  type ChatsResponseDto,
   chatCreation
 } from './modules/chat/chat.js';
 export {

@@ -1,18 +1,15 @@
 import { APIPath } from '~/libs/enums/enums.js';
 import { logger } from '~/libs/modules/logger/logger.js';
 
+import { chatRepository } from '../initializations/repositories.js';
+import { messageRepository } from '../message/message.js';
 import { profileRepository } from '../profile/profile.js';
 import { Chat as ChatController } from './chat.controller.js';
-import { ChatModel } from './chat.model.js';
-import { Chat as ChatRepository } from './chat.repository.js';
 import { Chat as ChatService } from './chat.service.js';
-
-const chatRepository = new ChatRepository({
-  chatModel: ChatModel
-});
 
 const chatService = new ChatService({
   chatRepository,
+  messageRepository,
   profileRepository
 });
 
@@ -23,6 +20,7 @@ const chatController = new ChatController({
 });
 
 export { chatController };
+export { chatRepository } from '../initializations/repositories.js';
 export { type Chat as ChatService } from './chat.service.js';
 export {
   ChatValidationMessage,

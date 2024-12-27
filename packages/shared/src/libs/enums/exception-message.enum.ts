@@ -3,6 +3,7 @@ const ExceptionMessage = {
   ERROR_SAVING_IMAGE: 'Error saving image.',
   ERROR_UPDATING_PROFILE: 'Error updating profile.',
   FORBIDDEN: 'This action is forbidden.',
+  GROUP_NAME_REQUIRED: 'Group name is required.',
   GROUP_NOT_FOUND: 'Group not found.',
   INVALID_CREDENTIALS: 'Invalid credentials.',
   INVALID_DATE_OF_BIRTH: 'Invalid date of birth.',

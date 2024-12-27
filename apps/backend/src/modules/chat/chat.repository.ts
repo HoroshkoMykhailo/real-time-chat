@@ -12,6 +12,12 @@ class Chat extends AbstractRepository<ChatDocument, TChat> {
     super(chatModel);
   }
 
+  public async getByProfileId(profileId: string): Promise<TChat[]> {
+    const chats = await this.model.find({ members: profileId });
+
+    return chats.map(chat => this.mapToBusinessLogic(chat));
+  }
+
   protected mapAdditionalBusinessLogic(document: ChatDocument): Partial<TChat> {
     const result: Partial<TChat> = {
       members: document.members.map(member => member.toString()),
@@ -28,6 +34,10 @@ class Chat extends AbstractRepository<ChatDocument, TChat> {
 
     if (document.groupPicture) {
       result.groupPicture = document.groupPicture;
+    }
+
+    if (document.lastMessageId) {
+      result.lastMessageId = document.lastMessageId.toString();
     }
 
     return result;
@@ -52,11 +62,25 @@ class Chat extends AbstractRepository<ChatDocument, TChat> {
       result.adminId = new Types.ObjectId(data.adminId);
     }
 
+    if (data.lastMessageId) {
+      result.lastMessageId = new Types.ObjectId(data.lastMessageId);
+    }
+
     if (data.groupPicture) {
       result.groupPicture = data.groupPicture;
     }
 
     return result;
+  }
+
+  public async setLastMessage(
+    chatId: string,
+    messageId: string
+  ): Promise<void> {
+    await this.model.updateOne(
+      { _id: chatId },
+      { $set: { lastMessageId: messageId } }
+    );
   }
 }
 

@@ -6,7 +6,8 @@ import { type User } from '~/modules/user/user.js';
 
 import {
   type ChatCreationRequestDto,
-  type ChatCreationResponseDto
+  type ChatCreationResponseDto,
+  type ChatsResponseDto
 } from './types.js';
 
 type ChatController = {
@@ -16,6 +17,12 @@ type ChatController = {
       user: User;
     }>
   ) => Promise<ControllerAPIHandlerResponse<ChatCreationResponseDto>>;
+
+  getMyChats: (
+    options: ControllerAPIHandlerOptions<{
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<ChatsResponseDto>>;
 };
 
 export { type ChatController };

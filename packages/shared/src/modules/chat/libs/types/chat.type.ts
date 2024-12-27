@@ -7,6 +7,7 @@ type Chat = {
   createdAt: string;
   groupPicture?: string;
   id: string;
+  lastMessageId?: string;
   members: string[];
   name?: string;
   type: ValueOf<typeof ChatType>;

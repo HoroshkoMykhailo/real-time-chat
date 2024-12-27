@@ -12,6 +12,7 @@ import { ChatType } from './libs/enums/enums.js';
 interface ChatDocument extends AbstractDocument {
   adminId?: Types.ObjectId;
   groupPicture?: string;
+  lastMessageId?: Types.ObjectId;
   members: Types.ObjectId[];
   name?: string;
   type: ValueOf<typeof ChatType>;
@@ -20,6 +21,7 @@ interface ChatDocument extends AbstractDocument {
 const ChatSchema = new Schema<ChatDocument>({
   adminId: { ref: 'Profile', type: Schema.Types.ObjectId },
   groupPicture: { type: String },
+  lastMessageId: { ref: 'Message', type: Schema.Types.ObjectId },
   members: [{ ref: 'Profile', required: true, type: Schema.Types.ObjectId }],
   name: { type: String },
   type: { enum: Object.values(ChatType), required: true, type: String }
