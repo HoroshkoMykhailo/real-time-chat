@@ -1,6 +1,12 @@
+import { Types } from 'mongoose';
+
 import { AbstractRepository } from '~/libs/modules/database/database.js';
 
-import { type Message as TMessage } from './libs/types/types.js';
+import { DEFAULT_LIMIT, LIMIT_DIVISOR } from './libs/constants/constants.js';
+import {
+  type FilterType,
+  type Message as TMessage
+} from './libs/types/types.js';
 import { type MessageDocument, type MessageModel } from './message.model.js';
 
 type Constructor = Record<'messageModel', typeof MessageModel>;
@@ -10,8 +16,65 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     super(messageModel);
   }
 
-  public async getMessagesByChatId(chatId: string): Promise<TMessage[]> {
-    return await this.model.find({ chatId });
+  public async getMessagesByChatId({
+    after,
+    before,
+    chatId,
+    limit
+  }: {
+    after?: string;
+    before?: string;
+    chatId: string;
+    limit?: number;
+  }): Promise<TMessage[]> {
+    const chatObjectId = new Types.ObjectId(chatId);
+
+    const queryFilter: FilterType = { chatId: chatObjectId };
+
+    if (after && before && after === before) {
+      const halfLimit = limit
+        ? Math.floor(limit / LIMIT_DIVISOR)
+        : Math.floor(DEFAULT_LIMIT / LIMIT_DIVISOR);
+      const centerDate = new Date(after);
+
+      const messagesBefore = await this.model
+        .find({ chatId: chatObjectId, createdAt: { $lte: centerDate } })
+        .sort({ createdAt: -1 })
+        .limit(halfLimit);
+
+      const messagesAfter = await this.model
+        .find({ chatId: chatObjectId, createdAt: { $gt: centerDate } })
+        .sort({ createdAt: -1 })
+        .limit(halfLimit);
+
+      const combinedMessages = [
+        ...messagesBefore.toReversed(),
+        ...messagesAfter
+      ];
+
+      return combinedMessages.map(message => this.mapToBusinessLogic(message));
+    }
+
+    if (after) {
+      queryFilter.createdAt = {
+        ...queryFilter.createdAt,
+        $gt: new Date(after)
+      };
+    }
+
+    if (before) {
+      queryFilter.createdAt = {
+        ...queryFilter.createdAt,
+        $lt: new Date(before)
+      };
+    }
+
+    const messages = await this.model
+      .find({ ...queryFilter })
+      .sort({ createdAt: 1 })
+      .limit(limit ?? DEFAULT_LIMIT);
+
+    return messages.map(message => this.mapToBusinessLogic(message));
   }
 
   protected mapAdditionalBusinessLogic(

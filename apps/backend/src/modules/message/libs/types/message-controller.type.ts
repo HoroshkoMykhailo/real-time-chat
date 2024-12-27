@@ -5,6 +5,7 @@ import {
 import { type User } from '~/modules/user/user.js';
 
 import {
+  type Message,
   type MessageCreationResponseDto,
   type TextMessageRequestDto
 } from './types.js';
@@ -17,6 +18,18 @@ type MessageController = {
       user: User;
     }>
   ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;
+
+  getMessagesByChatId: (
+    options: ControllerAPIHandlerOptions<{
+      params: { chatId: string };
+      query: {
+        after?: string;
+        before?: string;
+        limit?: number;
+      };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<Message[]>>;
 };
 
 export { type MessageController };

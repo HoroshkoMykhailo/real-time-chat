@@ -235,11 +235,8 @@ class Chat implements ChatService {
       chat.members
     );
 
-    const messages = await this.#messageRepository.getMessagesByChatId(id);
-
     return {
       members: profiles,
-      messages,
       ...(chat.adminId && { adminId: chat.adminId })
     };
   }

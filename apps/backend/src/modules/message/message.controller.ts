@@ -15,6 +15,7 @@ import { type MessageController } from './libs/types/message-controller.type.js'
 import { type MessageService } from './libs/types/message-service.type.js';
 import {
   type MessageCreationResponseDto,
+  type Message as TMessage,
   type TextMessageRequestDto
 } from './libs/types/types.js';
 import { textMessageValidationSchema } from './libs/validation-schemas/validation-schemas.js';
@@ -47,6 +48,33 @@ class Message extends Controller implements MessageController {
     };
   };
 
+  public getMessagesByChatId = async (
+    options: ControllerAPIHandlerOptions<{
+      params: { chatId: string };
+      query: {
+        after?: string;
+        before?: string;
+        limit?: number;
+      };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<TMessage[]>> => {
+    const {
+      params: { chatId },
+      query,
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.getMessagesByChatId(
+        user,
+        chatId,
+        query
+      ),
+      status: HTTPCode.OK
+    };
+  };
+
   public constructor({ apiPath, logger, messageService }: Constructor) {
     super({ apiPath, logger });
     this.#messageService = messageService;
@@ -58,6 +86,12 @@ class Message extends Controller implements MessageController {
         body: textMessageValidationSchema
       },
       url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.TEXT}`
+    });
+
+    this.addRoute({
+      handler: this.getMessagesByChatId as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: MessageApiPath.$CHAT_ID
     });
   }
 }

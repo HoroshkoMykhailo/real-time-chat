@@ -54,7 +54,6 @@ class Controller implements ControllerModule {
 
   public addRoute(options: ControllerRouteParameters): void {
     const { handler, url } = options;
-
     this.#routes.push({
       ...options,
       handler: (request, reply) => this.mapHandler(handler, request, reply),
