@@ -10,6 +10,12 @@ class Profile extends AbstractRepository<ProfileDocument, TProfile> {
     super(profileModel);
   }
 
+  public async getByUsername(username: string): Promise<TProfile[]> {
+    return await this.model.find({
+      username: { $options: 'i', $regex: username }
+    });
+  }
+
   public async getProfilesByIds(ids: string[]): Promise<TProfile[]> {
     return await this.model.find({ _id: { $in: ids } });
   }
