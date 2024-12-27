@@ -18,6 +18,7 @@ export {
   type Chat,
   ChatApiPath,
   type ChatCreationResponseDto,
+  type ChatGetResponseDto,
   ChatType,
   ChatValidationMessage,
   ChatValidationRule,

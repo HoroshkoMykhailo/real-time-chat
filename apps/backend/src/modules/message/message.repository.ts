@@ -10,6 +10,10 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     super(messageModel);
   }
 
+  public async getMessagesByChatId(chatId: string): Promise<TMessage[]> {
+    return await this.model.find({ chatId });
+  }
+
   protected mapAdditionalBusinessLogic(
     document: MessageDocument
   ): Partial<TMessage> {

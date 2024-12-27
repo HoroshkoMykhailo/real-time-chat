@@ -7,6 +7,7 @@ export {
 export {
   type Chat,
   type ChatCreationResponseDto,
+  type ChatGetResponseDto,
   type ChatsResponseDto
 } from './libs/types/types.js';
 export { chatCreation } from './libs/validation-schemas/validation-schemas.js';

@@ -10,6 +10,7 @@ import { ChatType, ChatValidationRule } from './libs/enums/enums.js';
 import {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
+  type ChatGetResponseDto,
   type ChatService,
   type ChatsResponseDto,
   type Chat as TChat
@@ -209,6 +210,38 @@ class Chat implements ChatService {
     };
 
     return response;
+  }
+
+  public async getChat(id: string, user: User): Promise<ChatGetResponseDto> {
+    const chat = await this.#chatRepository.getById(id);
+
+    if (!chat) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const isUserMember = chat.members.includes(user.profileId);
+
+    if (!isUserMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.USER_NOT_IN_CHAT,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const profiles = await this.#profileRepository.getProfilesByIds(
+      chat.members
+    );
+
+    const messages = await this.#messageRepository.getMessagesByChatId(id);
+
+    return {
+      members: profiles,
+      messages,
+      ...(chat.adminId && { adminId: chat.adminId })
+    };
   }
 
   public async getMyChats(user: User): Promise<ChatsResponseDto> {

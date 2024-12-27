@@ -16,6 +16,7 @@ import { type ChatCreationRequestDto } from './libs/types/chat-creation-request-
 import { type ChatService } from './libs/types/chat-service.type.js';
 import {
   type ChatCreationResponseDto,
+  type ChatGetResponseDto,
   type ChatsResponseDto
 } from './libs/types/types.js';
 import { chatCreationValidationSchema } from './libs/validation-schemas/validation-schemas.js';
@@ -43,6 +44,23 @@ class Chat extends Controller implements ChatController {
     };
   };
 
+  public getChat = async (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<ChatGetResponseDto>> => {
+    const {
+      params: { id },
+      user
+    } = options;
+
+    return {
+      payload: await this.#chatService.getChat(id, user),
+      status: HTTPCode.OK
+    };
+  };
+
   public getMyChats = async (
     options: ControllerAPIHandlerOptions<{ user: TUser }>
   ): Promise<ControllerAPIHandlerResponse<ChatsResponseDto>> => {
@@ -65,6 +83,12 @@ class Chat extends Controller implements ChatController {
         body: chatCreationValidationSchema
       },
       url: ChatApiPath.ROOT
+    });
+
+    this.addRoute({
+      handler: this.getChat as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: ChatApiPath.$CHAT_ID
     });
 
     this.addRoute({
