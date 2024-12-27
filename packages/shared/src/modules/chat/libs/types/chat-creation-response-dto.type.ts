@@ -1,7 +1,7 @@
 import { type ValueOf } from '~/index.js';
 import { type Profile } from '~/modules/profile/profile.js';
 
-import { type ChatType } from '../../chats.js';
+import { type ChatType } from '../../chat.js';
 
 type ChatCreationResponseDto = {
   admin?: {

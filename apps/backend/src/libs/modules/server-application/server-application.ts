@@ -4,6 +4,7 @@ import { config } from '~/libs/modules/config/config.js';
 import { database } from '~/libs/modules/database/database.js';
 import { authController } from '~/modules/auth/auth.js';
 import { chatController } from '~/modules/chats/chat.js';
+import { messageController } from '~/modules/message/message.js';
 import { userController, userService } from '~/modules/user/user.js';
 
 import { logger } from '../logger/logger.js';
@@ -20,7 +21,8 @@ const serverAppApiV1 = new ServerAppApi({
   routes: [
     ...authController.routes,
     ...userController.routes,
-    ...chatController.routes
+    ...chatController.routes,
+    ...messageController.routes
   ],
   version: 'v1'
 });
