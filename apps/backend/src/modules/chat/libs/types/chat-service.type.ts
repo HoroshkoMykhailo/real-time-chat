@@ -18,9 +18,11 @@ type ChatService = {
     user: User,
     data: ChatCreationRequestDto
   ): Promise<ChatCreationResponseDto>;
-  getChat(id: string, user: User): Promise<ChatGetResponseDto>;
 
+  getChat(id: string, user: User): Promise<ChatGetResponseDto>;
   getMyChats(user: User): Promise<ChatsResponseDto>;
+
+  leaveChat(id: string, user: User): Promise<ChatGetResponseDto | null>;
 
   removeMember(
     id: string,

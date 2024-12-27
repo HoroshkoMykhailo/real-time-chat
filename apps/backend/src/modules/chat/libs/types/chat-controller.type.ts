@@ -40,6 +40,13 @@ type ChatController = {
     }>
   ) => Promise<ControllerAPIHandlerResponse<ChatsResponseDto>>;
 
+  leaveChat: (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<ChatGetResponseDto | null>>;
+
   removeMember: (
     options: ControllerAPIHandlerOptions<{
       params: { id: string; memberId: string };

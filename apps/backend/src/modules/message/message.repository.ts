@@ -16,6 +16,10 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     super(messageModel);
   }
 
+  public async deleteByChatId(chatId: string): Promise<void> {
+    await this.model.deleteMany({ chatId });
+  }
+
   public async getMessagesByChatId({
     after,
     before,

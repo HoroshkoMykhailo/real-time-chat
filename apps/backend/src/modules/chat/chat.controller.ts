@@ -94,6 +94,23 @@ class Chat extends Controller implements ChatController {
     };
   };
 
+  public leaveChat = async (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<ChatGetResponseDto | null>> => {
+    const {
+      params: { id },
+      user
+    } = options;
+
+    return {
+      payload: await this.#chatService.leaveChat(id, user),
+      status: HTTPCode.OK
+    };
+  };
+
   public removeMember = async (
     options: ControllerAPIHandlerOptions<{
       params: { id: string; memberId: string };
@@ -149,6 +166,12 @@ class Chat extends Controller implements ChatController {
       handler: this.removeMember as ControllerAPIHandler,
       method: HTTPMethod.DELETE,
       url: `${ChatApiPath.MEMBERS}${ChatApiPath.$CHAT_ID}${ChatApiPath.$MEMBER_ID}`
+    });
+
+    this.addRoute({
+      handler: this.leaveChat as ControllerAPIHandler,
+      method: HTTPMethod.DELETE,
+      url: ChatApiPath.$CHAT_ID
     });
   }
 }

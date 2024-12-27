@@ -309,6 +309,63 @@ class Chat implements ChatService {
 
     return await Promise.all(chats.map(chat => this.#formatChat(chat, userId)));
   }
+
+  public async leaveChat(
+    id: string,
+    user: User
+  ): Promise<ChatGetResponseDto | null> {
+    const chat = await this.#chatRepository.getById(id);
+
+    if (!chat) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const isUserMember = chat.members.includes(user.profileId);
+
+    if (!isUserMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.USER_NOT_IN_CHAT,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    chat.members = chat.members.filter(member => member !== user.profileId);
+
+    if (chat.type === ChatType.PRIVATE) {
+      await this.#messageRepository.deleteByChatId(id);
+      await this.#chatRepository.deleteById(id);
+
+      return null;
+    }
+
+    if (chat.adminId === user.profileId) {
+      if (chat.members.length === DEFAULT_VALUE) {
+        await this.#messageRepository.deleteByChatId(id);
+        await this.#chatRepository.deleteById(id);
+
+        return null;
+      }
+
+      if (chat.members[DEFAULT_VALUE]) {
+        [chat.adminId] = chat.members;
+      }
+    }
+
+    await this.#chatRepository.updateById(id, chat);
+
+    const profiles = await this.#profileRepository.getProfilesByIds(
+      chat.members
+    );
+
+    return {
+      members: profiles,
+      ...(chat.adminId && { adminId: chat.adminId })
+    };
+  }
+
   public async removeMember(
     id: string,
     user: User,
