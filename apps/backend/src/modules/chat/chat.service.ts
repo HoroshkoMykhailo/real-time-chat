@@ -273,6 +273,36 @@ class Chat implements ChatService {
     return response;
   }
 
+  public async deleteChat(id: string, user: User): Promise<boolean> {
+    let chat = await this.#chatRepository.getById(id);
+
+    if (!chat) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    if (chat.type === ChatType.PRIVATE) {
+      await this.#messageRepository.deleteByChatId(id);
+      chat = await this.#chatRepository.deleteById(id);
+
+      return !!chat;
+    }
+
+    if (chat.adminId !== user.profileId && user.role !== UserRole.ADMIN) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    await this.#messageRepository.deleteByChatId(id);
+    chat = await this.#chatRepository.deleteById(id);
+
+    return !!chat;
+  }
+
   public async getChat(id: string, user: User): Promise<ChatGetResponseDto> {
     const chat = await this.#chatRepository.getById(id);
 

@@ -27,6 +27,13 @@ type ChatController = {
     }>
   ) => Promise<ControllerAPIHandlerResponse<ChatCreationResponseDto>>;
 
+  deleteChat: (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<boolean>>;
+
   getChat: (
     options: ControllerAPIHandlerOptions<{
       params: { id: string };
