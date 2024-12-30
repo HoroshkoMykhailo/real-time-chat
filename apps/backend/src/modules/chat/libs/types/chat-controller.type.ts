@@ -8,6 +8,8 @@ import {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatUpdateRequestDto,
+  type ChatUpdateResponseDto,
   type ChatsResponseDto
 } from './types.js';
 
@@ -60,6 +62,14 @@ type ChatController = {
       user: User;
     }>
   ) => Promise<ControllerAPIHandlerResponse<ChatGetResponseDto>>;
+
+  updateChat: (
+    options: ControllerAPIHandlerOptions<{
+      body: ChatUpdateRequestDto;
+      params: { id: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<ChatUpdateResponseDto>>;
 };
 
 export { type ChatController };

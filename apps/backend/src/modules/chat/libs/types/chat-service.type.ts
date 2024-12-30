@@ -4,6 +4,8 @@ import {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatUpdateRequestDto,
+  type ChatUpdateResponseDto,
   type ChatsResponseDto
 } from './types.js';
 
@@ -30,6 +32,11 @@ type ChatService = {
     user: User,
     member: string
   ): Promise<ChatGetResponseDto>;
+  updateChat(
+    id: string,
+    user: User,
+    data: ChatUpdateRequestDto
+  ): Promise<ChatUpdateResponseDto>;
 };
 
 export { type ChatService };

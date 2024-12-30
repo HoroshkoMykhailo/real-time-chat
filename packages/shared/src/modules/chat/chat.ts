@@ -8,9 +8,11 @@ export {
   type Chat,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatUpdateResponseDto,
   type ChatsResponseDto
 } from './libs/types/types.js';
 export {
   addMembers,
-  chatCreation
+  chatCreation,
+  chatUpdate
 } from './libs/validation-schemas/validation-schemas.js';

@@ -20,11 +20,13 @@ export {
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
   ChatType,
+  type ChatUpdateResponseDto,
   ChatValidationMessage,
   ChatValidationRule,
   type ChatsResponseDto,
   addMembers,
-  chatCreation
+  chatCreation,
+  chatUpdate
 } from './modules/chat/chat.js';
 export {
   type Message,

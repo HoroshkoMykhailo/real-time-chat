@@ -12,6 +12,8 @@ import {
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
   type ChatService,
+  type ChatUpdateRequestDto,
+  type ChatUpdateResponseDto,
   type ChatsResponseDto,
   type Chat as TChat
 } from './libs/types/types.js';
@@ -232,23 +234,17 @@ class Chat implements ChatService {
       })
     );
 
-    let groupPicturePath: string | undefined;
-
-    if (groupPicture) {
-      groupPicturePath = await savePicture(groupPicture);
-    }
-
     const chatCreation: Omit<TChat, 'createdAt' | 'id' | 'updatedAt'> = {
       members: members.map(member => member.value),
       type: type.value
     };
 
-    if (type.value === ChatType.GROUP) {
-      chatCreation.adminId = adminId;
+    if (groupPicture) {
+      chatCreation.groupPicture = await savePicture(groupPicture);
     }
 
-    if (groupPicturePath) {
-      chatCreation.groupPicture = groupPicturePath;
+    if (type.value === ChatType.GROUP) {
+      chatCreation.adminId = adminId;
     }
 
     if (name) {
@@ -263,7 +259,7 @@ class Chat implements ChatService {
       members: memberProfiles,
       type: createdChat.type,
       updatedAt: createdChat.updatedAt,
-      ...(groupPicturePath && { groupPicture: groupPicturePath }),
+      ...(groupPicture && { groupPicture: chatCreation.groupPicture }),
       ...(name && { name: name.value }),
       ...(type.value === ChatType.GROUP && {
         admin: { id: adminId, profile: adminProfile }
@@ -339,7 +335,6 @@ class Chat implements ChatService {
 
     return await Promise.all(chats.map(chat => this.#formatChat(chat, userId)));
   }
-
   public async leaveChat(
     id: string,
     user: User
@@ -451,6 +446,65 @@ class Chat implements ChatService {
       members: profiles,
       ...(chat.adminId && { adminId: chat.adminId })
     };
+  }
+
+  public async updateChat(
+    id: string,
+    user: User,
+    data: ChatUpdateRequestDto
+  ): Promise<ChatUpdateResponseDto> {
+    const chat = await this.#chatRepository.getById(id);
+
+    const { groupPicture, name } = data;
+
+    if (!chat) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    if (user.profileId !== chat.adminId && user.role !== UserRole.ADMIN) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    if (chat.type === ChatType.PRIVATE) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_IS_PRIVATE,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    if (name?.value) {
+      chat.name = name.value;
+    }
+
+    if (groupPicture) {
+      chat.groupPicture = await savePicture(groupPicture);
+    }
+
+    const updatedChat = await this.#chatRepository.updateById(id, chat);
+
+    if (!updatedChat) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const response: ChatUpdateResponseDto = {
+      createdAt: updatedChat.createdAt,
+      id: updatedChat.id,
+      type: updatedChat.type,
+      updatedAt: updatedChat.updatedAt,
+      ...(groupPicture && { groupPicture: updatedChat.groupPicture }),
+      ...(name && { name: name.value })
+    };
+
+    return response;
   }
 }
 

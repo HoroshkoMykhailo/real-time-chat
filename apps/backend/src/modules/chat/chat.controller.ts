@@ -17,11 +17,14 @@ import { type ChatService } from './libs/types/chat-service.type.js';
 import {
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatUpdateRequestDto,
+  type ChatUpdateResponseDto,
   type ChatsResponseDto
 } from './libs/types/types.js';
 import {
   addMembersValidationSchema,
-  chatCreationValidationSchema
+  chatCreationValidationSchema,
+  chatUpdateValidationSchema
 } from './libs/validation-schemas/validation-schemas.js';
 
 type Constructor = {
@@ -145,6 +148,25 @@ class Chat extends Controller implements ChatController {
     };
   };
 
+  public updateChat = async (
+    options: ControllerAPIHandlerOptions<{
+      body: ChatUpdateRequestDto;
+      params: { id: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<ChatUpdateResponseDto>> => {
+    const {
+      body,
+      params: { id },
+      user
+    } = options;
+
+    return {
+      payload: await this.#chatService.updateChat(id, user, body),
+      status: HTTPCode.OK
+    };
+  };
+
   public constructor({ apiPath, chatService, logger }: Constructor) {
     super({ apiPath, logger });
     this.#chatService = chatService;
@@ -194,6 +216,15 @@ class Chat extends Controller implements ChatController {
     this.addRoute({
       handler: this.deleteChat as ControllerAPIHandler,
       method: HTTPMethod.DELETE,
+      url: ChatApiPath.$CHAT_ID
+    });
+
+    this.addRoute({
+      handler: this.updateChat as ControllerAPIHandler,
+      method: HTTPMethod.PUT,
+      schema: {
+        body: chatUpdateValidationSchema
+      },
       url: ChatApiPath.$CHAT_ID
     });
   }
