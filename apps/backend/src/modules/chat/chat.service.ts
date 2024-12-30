@@ -41,6 +41,19 @@ class Chat implements ChatService {
     this.#profileRepository = profileRepository;
   }
 
+  async #checkChatExists(chatId: string): Promise<TChat> {
+    const chat = await this.#chatRepository.getById(chatId);
+
+    if (!chat) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    return chat;
+  }
+
   async #formatChat(
     chat: TChat,
     userId: string
@@ -130,14 +143,7 @@ class Chat implements ChatService {
     user: User,
     members: string[]
   ): Promise<ChatGetResponseDto> {
-    const chat = await this.#chatRepository.getById(id);
-
-    if (!chat) {
-      throw new HTTPError({
-        message: ExceptionMessage.CHAT_NOT_FOUND,
-        status: HTTPCode.NOT_FOUND
-      });
-    }
+    const chat = await this.#checkChatExists(id);
 
     if (chat.type === ChatType.PRIVATE) {
       throw new HTTPError({
@@ -270,20 +276,12 @@ class Chat implements ChatService {
   }
 
   public async deleteChat(id: string, user: User): Promise<boolean> {
-    let chat = await this.#chatRepository.getById(id);
-
-    if (!chat) {
-      throw new HTTPError({
-        message: ExceptionMessage.CHAT_NOT_FOUND,
-        status: HTTPCode.NOT_FOUND
-      });
-    }
+    const chat = await this.#checkChatExists(id);
 
     if (chat.type === ChatType.PRIVATE) {
       await this.#messageRepository.deleteByChatId(id);
-      chat = await this.#chatRepository.deleteById(id);
 
-      return !!chat;
+      return !!(await this.#chatRepository.deleteById(id));
     }
 
     if (chat.adminId !== user.profileId && user.role !== UserRole.ADMIN) {
@@ -294,9 +292,8 @@ class Chat implements ChatService {
     }
 
     await this.#messageRepository.deleteByChatId(id);
-    chat = await this.#chatRepository.deleteById(id);
 
-    return !!chat;
+    return !!(await this.#chatRepository.deleteById(id));
   }
 
   public async getChat(id: string, user: User): Promise<ChatGetResponseDto> {
@@ -396,14 +393,7 @@ class Chat implements ChatService {
     user: User,
     member: string
   ): Promise<ChatGetResponseDto> {
-    const chat = await this.#chatRepository.getById(id);
-
-    if (!chat) {
-      throw new HTTPError({
-        message: ExceptionMessage.CHAT_NOT_FOUND,
-        status: HTTPCode.NOT_FOUND
-      });
-    }
+    const chat = await this.#checkChatExists(id);
 
     if (user.profileId === member) {
       throw new HTTPError({
@@ -453,16 +443,9 @@ class Chat implements ChatService {
     user: User,
     data: ChatUpdateRequestDto
   ): Promise<ChatUpdateResponseDto> {
-    const chat = await this.#chatRepository.getById(id);
+    const chat = await this.#checkChatExists(id);
 
     const { groupPicture, name } = data;
-
-    if (!chat) {
-      throw new HTTPError({
-        message: ExceptionMessage.CHAT_NOT_FOUND,
-        status: HTTPCode.NOT_FOUND
-      });
-    }
 
     if (user.profileId !== chat.adminId && user.role !== UserRole.ADMIN) {
       throw new HTTPError({
