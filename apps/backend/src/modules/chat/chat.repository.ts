@@ -3,6 +3,7 @@ import { Types } from 'mongoose';
 import { AbstractRepository } from '~/libs/modules/database/database.js';
 
 import { type ChatDocument, type ChatModel } from './chat.model.js';
+import { ChatType } from './libs/enums/enums.js';
 import { type Chat as TChat } from './libs/types/types.js';
 
 type Constructor = Record<'chatModel', typeof ChatModel>;
@@ -10,6 +11,15 @@ type Constructor = Record<'chatModel', typeof ChatModel>;
 class Chat extends AbstractRepository<ChatDocument, TChat> {
   public constructor({ chatModel }: Constructor) {
     super(chatModel);
+  }
+
+  public async findPrivateChatByMembers(
+    memberIds: string[]
+  ): Promise<TChat | null> {
+    return await this.model.findOne({
+      members: { $all: memberIds },
+      type: ChatType.PRIVATE
+    });
   }
 
   public async getByProfileId(profileId: string): Promise<TChat[]> {

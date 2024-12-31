@@ -6,6 +6,7 @@ import {
 } from '@reduxjs/toolkit';
 
 import { type authApi, type authReducer } from '~/modules/auth/auth.js';
+import { type chatApi, type chatReducer } from '~/modules/chat/chat.js';
 import {
   type profileApi,
   type profileReducer
@@ -14,11 +15,13 @@ import { type storageApi } from '~/modules/storage/storage.js';
 
 type RootReducer = {
   auth: ReturnType<typeof authReducer>;
+  chat: ReturnType<typeof chatReducer>;
   profile: ReturnType<typeof profileReducer>;
 };
 
 type ExtraArguments = {
   authApi: typeof authApi;
+  chatApi: typeof chatApi;
   profileApi: typeof profileApi;
   storageApi: typeof storageApi;
 };

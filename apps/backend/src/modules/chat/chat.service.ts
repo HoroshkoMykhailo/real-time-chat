@@ -19,6 +19,8 @@ import {
 } from './libs/types/types.js';
 
 const DEFAULT_VALUE = 0;
+const NEGATIVE_VALUE = -1;
+const POSITIVE_VALUE = 1;
 
 type Constructor = {
   chatRepository: ChatRepository;
@@ -66,7 +68,7 @@ class Chat implements ChatService {
       name,
       type: chat.type,
       ...(lastMessage && { lastMessage }),
-      ...(chatPicture && { groupPicture: chatPicture })
+      ...(chatPicture && { chatPicture })
     };
   }
 
@@ -208,6 +210,13 @@ class Chat implements ChatService {
       });
     }
 
+    if (!members.some(member => member.value === adminId)) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.BAD_REQUEST
+      });
+    }
+
     if (!name && type.value === ChatType.GROUP) {
       throw new HTTPError({
         message: ExceptionMessage.GROUP_NAME_REQUIRED,
@@ -223,6 +232,22 @@ class Chat implements ChatService {
         message: ExceptionMessage.NOT_VALID_MEMBERS_COUNT,
         status: HTTPCode.NOT_FOUND
       });
+    }
+
+    if (type.value === ChatType.PRIVATE) {
+      const memberIds = members
+        .map(member => member.value)
+        .sort((a, b) => a.localeCompare(b));
+
+      const existingChat =
+        await this.#chatRepository.findPrivateChatByMembers(memberIds);
+
+      if (existingChat) {
+        throw new HTTPError({
+          message: ExceptionMessage.PRIVATE_CHAT_EXISTS,
+          status: HTTPCode.BAD_REQUEST
+        });
+      }
     }
 
     const memberProfiles = await Promise.all(
@@ -330,7 +355,26 @@ class Chat implements ChatService {
 
     const chats = await this.#chatRepository.getByProfileId(userId);
 
-    return await Promise.all(chats.map(chat => this.#formatChat(chat, userId)));
+    const formattedChats = await Promise.all(
+      chats.map(chat => this.#formatChat(chat, userId))
+    );
+
+    return formattedChats.sort((a, b) => {
+      const lastMessageA = a.lastMessage?.createdAt;
+      const lastMessageB = b.lastMessage?.createdAt;
+
+      if (!lastMessageA) {
+        return POSITIVE_VALUE;
+      }
+
+      if (!lastMessageB) {
+        return NEGATIVE_VALUE;
+      }
+
+      return (
+        new Date(lastMessageB).getTime() - new Date(lastMessageA).getTime()
+      );
+    });
   }
   public async leaveChat(
     id: string,

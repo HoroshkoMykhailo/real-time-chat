@@ -48,7 +48,7 @@ class Message implements MessageService {
     data: TextMessageRequestDto,
     chatId: string
   ): Promise<MessageCreationResponseDto> {
-    const { id: userId } = user;
+    const { profileId: userId } = user;
 
     const text = data.content;
 

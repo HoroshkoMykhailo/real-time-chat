@@ -17,6 +17,7 @@ const ExceptionMessage = {
   NO_TOKEN_PROVIDED: 'No token provided.',
   NOT_VALID_MEMBERS_COUNT: 'Not valid members count.',
   NOTIFICATION_NOT_FOUND: 'Notification not found.',
+  PRIVATE_CHAT_EXISTS: 'Private chat already exists.',
   PROFILE_NOT_FOUND: 'Profile not found.',
   TOKEN_EXPIRED: 'Token is expired.',
   USER_ALREADY_IN_CHAT: 'User is already in chat.',

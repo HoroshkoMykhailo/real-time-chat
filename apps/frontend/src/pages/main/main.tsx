@@ -1,4 +1,4 @@
-import { Header } from '~/libs/components/components.js';
+import { ChatList, Header } from '~/libs/components/components.js';
 import { useAppDispatch, useEffect } from '~/libs/hooks/hooks.js';
 import { profileActions } from '~/modules/profile/profile.js';
 
@@ -16,7 +16,8 @@ const Main: React.FC = () => {
       <div className={styles['page-header']}>
         <Header />
       </div>
-      <div>
+      <div className={styles['page-content']}>
+        <ChatList />
         <h1>main</h1>
       </div>
     </div>

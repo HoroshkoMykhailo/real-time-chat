@@ -1,5 +1,6 @@
 export { Avatar } from './avatar/avatar.js';
 export { Button } from './button/button.js';
+export { ChatList } from './chat-list/chat-list.js';
 export { DatePicker } from './date-picker/date-picker.js';
 export { Header } from './header/header.js';
 export { Icon } from './icon/icon.js';
