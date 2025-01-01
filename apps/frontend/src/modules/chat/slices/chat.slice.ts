@@ -9,11 +9,13 @@ import { getMyChats } from './actions.js';
 type State = {
   chats: ChatsResponseDto;
   dataStatus: ValueOf<typeof DataStatus>;
+  selectedChat: ChatsResponseDto[number] | null;
 };
 
 const initialState: State = {
   chats: [],
-  dataStatus: DataStatus.IDLE
+  dataStatus: DataStatus.IDLE,
+  selectedChat: null
 };
 
 const { actions, reducer } = createSlice({
@@ -33,7 +35,14 @@ const { actions, reducer } = createSlice({
   },
   initialState,
   name: 'chats',
-  reducers: {}
+  reducers: {
+    resetSelectedChat: state => {
+      state.selectedChat = null;
+    },
+    setSelectedChat: (state, action: { payload: State['selectedChat'] }) => {
+      state.selectedChat = action.payload;
+    }
+  }
 });
 
 export { actions, reducer };

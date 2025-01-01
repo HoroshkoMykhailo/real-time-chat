@@ -9,6 +9,7 @@ import {
   useState
 } from '~/libs/hooks/hooks.js';
 import { ChatType, chatActions } from '~/modules/chat/chat.js';
+import { type ChatsResponseDto } from '~/modules/chat/libs/types/types.js';
 
 import { Icon, Loader } from '../components.js';
 import { ChatPicture } from './libs/chat-picture/chat-picture.js';
@@ -18,6 +19,7 @@ import styles from './styles.module.scss';
 const ChatList: React.FC = () => {
   const dispatch = useAppDispatch();
   const { chats, dataStatus } = useAppSelector(state => state.chat);
+  const { selectedChat } = useAppSelector(state => state.chat);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
@@ -33,6 +35,18 @@ const ChatList: React.FC = () => {
       setSearchQuery(event.target.value);
     },
     []
+  );
+
+  const handleChatClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      const chatData = event.currentTarget.dataset['chat'];
+
+      if (chatData) {
+        const chat = JSON.parse(chatData) as ChatsResponseDto[number];
+        dispatch(chatActions.setSelectedChat(chat));
+      }
+    },
+    [dispatch]
   );
 
   if (dataStatus === DataStatus.PENDING) {
@@ -53,38 +67,47 @@ const ChatList: React.FC = () => {
           value={searchQuery}
         />
       </div>
-      <div className={styles['chat-list']}>
+      <ul className={styles['chat-list']}>
         {filteredChats.map(chat => (
-          <div className={styles['chat-item']} key={chat.id}>
-            <ChatPicture name={chat.name} picture={chat.chatPicture} />
-            <div className={styles['chat-info']}>
-              <p className={styles['chat-name']}>{chat.name}</p>
-              <p className={styles['chat-message']}>
-                {chat.type === ChatType.GROUP &&
-                chat.lastMessage?.senderName ? (
-                  <>
-                    <span className={styles['sender-name']}>
-                      {chat.lastMessage.senderName}:
-                    </span>
+          <button
+            className={`${styles['chat-item']} ${
+              selectedChat?.id === chat.id ? styles['selected'] : ''
+            }`}
+            data-chat={JSON.stringify(chat)}
+            key={chat.id}
+            onClick={handleChatClick}
+          >
+            <div className={styles['chat-item-content']}>
+              <ChatPicture name={chat.name} picture={chat.chatPicture} />
+              <div className={styles['chat-info']}>
+                <p className={styles['chat-name']}>{chat.name}</p>
+                <p className={styles['chat-message']}>
+                  {chat.type === ChatType.GROUP &&
+                  chat.lastMessage?.senderName ? (
+                    <>
+                      <span className={styles['sender-name']}>
+                        {chat.lastMessage.senderName}:
+                      </span>
+                      <span className={styles['message-content']}>
+                        {chat.lastMessage.content}
+                      </span>
+                    </>
+                  ) : (
                     <span className={styles['message-content']}>
-                      {chat.lastMessage.content}
+                      {chat.lastMessage?.content}
                     </span>
-                  </>
-                ) : (
-                  <span className={styles['message-content']}>
-                    {chat.lastMessage?.content}
-                  </span>
-                )}
-              </p>
+                  )}
+                </p>
+              </div>
+              <div className={styles['chat-time']}>
+                {chat.lastMessage?.createdAt
+                  ? formatLastMessageTime(chat.lastMessage.createdAt)
+                  : ''}
+              </div>
             </div>
-            <div className={styles['chat-time']}>
-              {chat.lastMessage?.createdAt
-                ? formatLastMessageTime(chat.lastMessage.createdAt)
-                : ''}
-            </div>
-          </div>
+          </button>
         ))}
-      </div>
+      </ul>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { getValidClassNames } from '~/libs/helpers/helpers.js';
+import { Zero, getValidClassNames } from '~/libs/helpers/helpers.js';
 
 import { Image } from '../image/image.js';
 import styles from './styles.module.scss';
@@ -8,10 +8,8 @@ type Properties = {
   picture?: string | undefined;
 };
 
-const FIRST_LETTER_INDEX = 0;
-
 const Avatar = ({ name, picture }: Properties): JSX.Element => {
-  const firstLetter = name[FIRST_LETTER_INDEX];
+  const firstLetter = name[Zero];
   const hasImage = Boolean(picture);
 
   const imageUrl = `${import.meta.env['VITE_APP_PROXY_SERVER_URL']}${picture}`;
