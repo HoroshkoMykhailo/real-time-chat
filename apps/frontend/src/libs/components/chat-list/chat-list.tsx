@@ -4,7 +4,9 @@ import { DataStatus } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppSelector,
-  useEffect
+  useCallback,
+  useEffect,
+  useState
 } from '~/libs/hooks/hooks.js';
 import { ChatType, chatActions } from '~/modules/chat/chat.js';
 
@@ -16,10 +18,22 @@ import styles from './styles.module.scss';
 const ChatList: React.FC = () => {
   const dispatch = useAppDispatch();
   const { chats, dataStatus } = useAppSelector(state => state.chat);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
     void dispatch(chatActions.getMyChats());
   }, [dispatch]);
+
+  const filteredChats = chats.filter(chat =>
+    chat.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSearchChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>): void => {
+      setSearchQuery(event.target.value);
+    },
+    []
+  );
 
   if (dataStatus === DataStatus.PENDING) {
     return <Loader />;
@@ -33,12 +47,14 @@ const ChatList: React.FC = () => {
         </div>
         <input
           className={styles['search-input']}
+          onChange={handleSearchChange}
           placeholder="Search chats"
           type="text"
+          value={searchQuery}
         />
       </div>
       <div className={styles['chat-list']}>
-        {chats.map(chat => (
+        {filteredChats.map(chat => (
           <div className={styles['chat-item']} key={chat.id}>
             <ChatPicture name={chat.name} picture={chat.chatPicture} />
             <div className={styles['chat-info']}>
