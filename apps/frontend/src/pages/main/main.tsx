@@ -4,6 +4,7 @@ import {
   RouterOutlet
 } from '~/libs/components/components.js';
 import { useAppDispatch, useEffect } from '~/libs/hooks/hooks.js';
+import { chatActions } from '~/modules/chat/chat.js';
 import { profileActions } from '~/modules/profile/profile.js';
 
 import styles from './styles.module.scss';
@@ -13,6 +14,7 @@ const Main: React.FC = () => {
 
   useEffect(() => {
     void dispatch(profileActions.getProfile());
+    dispatch(chatActions.resetSelectedChat());
   }, [dispatch]);
 
   return (

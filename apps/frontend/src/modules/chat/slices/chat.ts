@@ -1,10 +1,11 @@
-import { getChat, getMyChats } from './actions.js';
+import { getChat, getMyChats, leaveChat } from './actions.js';
 import { actions } from './chat.slice.js';
 
 const allActions = {
   ...actions,
   getChat,
-  getMyChats
+  getMyChats,
+  leaveChat
 };
 
 export { allActions as actions };

@@ -46,6 +46,19 @@ class Chat implements ChatApi {
       }
     );
   }
+
+  public leaveChat(chatId: string): Promise<ChatGetResponseDto | null> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.CHAT}${ChatApiPath.MEMBERS}${ChatApiPath.$CHAT_ID.replace(
+        ':id',
+        chatId
+      )}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.DELETE
+      }
+    );
+  }
 }
 
 export { Chat };

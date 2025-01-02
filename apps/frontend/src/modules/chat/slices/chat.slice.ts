@@ -7,7 +7,7 @@ import {
   type ChatGetResponseDto,
   type ChatsResponseDto
 } from '../libs/types/types.js';
-import { getChat, getMyChats } from './actions.js';
+import { getChat, getMyChats, leaveChat } from './actions.js';
 
 type State = {
   chats: ChatsResponseDto;
@@ -45,6 +45,9 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(getChat.rejected), state => {
         state.selectedChat = null;
+      })
+      .addMatcher(isAnyOf(leaveChat.fulfilled), (state, action) => {
+        state.chats = state.chats.filter(chat => chat.id !== action.payload);
       });
   },
   initialState,

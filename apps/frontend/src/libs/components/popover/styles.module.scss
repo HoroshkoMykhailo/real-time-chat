@@ -17,3 +17,11 @@
   box-shadow: var(--box-shadow);
   transform: translateX(-100%);
 }
+
+.chat-popover {
+  transform: translateX(-120%);
+}
+
+.chat-popover-up {
+  transform: translateX(-120%) translateY(-200%);
+}

@@ -13,6 +13,7 @@ import { ChatType, chatActions } from '~/modules/chat/chat.js';
 import { type ChatsResponseDto } from '~/modules/chat/libs/types/types.js';
 
 import { ChatPicture, Icon, Loader } from '../components.js';
+import { ChatPopover } from './libs/components/chat-popover/chat-popover.js';
 import { formatLastMessageTime } from './libs/helpers/format-last-message-time.js';
 import styles from './styles.module.scss';
 
@@ -21,6 +22,7 @@ const ChatList: React.FC = () => {
   const { chats, dataStatus } = useAppSelector(state => state.chat);
   const { selectedChat } = useAppSelector(state => state.chat);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [popoverChatId, setPopoverChatId] = useState<null | string>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,6 +54,24 @@ const ChatList: React.FC = () => {
     [dispatch, navigate]
   );
 
+  const handleChatPopoverClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      const chatData = event.currentTarget.dataset['chat'];
+
+      if (chatData) {
+        const chat = JSON.parse(chatData) as ChatsResponseDto[number];
+        event.stopPropagation();
+        event.preventDefault();
+        setPopoverChatId(chat.id);
+      }
+    },
+    []
+  );
+
+  const handleChatPopoverClose = useCallback((): void => {
+    setPopoverChatId(null);
+  }, []);
+
   if (dataStatus === DataStatus.PENDING) {
     return <Loader />;
   }
@@ -72,43 +92,54 @@ const ChatList: React.FC = () => {
       </div>
       <div className={styles['chat-list']}>
         {filteredChats.map(chat => (
-          <button
-            className={`${styles['chat-item']} ${
-              selectedChat?.id === chat.id ? styles['selected'] : ''
-            }`}
-            data-chat={JSON.stringify(chat)}
+          <ChatPopover
+            chatId={chat.id}
+            isOpened={popoverChatId === chat.id}
             key={chat.id}
-            onClick={handleChatClick}
+            onClose={handleChatPopoverClose}
+            {...(selectedChat && { currentChatId: selectedChat.id })}
           >
-            <div className={styles['chat-item-content']}>
-              <ChatPicture name={chat.name} picture={chat.chatPicture} />
-              <div className={styles['chat-info']}>
-                <p className={styles['chat-name']}>{chat.name}</p>
-                <p className={styles['chat-message']}>
-                  {chat.type === ChatType.GROUP &&
-                  chat.lastMessage?.senderName ? (
-                    <>
-                      <span className={styles['sender-name']}>
-                        {chat.lastMessage.senderName}:
-                      </span>
+            <button
+              className={`${styles['chat-item']} ${
+                selectedChat?.id === chat.id || chat.id === popoverChatId
+                  ? styles['selected']
+                  : ''
+              }`}
+              data-chat={JSON.stringify(chat)}
+              key={chat.id}
+              onClick={handleChatClick}
+              onContextMenu={handleChatPopoverClick}
+            >
+              <div className={styles['chat-item-content']}>
+                <ChatPicture name={chat.name} picture={chat.chatPicture} />
+                <div className={styles['chat-info']}>
+                  <p className={styles['chat-name']}>{chat.name}</p>
+                  <p className={styles['chat-message']}>
+                    {chat.type === ChatType.GROUP &&
+                    chat.lastMessage?.senderName ? (
+                      <>
+                        <span className={styles['sender-name']}>
+                          {chat.lastMessage.senderName}:
+                        </span>
+                        <span className={styles['message-content']}>
+                          {chat.lastMessage.content}
+                        </span>
+                      </>
+                    ) : (
                       <span className={styles['message-content']}>
-                        {chat.lastMessage.content}
+                        {chat.lastMessage?.content}
                       </span>
-                    </>
-                  ) : (
-                    <span className={styles['message-content']}>
-                      {chat.lastMessage?.content}
-                    </span>
-                  )}
-                </p>
+                    )}
+                  </p>
+                </div>
+                <div className={styles['chat-time']}>
+                  {chat.lastMessage?.createdAt
+                    ? formatLastMessageTime(chat.lastMessage.createdAt)
+                    : ''}
+                </div>
               </div>
-              <div className={styles['chat-time']}>
-                {chat.lastMessage?.createdAt
-                  ? formatLastMessageTime(chat.lastMessage.createdAt)
-                  : ''}
-              </div>
-            </div>
-          </button>
+            </button>
+          </ChatPopover>
         ))}
       </div>
     </div>

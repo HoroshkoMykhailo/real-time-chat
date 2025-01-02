@@ -24,4 +24,13 @@ const getChat = createAsyncThunk<
   return await chatApi.getChat(id);
 });
 
-export { getChat, getMyChats };
+const leaveChat = createAsyncThunk<string, { id: string }, AsyncThunkConfig>(
+  ActionType.LEAVE_CHAT,
+  async ({ id }, { extra: { chatApi } }) => {
+    await chatApi.leaveChat(id);
+
+    return id;
+  }
+);
+
+export { getChat, getMyChats, leaveChat };
