@@ -3,7 +3,11 @@ import { HTTPMethod } from '~/modules/http/libs/enums/enums.js';
 
 import { type HttpApi } from '../http/http.js';
 import { ChatApiPath } from './libs/enums/enums.js';
-import { type ChatApi, type ChatsResponseDto } from './libs/types/types.js';
+import {
+  type ChatApi,
+  type ChatGetResponseDto,
+  type ChatsResponseDto
+} from './libs/types/types.js';
 
 type Constructor = {
   apiPath: string;
@@ -18,6 +22,19 @@ class Chat implements ChatApi {
   public constructor({ apiPath, httpApi }: Constructor) {
     this.#apiPath = apiPath;
     this.#httpApi = httpApi;
+  }
+
+  public getChat(chatId: string): Promise<ChatGetResponseDto> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.CHAT}${ChatApiPath.$CHAT_ID.replace(
+        ':id',
+        chatId
+      )}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.GET
+      }
+    );
   }
 
   public getMyChats(): Promise<ChatsResponseDto> {

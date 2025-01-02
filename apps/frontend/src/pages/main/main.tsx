@@ -1,9 +1,9 @@
-import { ChatList, Header } from '~/libs/components/components.js';
 import {
-  useAppDispatch,
-  useAppSelector,
-  useEffect
-} from '~/libs/hooks/hooks.js';
+  ChatList,
+  Header,
+  RouterOutlet
+} from '~/libs/components/components.js';
+import { useAppDispatch, useEffect } from '~/libs/hooks/hooks.js';
 import { profileActions } from '~/modules/profile/profile.js';
 
 import styles from './styles.module.scss';
@@ -11,7 +11,6 @@ import styles from './styles.module.scss';
 const Main: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const { selectedChat } = useAppSelector(state => state.chat);
   useEffect(() => {
     void dispatch(profileActions.getProfile());
   }, [dispatch]);
@@ -23,7 +22,7 @@ const Main: React.FC = () => {
       </div>
       <div className={styles['page-content']}>
         <ChatList />
-        <h1>{selectedChat?.name}</h1>
+        <RouterOutlet />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { DataStatus } from '~/libs/enums/enums.js';
+import { AppRoute, DataStatus } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppSelector,
@@ -11,8 +12,7 @@ import {
 import { ChatType, chatActions } from '~/modules/chat/chat.js';
 import { type ChatsResponseDto } from '~/modules/chat/libs/types/types.js';
 
-import { Icon, Loader } from '../components.js';
-import { ChatPicture } from './libs/chat-picture/chat-picture.js';
+import { ChatPicture, Icon, Loader } from '../components.js';
 import { formatLastMessageTime } from './libs/helpers/format-last-message-time.js';
 import styles from './styles.module.scss';
 
@@ -21,6 +21,7 @@ const ChatList: React.FC = () => {
   const { chats, dataStatus } = useAppSelector(state => state.chat);
   const { selectedChat } = useAppSelector(state => state.chat);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     void dispatch(chatActions.getMyChats());
@@ -44,9 +45,11 @@ const ChatList: React.FC = () => {
       if (chatData) {
         const chat = JSON.parse(chatData) as ChatsResponseDto[number];
         dispatch(chatActions.setSelectedChat(chat));
+        void dispatch(chatActions.getChat({ id: chat.id }));
+        navigate(`${AppRoute.CHATS}/${chat.id}`);
       }
     },
-    [dispatch]
+    [dispatch, navigate]
   );
 
   if (dataStatus === DataStatus.PENDING) {
@@ -67,7 +70,7 @@ const ChatList: React.FC = () => {
           value={searchQuery}
         />
       </div>
-      <ul className={styles['chat-list']}>
+      <div className={styles['chat-list']}>
         {filteredChats.map(chat => (
           <button
             className={`${styles['chat-item']} ${
@@ -107,7 +110,7 @@ const ChatList: React.FC = () => {
             </div>
           </button>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

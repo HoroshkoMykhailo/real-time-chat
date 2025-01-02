@@ -3,13 +3,16 @@ import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
-import { type ChatsResponseDto } from '../libs/types/types.js';
-import { getMyChats } from './actions.js';
+import {
+  type ChatGetResponseDto,
+  type ChatsResponseDto
+} from '../libs/types/types.js';
+import { getChat, getMyChats } from './actions.js';
 
 type State = {
   chats: ChatsResponseDto;
   dataStatus: ValueOf<typeof DataStatus>;
-  selectedChat: ChatsResponseDto[number] | null;
+  selectedChat: (ChatsResponseDto[number] & Partial<ChatGetResponseDto>) | null;
 };
 
 const initialState: State = {
@@ -31,6 +34,17 @@ const { actions, reducer } = createSlice({
       .addMatcher(isAnyOf(getMyChats.rejected), state => {
         state.chats = [];
         state.dataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(getChat.fulfilled), (state, action) => {
+        if (state.selectedChat) {
+          state.selectedChat = {
+            ...state.selectedChat,
+            ...action.payload
+          };
+        }
+      })
+      .addMatcher(isAnyOf(getChat.rejected), state => {
+        state.selectedChat = null;
       });
   },
   initialState,

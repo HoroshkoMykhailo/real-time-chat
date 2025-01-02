@@ -5,6 +5,7 @@ import {
 import { AppRoute } from '~/libs/enums/enums.js';
 
 import { Auth } from '../auth/auth.js';
+import { Chat } from '../chat/chat.js';
 import { Main } from '../main/main.js';
 import { NotFound } from '../not-found/not-found.js';
 import { Profile } from '../profile/profile.js';
@@ -17,6 +18,12 @@ const App: React.FC = () => {
         {
           children: [
             {
+              children: [
+                {
+                  element: <Chat />,
+                  path: `${AppRoute.CHATS}${AppRoute.CHAT}`
+                }
+              ],
               element: (
                 <ProtectedRoute>
                   <Main />

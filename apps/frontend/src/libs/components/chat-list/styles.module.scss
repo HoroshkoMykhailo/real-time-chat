@@ -1,6 +1,6 @@
 .chat-list-container {
   display: flex;
-  width: 350px;
+  width: var(--chat-list-width);
   flex-direction: column;
   border-right: 1px solid var(--border-layout);
   overflow-y: hidden;
@@ -13,7 +13,7 @@
     border-radius: 12px;
     padding: 0.5rem;
     margin: 1rem;
-    margin-bottom: 0;
+    margin-bottom: 0.5rem;
 
     .search-icon {
       display: flex;
@@ -51,6 +51,11 @@
     text-align: left;
     transition: background-color 0.3s ease;
 
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible,
     &:hover {
       .chat-item-content {
         background-color: var(--input-bg);
@@ -83,7 +88,6 @@
 
       .chat-name {
         font-size: 1rem;
-        font-weight: 500;
         color: var(--main-dark);
         white-space: nowrap;
         overflow: hidden;
@@ -101,7 +105,7 @@
         }
 
         .message-content {
-          color: var(--text-dark);
+          color: var(--gray);
         }
       }
 

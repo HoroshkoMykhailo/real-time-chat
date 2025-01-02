@@ -2,7 +2,10 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { type AsyncThunkConfig } from '~/libs/types/types.js';
 
-import { type ChatsResponseDto } from '../libs/types/types.js';
+import {
+  type ChatGetResponseDto,
+  type ChatsResponseDto
+} from '../libs/types/types.js';
 import { ActionType } from './common.js';
 
 const getMyChats = createAsyncThunk<
@@ -13,4 +16,12 @@ const getMyChats = createAsyncThunk<
   return await chatApi.getMyChats();
 });
 
-export { getMyChats };
+const getChat = createAsyncThunk<
+  ChatGetResponseDto,
+  { id: string },
+  AsyncThunkConfig
+>(ActionType.GET_CHAT, async ({ id }, { extra: { chatApi } }) => {
+  return await chatApi.getChat(id);
+});
+
+export { getChat, getMyChats };
