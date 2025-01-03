@@ -45,6 +45,7 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(getChat.rejected), state => {
         state.selectedChat = null;
+        state.dataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(leaveChat.fulfilled), (state, action) => {
         state.chats = state.chats.filter(chat => chat.id !== action.payload);

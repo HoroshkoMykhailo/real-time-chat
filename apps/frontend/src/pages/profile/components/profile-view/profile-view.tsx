@@ -4,17 +4,13 @@ import { type Profile } from '~/modules/profile/libs/types/types.js';
 
 import styles from './styles.module.scss';
 
-type ProfileViewProperties = {
+type Properties = {
   onBack: () => void;
   onEdit: () => void;
   profile: Profile;
 };
 
-const ProfileView: React.FC<ProfileViewProperties> = ({
-  onBack,
-  onEdit,
-  profile
-}) => {
+const ProfileView: React.FC<Properties> = ({ onBack, onEdit, profile }) => {
   const imageUrl = profile.profilePicture
     ? `${import.meta.env['VITE_APP_PROXY_SERVER_URL']}${profile.profilePicture}`
     : null;

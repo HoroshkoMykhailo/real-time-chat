@@ -8,12 +8,12 @@ import {
   useCallback,
   useState
 } from '~/libs/hooks/hooks.js';
-import { ChatType, chatActions } from '~/modules/chat/chat.js';
+import { chatActions } from '~/modules/chat/chat.js';
 import { type ChatsResponseDto } from '~/modules/chat/libs/types/types.js';
 
-import { ChatPicture, Icon, Loader } from '../components.js';
+import { Loader, SearchBar } from '../components.js';
+import { ChatItem } from './libs/components/chat-item/chat-item.js';
 import { ChatPopover } from './libs/components/chat-popover/chat-popover.js';
-import { formatLastMessageTime } from './libs/helpers/format-last-message-time.js';
 import styles from './styles.module.scss';
 
 const ChatList: React.FC = () => {
@@ -73,18 +73,11 @@ const ChatList: React.FC = () => {
 
   return (
     <div className={styles['chat-list-container']}>
-      <div className={styles['search-bar']}>
-        <div className={styles['search-icon']}>
-          <Icon height={24} name="search" width={24} />
-        </div>
-        <input
-          className={styles['search-input']}
-          onChange={handleSearchChange}
-          placeholder="Search chats"
-          type="text"
-          value={searchQuery}
-        />
-      </div>
+      <SearchBar
+        onChange={handleSearchChange}
+        placeholder="Search chats"
+        value={searchQuery}
+      />
       <div className={styles['chat-list']}>
         {filteredChats.map(chat => (
           <ChatPopover
@@ -105,34 +98,7 @@ const ChatList: React.FC = () => {
               onClick={handleChatClick}
               onContextMenu={handleChatPopoverClick}
             >
-              <div className={styles['chat-item-content']}>
-                <ChatPicture name={chat.name} picture={chat.chatPicture} />
-                <div className={styles['chat-info']}>
-                  <p className={styles['chat-name']}>{chat.name}</p>
-                  <p className={styles['chat-message']}>
-                    {chat.type === ChatType.GROUP &&
-                    chat.lastMessage?.senderName ? (
-                      <>
-                        <span className={styles['sender-name']}>
-                          {chat.lastMessage.senderName}:
-                        </span>
-                        <span className={styles['message-content']}>
-                          {chat.lastMessage.content}
-                        </span>
-                      </>
-                    ) : (
-                      <span className={styles['message-content']}>
-                        {chat.lastMessage?.content}
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <div className={styles['chat-time']}>
-                  {chat.lastMessage?.createdAt
-                    ? formatLastMessageTime(chat.lastMessage.createdAt)
-                    : ''}
-                </div>
-              </div>
+              <ChatItem chat={chat} />
             </button>
           </ChatPopover>
         ))}

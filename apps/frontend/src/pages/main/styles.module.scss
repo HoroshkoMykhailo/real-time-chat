@@ -23,9 +23,13 @@
   height: calc(100vh - var(--header-height));
 }
 
-.create-chat-button {
+.create-chat-wrapper {
   position: fixed;
   bottom: var(--create-chat-button-bottom);
   left: var(--create-chat-button-left);
   width: var(--create-chat-button-width);
+}
+
+.create-chat-button {
+  padding: 0.6rem 1rem;
 }

@@ -30,14 +30,14 @@ type ProfileFormValues = {
   username: string;
 };
 
-type ProfileEditProperties = {
+type Properties = {
   ifNewProfile?: boolean;
   onCancel: () => void;
   onUpdate: (data: UserProfileCreationRequestDto) => void;
   profile: Profile;
 };
 
-const ProfileEdit: React.FC<ProfileEditProperties> = ({
+const ProfileEdit: React.FC<Properties> = ({
   ifNewProfile = false,
   onCancel,
   onUpdate,

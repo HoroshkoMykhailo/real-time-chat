@@ -1,15 +1,24 @@
 import {
   Button,
   ChatList,
+  CreateChat,
   Header,
   RouterOutlet
 } from '~/libs/components/components.js';
 import { ButtonColor } from '~/libs/enums/enums.js';
-import { useAppDispatch, useEffect, usePopover } from '~/libs/hooks/hooks.js';
+import {
+  useAppDispatch,
+  useCallback,
+  useEffect,
+  usePopover,
+  useState
+} from '~/libs/hooks/hooks.js';
+import { type ValueOf } from '~/libs/types/types.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import { profileActions } from '~/modules/profile/profile.js';
 
-import { CreateChatPopover } from './components/create-chat-popover/create-chat-popover.js';
+import { CreateChatPopover } from './libs/components/create-chat-popover/create-chat-popover.js';
+import { ActiveSideView } from './libs/enums/active-side-view.enum.js';
 import styles from './styles.module.scss';
 
 const Main: React.FC = () => {
@@ -20,11 +29,50 @@ const Main: React.FC = () => {
     onOpen: onCreateChatOpen
   } = usePopover();
 
+  const [activeView, setActiveView] = useState<ValueOf<typeof ActiveSideView>>(
+    ActiveSideView.ChatList
+  );
+
   useEffect(() => {
     void dispatch(profileActions.getProfile());
     void dispatch(chatActions.getMyChats());
     dispatch(chatActions.resetSelectedChat());
   }, [dispatch]);
+
+  const handleOpenCreateGroup = useCallback((): void => {
+    setActiveView(ActiveSideView.CreateGroup);
+    onCreateChatClose();
+  }, [onCreateChatClose]);
+
+  const handleOpenCreateChat = useCallback((): void => {
+    setActiveView(ActiveSideView.CreateChat);
+    onCreateChatClose();
+  }, [onCreateChatClose]);
+
+  const handleCancelClick = useCallback((): void => {
+    if (activeView === ActiveSideView.ChatList) {
+      isCreateChatOpened ? onCreateChatClose() : onCreateChatOpen();
+    } else {
+      setActiveView(ActiveSideView.ChatList);
+      onCreateChatClose();
+    }
+  }, [activeView, isCreateChatOpened, onCreateChatClose, onCreateChatOpen]);
+
+  const renderContent = (): JSX.Element => {
+    switch (activeView) {
+      case ActiveSideView.CreateGroup: {
+        return <div>Create Group Component</div>;
+      }
+
+      case ActiveSideView.CreateChat: {
+        return <CreateChat />;
+      }
+
+      default: {
+        return <ChatList />;
+      }
+    }
+  };
 
   return (
     <div className={styles['page']}>
@@ -32,20 +80,25 @@ const Main: React.FC = () => {
         <Header />
       </div>
       <div className={styles['page-content']}>
-        <ChatList />
+        {renderContent()}
         <RouterOutlet />
       </div>
-      <div className={styles['create-chat-button'] ?? ''}>
+      <div className={styles['create-chat-wrapper'] ?? ''}>
         <CreateChatPopover
           isOpened={isCreateChatOpened}
           onClose={onCreateChatClose}
+          onCreateChat={handleOpenCreateChat}
+          onCreateGroup={handleOpenCreateGroup}
         >
           <Button
+            className={styles['create-chat-button'] ?? ''}
             color={ButtonColor.TEAL}
             isPrimary
-            onClick={isCreateChatOpened ? onCreateChatClose : onCreateChatOpen}
+            onClick={handleCancelClick}
           >
-            {isCreateChatOpened ? 'Cancel' : 'Create Chat'}
+            {!isCreateChatOpened && activeView === ActiveSideView.ChatList
+              ? 'Create Chat'
+              : 'Cancel'}
           </Button>
         </CreateChatPopover>
       </div>

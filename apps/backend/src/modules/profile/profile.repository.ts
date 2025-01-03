@@ -1,5 +1,6 @@
 import { AbstractRepository } from '~/libs/modules/database/database.js';
 
+import { DEFAULT_LIMIT } from './libs/constants/constants.js';
 import { type Profile as TProfile } from './libs/types/types.js';
 import { type ProfileDocument, type ProfileModel } from './profile.model.js';
 
@@ -11,9 +12,13 @@ class Profile extends AbstractRepository<ProfileDocument, TProfile> {
   }
 
   public async getByUsername(username: string): Promise<TProfile[]> {
-    return await this.model.find({
-      username: { $options: 'i', $regex: username }
-    });
+    const profiles = await this.model
+      .find({
+        username: { $options: 'i', $regex: username }
+      })
+      .limit(DEFAULT_LIMIT);
+
+    return profiles.map(profile => this.mapToBusinessLogic(profile));
   }
 
   public async getProfilesByIds(ids: string[]): Promise<TProfile[]> {

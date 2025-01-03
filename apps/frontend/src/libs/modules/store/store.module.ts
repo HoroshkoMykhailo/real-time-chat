@@ -6,6 +6,7 @@ import { authApi, authReducer } from '~/modules/auth/auth.js';
 import { chatApi, chatReducer } from '~/modules/chat/chat.js';
 import { profileApi, profileReducer } from '~/modules/profile/profile.js';
 import { storageApi } from '~/modules/storage/storage.js';
+import { userApi, userReducer } from '~/modules/user/user.js';
 
 import {
   type ExtraArguments,
@@ -29,7 +30,8 @@ class Store implements StoreModule {
       reducer: {
         auth: authReducer,
         chat: chatReducer,
-        profile: profileReducer
+        profile: profileReducer,
+        user: userReducer
       }
     });
   }
@@ -39,7 +41,8 @@ class Store implements StoreModule {
       authApi,
       chatApi,
       profileApi,
-      storageApi
+      storageApi,
+      userApi
     };
   }
 
