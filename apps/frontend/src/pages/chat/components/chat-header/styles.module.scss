@@ -10,6 +10,14 @@
   margin-left: 16px;
 }
 
+.private {
+  justify-content: center;
+
+  .chat-name {
+    margin-top: 0;
+  }
+}
+
 .chat-name {
   margin: 0;
   margin-top: 0.1rem;

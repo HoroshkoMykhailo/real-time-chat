@@ -22,3 +22,10 @@
   flex: 1;
   height: calc(100vh - var(--header-height));
 }
+
+.create-chat-button {
+  position: fixed;
+  bottom: var(--create-chat-button-bottom);
+  left: var(--create-chat-button-left);
+  width: var(--create-chat-button-width);
+}

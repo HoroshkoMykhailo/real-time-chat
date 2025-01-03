@@ -6,7 +6,6 @@ import {
   useAppDispatch,
   useAppSelector,
   useCallback,
-  useEffect,
   useState
 } from '~/libs/hooks/hooks.js';
 import { ChatType, chatActions } from '~/modules/chat/chat.js';
@@ -24,10 +23,6 @@ const ChatList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [popoverChatId, setPopoverChatId] = useState<null | string>(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    void dispatch(chatActions.getMyChats());
-  }, [dispatch]);
 
   const filteredChats = chats.filter(chat =>
     chat.name.toLowerCase().includes(searchQuery.toLowerCase())
