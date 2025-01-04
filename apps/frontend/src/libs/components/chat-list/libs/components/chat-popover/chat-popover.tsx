@@ -13,6 +13,8 @@ import { chatActions } from '~/modules/chat/chat.js';
 
 import styles from './styles.module.scss';
 
+const POPOVER_OFFSET = 50;
+
 const CHAT_POPOVER_CLASS = 'chat-popover';
 
 type Properties = {
@@ -46,7 +48,7 @@ const ChatPopover = ({
   useEffect(() => {
     if (popoverReference.current) {
       const rect = popoverReference.current.getBoundingClientRect();
-      const isNearBottom = rect.bottom > window.innerHeight;
+      const isNearBottom = rect.bottom > window.innerHeight - POPOVER_OFFSET;
 
       setPopoverClass(isNearBottom ? 'chat-popover-up' : CHAT_POPOVER_CLASS);
     }
