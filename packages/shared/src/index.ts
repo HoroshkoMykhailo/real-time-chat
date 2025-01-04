@@ -17,6 +17,7 @@ export { AuthApiPath, signIn, signUp } from './modules/auth/auth.js';
 export {
   type Chat,
   ChatApiPath,
+  type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
   ChatType,

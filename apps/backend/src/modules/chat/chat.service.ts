@@ -1,8 +1,10 @@
 import { ExceptionMessage } from '~/libs/enums/enums.js';
 import { savePicture } from '~/libs/modules/helpers/helpers.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
+import { type ValueOf } from '~/libs/types/types.js';
 
 import { type Message as MessageRepository } from '../message/message.repository.js';
+import { type Profile } from '../profile/libs/types/types.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
 import { type User, UserRole } from '../user/user.js';
 import { type Chat as ChatRepository } from './chat.repository.js';
@@ -56,6 +58,23 @@ class Chat implements ChatService {
     return chat;
   }
 
+  async #fetchMemberProfiles(members: { value: string }[]): Promise<Profile[]> {
+    return await Promise.all(
+      members.map(async member => {
+        const profile = await this.#profileRepository.getById(member.value);
+
+        if (!profile) {
+          throw new HTTPError({
+            message: ExceptionMessage.MEMBER_NOT_FOUND,
+            status: HTTPCode.NOT_FOUND
+          });
+        }
+
+        return profile;
+      })
+    );
+  }
+
   async #formatChat(
     chat: TChat,
     userId: string
@@ -69,6 +88,41 @@ class Chat implements ChatService {
       type: chat.type,
       ...(lastMessage && { lastMessage }),
       ...(chatPicture && { chatPicture })
+    };
+  }
+
+  #formatChatResponse({
+    adminId,
+    chat,
+    memberProfiles,
+    type
+  }: {
+    adminId: string;
+    chat: TChat;
+    memberProfiles: Profile[];
+    type: ValueOf<typeof ChatType>;
+  }): ChatCreationResponseDto {
+    let chatName = chat.name ?? '';
+
+    if (type === ChatType.PRIVATE) {
+      const otherMember = memberProfiles.find(member => member.id !== adminId);
+
+      if (otherMember) {
+        chatName = otherMember.username;
+
+        if (otherMember.profilePicture) {
+          chat.groupPicture = otherMember.profilePicture;
+        }
+      }
+    }
+
+    return {
+      id: chat.id,
+      members: memberProfiles,
+      type: chat.type,
+      ...(chat.groupPicture && { chatPicture: chat.groupPicture }),
+      name: chatName,
+      ...(type === ChatType.GROUP && { adminId })
     };
   }
 
@@ -140,6 +194,65 @@ class Chat implements ChatService {
     return lastMessage;
   }
 
+  async #handleExistingPrivateChat(
+    adminId: string,
+    members: { value: string }[]
+  ): Promise<ChatCreationResponseDto | null> {
+    const memberIds = members
+      .map(member => member.value)
+      .sort((a, b) => a.localeCompare(b));
+    const existingChat =
+      await this.#chatRepository.findPrivateChatByMembers(memberIds);
+
+    if (!existingChat) {
+      return null;
+    }
+
+    const existingMemberProfiles = await this.#fetchMemberProfiles(members);
+
+    return this.#formatChatResponse({
+      adminId,
+      chat: existingChat,
+      memberProfiles: existingMemberProfiles,
+      type: ChatType.PRIVATE
+    });
+  }
+
+  async #validateAdminProfile(adminId: string): Promise<Profile> {
+    const adminProfile = await this.#profileRepository.getById(adminId);
+
+    if (!adminProfile) {
+      throw new HTTPError({
+        message: ExceptionMessage.USER_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    return adminProfile;
+  }
+  #validateMembers(
+    adminId: string,
+    members: { value: string }[],
+    type: { value: ValueOf<typeof ChatType> }
+  ): void {
+    if (!members.some(member => member.value === adminId)) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.BAD_REQUEST
+      });
+    }
+
+    if (
+      type.value === ChatType.PRIVATE &&
+      members.length !== ChatValidationRule.PRIVATE_MEMBERS_COUNT
+    ) {
+      throw new HTTPError({
+        message: ExceptionMessage.NOT_VALID_MEMBERS_COUNT,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+  }
+
   public async addMembers(
     id: string,
     user: User,
@@ -194,6 +307,7 @@ class Chat implements ChatService {
       ...(chat.adminId && { adminId: chat.adminId })
     };
   }
+
   public async create(
     user: User,
     data: ChatCreationRequestDto
@@ -201,20 +315,19 @@ class Chat implements ChatService {
     const { profileId: adminId } = user;
     const { groupPicture, members, name, type } = data;
 
-    const adminProfile = await this.#profileRepository.getById(adminId);
+    await this.#validateAdminProfile(adminId);
 
-    if (!adminProfile) {
-      throw new HTTPError({
-        message: ExceptionMessage.USER_NOT_FOUND,
-        status: HTTPCode.NOT_FOUND
-      });
-    }
+    this.#validateMembers(adminId, members, type);
 
-    if (!members.some(member => member.value === adminId)) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.BAD_REQUEST
-      });
+    if (type.value === ChatType.PRIVATE) {
+      const existingChat = await this.#handleExistingPrivateChat(
+        adminId,
+        members
+      );
+
+      if (existingChat) {
+        return existingChat;
+      }
     }
 
     if (!name && type.value === ChatType.GROUP) {
@@ -224,46 +337,7 @@ class Chat implements ChatService {
       });
     }
 
-    if (
-      type.value === ChatType.PRIVATE &&
-      members.length !== ChatValidationRule.PRIVATE_MEMBERS_COUNT
-    ) {
-      throw new HTTPError({
-        message: ExceptionMessage.NOT_VALID_MEMBERS_COUNT,
-        status: HTTPCode.NOT_FOUND
-      });
-    }
-
-    if (type.value === ChatType.PRIVATE) {
-      const memberIds = members
-        .map(member => member.value)
-        .sort((a, b) => a.localeCompare(b));
-
-      const existingChat =
-        await this.#chatRepository.findPrivateChatByMembers(memberIds);
-
-      if (existingChat) {
-        throw new HTTPError({
-          message: ExceptionMessage.PRIVATE_CHAT_EXISTS,
-          status: HTTPCode.BAD_REQUEST
-        });
-      }
-    }
-
-    const memberProfiles = await Promise.all(
-      members.map(async member => {
-        const profile = await this.#profileRepository.getById(member.value);
-
-        if (!profile) {
-          throw new HTTPError({
-            message: ExceptionMessage.MEMBER_NOT_FOUND,
-            status: HTTPCode.NOT_FOUND
-          });
-        }
-
-        return profile;
-      })
-    );
+    const memberProfiles = await this.#fetchMemberProfiles(members);
 
     const chatCreation: Omit<TChat, 'createdAt' | 'id' | 'updatedAt'> = {
       members: members.map(member => member.value),
@@ -284,20 +358,12 @@ class Chat implements ChatService {
 
     const createdChat = await this.#chatRepository.create(chatCreation);
 
-    const response: ChatCreationResponseDto = {
-      createdAt: createdChat.createdAt,
-      id: createdChat.id,
-      members: memberProfiles,
-      type: createdChat.type,
-      updatedAt: createdChat.updatedAt,
-      ...(groupPicture && { groupPicture: chatCreation.groupPicture }),
-      ...(name && { name: name.value }),
-      ...(type.value === ChatType.GROUP && {
-        admin: { id: adminId, profile: adminProfile }
-      })
-    };
-
-    return response;
+    return this.#formatChatResponse({
+      adminId,
+      chat: createdChat,
+      memberProfiles,
+      type: type.value
+    });
   }
 
   public async deleteChat(id: string, user: User): Promise<boolean> {

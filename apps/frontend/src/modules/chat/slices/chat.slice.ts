@@ -4,19 +4,27 @@ import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
 import {
+  type ChatCreationResponseDto,
   type ChatGetResponseDto,
   type ChatsResponseDto
 } from '../libs/types/types.js';
-import { getChat, getMyChats, leaveChat } from './actions.js';
+import {
+  createPrivateChat,
+  getChat,
+  getMyChats,
+  leaveChat
+} from './actions.js';
 
 type State = {
   chats: ChatsResponseDto;
+  createdChat: ChatCreationResponseDto | null;
   dataStatus: ValueOf<typeof DataStatus>;
   selectedChat: (ChatsResponseDto[number] & Partial<ChatGetResponseDto>) | null;
 };
 
 const initialState: State = {
   chats: [],
+  createdChat: null,
   dataStatus: DataStatus.IDLE,
   selectedChat: null
 };
@@ -49,6 +57,12 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(leaveChat.fulfilled), (state, action) => {
         state.chats = state.chats.filter(chat => chat.id !== action.payload);
+      })
+      .addMatcher(isAnyOf(createPrivateChat.fulfilled), (state, action) => {
+        state.createdChat = action.payload;
+      })
+      .addMatcher(isAnyOf(createPrivateChat.rejected), state => {
+        state.createdChat = null;
       });
   },
   initialState,

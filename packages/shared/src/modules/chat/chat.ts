@@ -6,6 +6,7 @@ export {
 } from './libs/enums/enums.js';
 export {
   type Chat,
+  type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
   type ChatUpdateResponseDto,

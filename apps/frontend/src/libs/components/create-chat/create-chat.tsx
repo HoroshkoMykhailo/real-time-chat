@@ -1,3 +1,6 @@
+import { useNavigate } from 'react-router-dom';
+
+import { AppRoute } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppSelector,
@@ -6,6 +9,7 @@ import {
   useEffect,
   useState
 } from '~/libs/hooks/hooks.js';
+import { chatActions } from '~/modules/chat/chat.js';
 import { userActions } from '~/modules/user/user.js';
 
 import { SearchBar } from '../components.js';
@@ -18,8 +22,10 @@ const CreateChat: React.FC = () => {
   const dispatch = useAppDispatch();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, DEBOUNCE_DELAY);
+  const { createdChat } = useAppSelector(state => state.chat);
   const { users } = useAppSelector(state => state.user);
   const { profile } = useAppSelector(state => state.profile);
+  const navigate = useNavigate();
 
   useEffect(() => {
     void dispatch(userActions.getUsersByUsername(debouncedSearchQuery.trim()));
@@ -32,6 +38,27 @@ const CreateChat: React.FC = () => {
     []
   );
 
+  const handleUserClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>): void => {
+      const { userId } = event.currentTarget.dataset;
+
+      if (userId && profile) {
+        void dispatch(
+          chatActions.createPrivateChat({ otherId: profile.id, userId })
+        );
+        dispatch(chatActions.resetSelectedChat());
+      }
+    },
+    [profile, dispatch]
+  );
+
+  useEffect(() => {
+    if (createdChat) {
+      dispatch(chatActions.setSelectedChat(createdChat));
+      navigate(`${AppRoute.CHATS}/${createdChat.id}`);
+    }
+  }, [navigate, dispatch, createdChat]);
+
   const filteredUsers = users.filter(user => user.id !== profile?.id);
 
   return (
@@ -43,9 +70,14 @@ const CreateChat: React.FC = () => {
       />
       <div className={styles['user-list']}>
         {filteredUsers.map(user => (
-          <div className={styles['user-item']} key={user.id}>
+          <button
+            className={styles['user-item']}
+            data-user-id={user.id}
+            key={user.id}
+            onClick={handleUserClick}
+          >
             <UserItem user={user} />
-          </div>
+          </button>
         ))}
       </div>
     </div>

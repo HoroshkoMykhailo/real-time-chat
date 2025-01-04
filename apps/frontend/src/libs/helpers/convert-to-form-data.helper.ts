@@ -8,8 +8,8 @@ const convertToFormData = <T extends Record<string, unknown>>(
       if (value instanceof Blob || value instanceof File) {
         formData.append(key, value);
       } else if (Array.isArray(value)) {
-        for (const [index, item] of value.entries()) {
-          formData.append(`${key}[${index}]`, item as Blob | string);
+        for (const item of value) {
+          formData.append(key, item as Blob | string);
         }
       } else if (
         typeof value === 'string' ||

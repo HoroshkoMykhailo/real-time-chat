@@ -1,8 +1,14 @@
-import { getChat, getMyChats, leaveChat } from './actions.js';
+import {
+  createPrivateChat,
+  getChat,
+  getMyChats,
+  leaveChat
+} from './actions.js';
 import { actions } from './chat.slice.js';
 
 const allActions = {
   ...actions,
+  createPrivateChat,
   getChat,
   getMyChats,
   leaveChat

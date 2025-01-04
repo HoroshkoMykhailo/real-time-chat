@@ -2,7 +2,10 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { type AsyncThunkConfig } from '~/libs/types/types.js';
 
+import { ChatType } from '../libs/enums/enums.js';
 import {
+  type ChatCreationRequestDto,
+  type ChatCreationResponseDto,
   type ChatGetResponseDto,
   type ChatsResponseDto
 } from '../libs/types/types.js';
@@ -33,4 +36,23 @@ const leaveChat = createAsyncThunk<string, { id: string }, AsyncThunkConfig>(
   }
 );
 
-export { getChat, getMyChats, leaveChat };
+const createPrivateChat = createAsyncThunk<
+  ChatCreationResponseDto,
+  {
+    otherId: string;
+    userId: string;
+  },
+  AsyncThunkConfig
+>(
+  ActionType.CREATE_PRIVATE_CHAT,
+  async ({ otherId, userId }, { extra: { chatApi } }) => {
+    const chat: ChatCreationRequestDto = {
+      members: [otherId, userId],
+      type: ChatType.PRIVATE
+    };
+
+    return await chatApi.createChat(chat);
+  }
+);
+
+export { createPrivateChat, getChat, getMyChats, leaveChat };

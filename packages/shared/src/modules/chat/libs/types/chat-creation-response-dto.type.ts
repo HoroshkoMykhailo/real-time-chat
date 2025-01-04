@@ -4,17 +4,12 @@ import { type Profile } from '~/modules/profile/profile.js';
 import { type ChatType } from '../../chat.js';
 
 type ChatCreationResponseDto = {
-  admin?: {
-    id: string;
-    profile: Profile;
-  };
-  createdAt: string;
-  groupPicture?: string;
+  adminId?: string;
+  chatPicture?: string;
   id: string;
   members: Profile[];
-  name?: string;
+  name: string;
   type: ValueOf<typeof ChatType>;
-  updatedAt: string;
 };
 
 export { type ChatCreationResponseDto };
