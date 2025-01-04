@@ -2,6 +2,7 @@ import {
   Button,
   ChatList,
   CreateChat,
+  CreateGroup,
   Header,
   RouterOutlet
 } from '~/libs/components/components.js';
@@ -66,7 +67,7 @@ const Main: React.FC = () => {
   const renderContent = (): JSX.Element => {
     switch (activeView) {
       case ActiveSideView.CreateGroup: {
-        return <div>Create Group Component</div>;
+        return <CreateGroup />;
       }
 
       case ActiveSideView.CreateChat: {
