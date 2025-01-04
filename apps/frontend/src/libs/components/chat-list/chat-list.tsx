@@ -16,7 +16,7 @@ import { ChatItem } from './libs/components/chat-item/chat-item.js';
 import { ChatPopover } from './libs/components/chat-popover/chat-popover.js';
 import styles from './styles.module.scss';
 
-const ChatList: React.FC = () => {
+const ChatList = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { chats, dataStatus } = useAppSelector(state => state.chat);
   const { selectedChat } = useAppSelector(state => state.chat);

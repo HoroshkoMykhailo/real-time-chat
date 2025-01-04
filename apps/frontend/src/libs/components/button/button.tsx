@@ -22,7 +22,7 @@ type Properties = {
   type?: ButtonType;
 };
 
-const Button: React.FC<Properties> = ({
+const Button = ({
   children,
   className,
   color,
@@ -34,7 +34,7 @@ const Button: React.FC<Properties> = ({
   isPrimary = false,
   onClick,
   type = 'button'
-}) => {
+}: Properties): JSX.Element => {
   if (href) {
     return (
       <NavLink

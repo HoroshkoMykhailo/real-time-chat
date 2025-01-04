@@ -16,7 +16,7 @@ type Properties = {
   width?: string;
 };
 
-const Image: React.FC<Properties> = ({
+const Image = ({
   alt,
   className,
   height,
@@ -25,7 +25,7 @@ const Image: React.FC<Properties> = ({
   size,
   src,
   width
-}) => {
+}: Properties): JSX.Element => {
   return (
     <img
       alt={alt}

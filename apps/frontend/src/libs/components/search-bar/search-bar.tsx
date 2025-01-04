@@ -9,7 +9,11 @@ type Properties = {
   value: string;
 };
 
-const SearchBar: React.FC<Properties> = ({ onChange, placeholder, value }) => {
+const SearchBar = ({
+  onChange,
+  placeholder,
+  value
+}: Properties): JSX.Element => {
   return (
     <div className={styles['search-bar']}>
       <div className={styles['search-icon']}>

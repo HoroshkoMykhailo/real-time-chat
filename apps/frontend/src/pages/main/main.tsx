@@ -58,6 +58,11 @@ const Main: React.FC = () => {
     }
   }, [activeView, isCreateChatOpened, onCreateChatClose, onCreateChatOpen]);
 
+  const handleLogoClick = useCallback((): void => {
+    setActiveView(ActiveSideView.ChatList);
+    onCreateChatClose();
+  }, [onCreateChatClose]);
+
   const renderContent = (): JSX.Element => {
     switch (activeView) {
       case ActiveSideView.CreateGroup: {
@@ -77,7 +82,7 @@ const Main: React.FC = () => {
   return (
     <div className={styles['page']}>
       <div className={styles['page-header']}>
-        <Header />
+        <Header onLogoClick={handleLogoClick} />
       </div>
       <div className={styles['page-content']}>
         {renderContent()}

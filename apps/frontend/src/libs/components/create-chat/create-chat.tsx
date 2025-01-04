@@ -18,7 +18,7 @@ import styles from './styles.module.scss';
 
 const DEBOUNCE_DELAY = 500;
 
-const CreateChat: React.FC = () => {
+const CreateChat = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, DEBOUNCE_DELAY);
