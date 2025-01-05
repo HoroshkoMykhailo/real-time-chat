@@ -7,7 +7,7 @@ import { UserPopover } from './libs/components/components.js';
 import styles from './styles.module.scss';
 
 type Properties = {
-  onLogoClick: () => void;
+  onLogoClick?: () => void;
 };
 
 const Header = ({ onLogoClick }: Properties): JSX.Element => {

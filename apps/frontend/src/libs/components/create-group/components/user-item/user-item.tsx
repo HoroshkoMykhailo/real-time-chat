@@ -6,21 +6,25 @@ import { type Profile } from '~/modules/profile/libs/types/types.js';
 import styles from '../../styles.module.scss';
 
 type Properties = {
-  isSelected: boolean;
+  isSelectable?: boolean;
+  isSelected?: boolean;
   user: Profile;
 };
 
 const UserItem: React.FC<Properties> = ({
-  isSelected,
+  isSelectable = false,
+  isSelected = false,
   user: { profilePicture, username }
 }) => {
   return (
     <div className={styles['user-item-content']}>
-      <ChatPicture name={username} picture={profilePicture} />
+      <ChatPicture name={username} picture={profilePicture} size="48" />
       <span className={styles['user-username']}>{username}</span>
-      <div className={styles['user-checkbox']}>
-        <Checkbox isChecked={isSelected} isReadOnly />
-      </div>
+      {isSelectable && (
+        <div className={styles['user-checkbox']}>
+          <Checkbox isChecked={isSelected} isReadOnly />
+        </div>
+      )}
     </div>
   );
 };

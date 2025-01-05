@@ -6,7 +6,7 @@ import {
   ONE_VALUE,
   ZERO_VALUE
 } from '~/libs/common/constants.js';
-import { AppRoute } from '~/libs/enums/enums.js';
+import { AppRoute, ButtonColor } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppSelector,
@@ -19,7 +19,7 @@ import { chatActions } from '~/modules/chat/chat.js';
 import { type Profile } from '~/modules/profile/profile.js';
 import { userActions } from '~/modules/user/user.js';
 
-import { SearchBar } from '../components.js';
+import { Button, SearchBar } from '../components.js';
 import { UserItem } from './components/user-item/user-item.js';
 import styles from './styles.module.scss';
 
@@ -33,6 +33,7 @@ const CreateGroup = (): JSX.Element => {
   const navigate = useNavigate();
 
   const [selectedUsers, setSelectedUsers] = useState<Profile[]>([]);
+  const [isGroupInformation, setIsGroupInformation] = useState<boolean>(false);
 
   useEffect(() => {
     void dispatch(userActions.getUsersByUsername(debouncedSearchQuery.trim()));
@@ -92,26 +93,63 @@ const CreateGroup = (): JSX.Element => {
 
   const combinedUsers = [...selectedUsers, ...nonSelectedUsers];
 
+  const handleContinueClick = useCallback(() => {
+    setIsGroupInformation(true);
+  }, []);
+
   return (
     <div className={styles['create-chat-container']}>
-      <h2 className={styles['create-group-title']}>Add Members</h2>
-      <SearchBar
-        onChange={handleSearchChange}
-        placeholder="Search users"
-        value={searchQuery}
-      />
-      <div className={styles['user-list']}>
-        {combinedUsers.map(user => (
-          <button
-            className={styles['user-item']}
-            data-user-id={user.id}
-            key={user.id}
-            onClick={handleUserClick}
-          >
-            <UserItem isSelected={selectedUserIds.has(user.id)} user={user} />
-          </button>
-        ))}
+      <div className={styles['create-group-header']}>
+        <h2 className={styles['create-group-title']}>
+          {isGroupInformation ? 'Group Information' : 'Add Members'}
+        </h2>
+        <Button
+          className={styles['continue-button'] ?? ''}
+          color={ButtonColor.TEAL}
+          isPrimary
+          onClick={handleContinueClick}
+        >
+          Continue
+        </Button>
       </div>
+      {isGroupInformation ? (
+        <>
+          <p className={styles['selected-users-count']}>
+            {selectedUsers.length} Members
+          </p>
+          <div className={styles['user-list']}>
+            {selectedUsers.map(user => (
+              <div className={styles['user-item']} key={user.id}>
+                <UserItem user={user} />
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <SearchBar
+            onChange={handleSearchChange}
+            placeholder="Search users"
+            value={searchQuery}
+          />
+          <div className={styles['user-list']}>
+            {combinedUsers.map(user => (
+              <button
+                className={`${styles['user-item']} ${styles['selectable']}`}
+                data-user-id={user.id}
+                key={user.id}
+                onClick={handleUserClick}
+              >
+                <UserItem
+                  isSelectable
+                  isSelected={selectedUserIds.has(user.id)}
+                  user={user}
+                />
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };
