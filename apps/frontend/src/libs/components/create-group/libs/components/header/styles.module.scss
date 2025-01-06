@@ -1,0 +1,17 @@
+.create-group-header {
+  padding: 0.5rem;
+  margin-left: 0.5rem;
+  padding-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+
+  .create-group-title {
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  .continue-button {
+    padding: 0.6rem 1rem;
+    margin-right: 0.5rem;
+  }
+}
