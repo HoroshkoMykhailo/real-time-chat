@@ -20,6 +20,7 @@ export {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  ChatPayloadKey,
   ChatType,
   type ChatUpdateResponseDto,
   ChatValidationMessage,
@@ -27,6 +28,7 @@ export {
   type ChatsResponseDto,
   addMembers,
   chatCreation,
+  chatCreationFront,
   chatUpdate
 } from './modules/chat/chat.js';
 export {

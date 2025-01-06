@@ -25,7 +25,7 @@ const ChatPicture = ({
   return (
     <div
       className={getValidClassNames(
-        styles['avatar'],
+        styles['chat-picture'],
         !picture && styles['no-image']
       )}
       style={{
@@ -42,7 +42,7 @@ const ChatPicture = ({
           width={size}
         />
       ) : (
-        <span className={styles['avatar-letter']}>{firstLetter}</span>
+        <span className={styles['chat-picture-letter']}>{firstLetter}</span>
       )}
     </div>
   );

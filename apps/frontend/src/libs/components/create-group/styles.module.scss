@@ -91,3 +91,52 @@
   font-size: 1rem;
   color: var(--gray);
 }
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  border: none;
+  gap: 10px;
+}
+
+.imageGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.groupPicture {
+  align-self: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 144px;
+  height: 144px;
+  border-radius: 50%;
+  border: 1px solid var(--main-dark);
+  position: relative;
+}
+
+.cameraIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+
+  &.hasImage {
+    color: var(--white);
+  }
+
+  &.noImage {
+    color: var(--black);
+  }
+}
+
+.label {
+  min-width: 100px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--main-dark);
+}

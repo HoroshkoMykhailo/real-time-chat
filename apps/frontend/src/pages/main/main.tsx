@@ -67,7 +67,7 @@ const Main: React.FC = () => {
   const renderContent = (): JSX.Element => {
     switch (activeView) {
       case ActiveSideView.CreateGroup: {
-        return <CreateGroup />;
+        return <CreateGroup setActiveView={setActiveView} />;
       }
 
       case ActiveSideView.CreateChat: {

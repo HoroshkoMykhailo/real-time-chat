@@ -1,5 +1,6 @@
 export {
   ChatApiPath,
+  ChatPayloadKey,
   ChatType,
   ChatValidationMessage,
   ChatValidationRule
@@ -15,5 +16,6 @@ export {
 export {
   addMembers,
   chatCreation,
+  chatCreationFront,
   chatUpdate
 } from './libs/validation-schemas/validation-schemas.js';

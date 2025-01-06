@@ -3,7 +3,7 @@ import React from 'react';
 import { ChatPicture, Checkbox } from '~/libs/components/components.js';
 import { type Profile } from '~/modules/profile/libs/types/types.js';
 
-import styles from '../../styles.module.scss';
+import styles from '../../../styles.module.scss';
 
 type Properties = {
   isSelectable?: boolean;

@@ -7,23 +7,45 @@ import {
   ZERO_VALUE
 } from '~/libs/common/constants.js';
 import { AppRoute, ButtonColor } from '~/libs/enums/enums.js';
+import { checkGreaterThanZero } from '~/libs/helpers/helpers.js';
 import {
   useAppDispatch,
+  useAppForm,
   useAppSelector,
   useCallback,
   useDebounce,
   useEffect,
   useState
 } from '~/libs/hooks/hooks.js';
-import { chatActions } from '~/modules/chat/chat.js';
+import { type ValueOf } from '~/libs/types/types.js';
+import {
+  ChatPayloadKey,
+  type ChatType,
+  chatActions
+} from '~/modules/chat/chat.js';
+import { type ChatCreationRequestDto } from '~/modules/chat/libs/types/types.js';
+import { chatCreationValidationSchema } from '~/modules/chat/libs/validation-schemas/validation-schemas.js';
 import { type Profile } from '~/modules/profile/profile.js';
 import { userActions } from '~/modules/user/user.js';
+import { ActiveSideView } from '~/pages/main/libs/enums/active-side-view.enum.js';
 
-import { Button, SearchBar } from '../components.js';
-import { UserItem } from './components/user-item/user-item.js';
+import { Button, Icon, Image, Input, SearchBar } from '../components.js';
+import { DEFAULT_CREATE_GROUP_PAYLOAD } from './libs/common/constants.js';
+import { UserItem } from './libs/components/user-item/user-item.js';
 import styles from './styles.module.scss';
 
-const CreateGroup = (): JSX.Element => {
+type GroupFormValues = {
+  groupPicture: File | null;
+  members: string[];
+  name: string;
+  type: ValueOf<typeof ChatType>;
+};
+
+type Properties = {
+  setActiveView: (value: ValueOf<typeof ActiveSideView>) => void;
+};
+
+const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, DEBOUNCE_DELAY);
@@ -34,6 +56,45 @@ const CreateGroup = (): JSX.Element => {
 
   const [selectedUsers, setSelectedUsers] = useState<Profile[]>([]);
   const [isGroupInformation, setIsGroupInformation] = useState<boolean>(false);
+  const [imageUrl, setImageUrl] = useState<null | string>(null);
+
+  const { control, errors, handleSubmit, setValue } =
+    useAppForm<GroupFormValues>({
+      defaultValues: DEFAULT_CREATE_GROUP_PAYLOAD,
+      validationSchema: chatCreationValidationSchema
+    });
+
+  const handleImageChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>): void => {
+      if (
+        event.target.files &&
+        checkGreaterThanZero(event.target.files.length)
+      ) {
+        const [file] = event.target.files;
+
+        if (file) {
+          setImageUrl(URL.createObjectURL(file));
+          setValue(ChatPayloadKey.GROUP_PICTURE, file);
+        }
+      }
+    },
+    [setValue]
+  );
+
+  const handleFormSubmit = useCallback(
+    (values: GroupFormValues): void => {
+      const group: ChatCreationRequestDto = {
+        groupPicture: values.groupPicture,
+        members: values.members,
+        name: values.name,
+        type: values.type
+      };
+
+      void dispatch(chatActions.createGroup(group));
+      dispatch(chatActions.resetSelectedChat());
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     void dispatch(userActions.getUsersByUsername(debouncedSearchQuery.trim()));
@@ -80,8 +141,9 @@ const CreateGroup = (): JSX.Element => {
     if (createdChat) {
       dispatch(chatActions.setSelectedChat(createdChat));
       navigate(`${AppRoute.CHATS}/${createdChat.id}`);
+      setActiveView(ActiveSideView.ChatList);
     }
-  }, [navigate, dispatch, createdChat]);
+  }, [navigate, dispatch, createdChat, setActiveView]);
 
   const filteredUsers = users.filter(user => user.id !== profile?.id);
 
@@ -94,8 +156,26 @@ const CreateGroup = (): JSX.Element => {
   const combinedUsers = [...selectedUsers, ...nonSelectedUsers];
 
   const handleContinueClick = useCallback(() => {
-    setIsGroupInformation(true);
-  }, []);
+    if (isGroupInformation) {
+      void handleSubmit(handleFormSubmit)();
+    } else {
+      setIsGroupInformation(true);
+
+      if (profile) {
+        setValue(ChatPayloadKey.MEMBERS, [
+          profile.id,
+          ...selectedUsers.map(user => user.id)
+        ]);
+      }
+    }
+  }, [
+    handleFormSubmit,
+    handleSubmit,
+    isGroupInformation,
+    profile,
+    selectedUsers,
+    setValue
+  ]);
 
   return (
     <div className={styles['create-chat-container']}>
@@ -114,9 +194,64 @@ const CreateGroup = (): JSX.Element => {
       </div>
       {isGroupInformation ? (
         <>
-          <p className={styles['selected-users-count']}>
-            {selectedUsers.length} Members
-          </p>
+          <form name="groupForm">
+            <fieldset className={styles['fieldset']}>
+              <div className={styles['imageGroup']}>
+                <label
+                  className={styles['groupPicture']}
+                  htmlFor={ChatPayloadKey.GROUP_PICTURE}
+                >
+                  {imageUrl ? (
+                    <>
+                      <Image
+                        alt="Selected"
+                        height="144"
+                        isCircular
+                        src={imageUrl}
+                        width="144"
+                      />
+                      <div
+                        className={`${styles['cameraIcon']} ${styles['hasImage']}`}
+                      >
+                        <Icon height={48} name="camera" width={48} />
+                      </div>
+                    </>
+                  ) : (
+                    <div
+                      className={`${styles['cameraIcon']} ${styles['noImage']}`}
+                    >
+                      <Icon height={48} name="camera" width={48} />
+                    </div>
+                  )}
+                  <input
+                    accept="image/*"
+                    id={ChatPayloadKey.GROUP_PICTURE}
+                    onChange={handleImageChange}
+                    style={{ display: 'none' }}
+                    type="file"
+                  />
+                </label>
+              </div>
+              <div className={styles['GroupName']}>
+                <label className={styles['label']} htmlFor="name">
+                  Group Name
+                </label>
+                <Input
+                  control={control}
+                  errors={errors}
+                  name="name"
+                  placeholder="Enter group name"
+                  type="text"
+                />
+              </div>
+            </fieldset>
+          </form>
+          {selectedUsers.length > ZERO_VALUE && (
+            <p className={styles['selected-users-count']}>
+              {selectedUsers.length} Member
+              {selectedUsers.length === ONE_VALUE ? '' : 's'}
+            </p>
+          )}
           <div className={styles['user-list']}>
             {selectedUsers.map(user => (
               <div className={styles['user-item']} key={user.id}>

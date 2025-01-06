@@ -9,6 +9,7 @@ import {
   type ChatsResponseDto
 } from '../libs/types/types.js';
 import {
+  createGroup,
   createPrivateChat,
   getChat,
   getMyChats,
@@ -62,6 +63,12 @@ const { actions, reducer } = createSlice({
         state.createdChat = action.payload;
       })
       .addMatcher(isAnyOf(createPrivateChat.rejected), state => {
+        state.createdChat = null;
+      })
+      .addMatcher(isAnyOf(createGroup.fulfilled), (state, action) => {
+        state.createdChat = action.payload;
+      })
+      .addMatcher(isAnyOf(createGroup.rejected), state => {
         state.createdChat = null;
       });
   },
