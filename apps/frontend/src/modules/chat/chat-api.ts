@@ -74,6 +74,22 @@ class Chat implements ChatApi {
       }
     );
   }
+
+  public removeMember(
+    chatId: string,
+    memberId: string
+  ): Promise<ChatGetResponseDto> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.CHAT}${ChatApiPath.MEMBERS}${ChatApiPath.$CHAT_ID.replace(
+        ':id',
+        chatId
+      )}${ChatApiPath.$MEMBER_ID.replace(':memberId', memberId)}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.DELETE
+      }
+    );
+  }
 }
 
 export { Chat };

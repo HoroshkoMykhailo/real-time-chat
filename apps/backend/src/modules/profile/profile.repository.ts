@@ -22,7 +22,9 @@ class Profile extends AbstractRepository<ProfileDocument, TProfile> {
   }
 
   public async getProfilesByIds(ids: string[]): Promise<TProfile[]> {
-    return await this.model.find({ _id: { $in: ids } });
+    const profiles = await this.model.find({ _id: { $in: ids } });
+
+    return profiles.map(profile => this.mapToBusinessLogic(profile));
   }
 
   protected mapAdditionalBusinessLogic(

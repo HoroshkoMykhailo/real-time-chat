@@ -6,6 +6,7 @@ type IconName =
   | 'group'
   | 'pencil'
   | 'person'
+  | 'remove'
   | 'search'
   | 'trashBin';
 

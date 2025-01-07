@@ -3,7 +3,8 @@ import {
   createPrivateChat,
   getChat,
   getMyChats,
-  leaveChat
+  leaveChat,
+  removeMember
 } from './actions.js';
 import { actions } from './chat.slice.js';
 
@@ -13,7 +14,8 @@ const allActions = {
   createPrivateChat,
   getChat,
   getMyChats,
-  leaveChat
+  leaveChat,
+  removeMember
 };
 
 export { allActions as actions };

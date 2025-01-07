@@ -7,6 +7,7 @@ import Error from '~/assets/images/icons/error.svg?react';
 import Group from '~/assets/images/icons/group.svg?react';
 import Pencil from '~/assets/images/icons/pencil.svg?react';
 import Person from '~/assets/images/icons/person.svg?react';
+import Remove from '~/assets/images/icons/remove.svg?react';
 import Search from '~/assets/images/icons/search.svg?react';
 import TrashBin from '~/assets/images/icons/trash-bin.svg?react';
 import { type IconName } from '~/libs/types/types.js';
@@ -19,6 +20,7 @@ const iconNameToSvg: Record<IconName, FC<React.SVGProps<SVGSVGElement>>> = {
   group: Group,
   pencil: Pencil,
   person: Person,
+  remove: Remove,
   search: Search,
   trashBin: TrashBin
 };

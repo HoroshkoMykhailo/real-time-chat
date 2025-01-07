@@ -6,8 +6,9 @@
   margin-left: 0.5rem;
   color: var(--text-dark);
 }
+
 .members-list {
-  overflow-y: auto;
+  overflow: hidden;
   padding: 0;
   margin: 0;
 
@@ -18,7 +19,14 @@
     border: none;
     text-align: left;
     transition: background-color 0.3s ease;
+    cursor: pointer;
 
+    &:focus {
+      outline: none;
+    }
+  }
 
+  &.overflow {
+    overflow-y: auto;
   }
 }

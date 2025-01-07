@@ -13,7 +13,8 @@ import {
   createPrivateChat,
   getChat,
   getMyChats,
-  leaveChat
+  leaveChat,
+  removeMember
 } from './actions.js';
 
 type State = {
@@ -70,6 +71,18 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(createGroup.rejected), state => {
         state.createdChat = null;
+      })
+      .addMatcher(isAnyOf(removeMember.fulfilled), (state, action) => {
+        if (state.selectedChat) {
+          state.selectedChat = {
+            ...state.selectedChat,
+            ...action.payload
+          };
+        }
+      })
+      .addMatcher(isAnyOf(removeMember.rejected), state => {
+        state.selectedChat = null;
+        state.dataStatus = DataStatus.REJECTED;
       });
   },
   initialState,

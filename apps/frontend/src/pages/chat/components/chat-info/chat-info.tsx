@@ -44,11 +44,16 @@ const ChatInfo = ({
           picture={chat.chatPicture}
           width="349"
         />
-        <h2 className={styles['chat-name']}>{chat.name}</h2>
+        <div className={styles['chat-name-wrapper']}>
+          <h2 className={styles['chat-name']}>{chat.name}</h2>
+          {chat.type === ChatType.GROUP && chat.members && (
+            <span className={styles['member-count']}>
+              {chat.members.length} members
+            </span>
+          )}
+        </div>
       </div>
-      {chat.type === ChatType.GROUP && chat.members && (
-        <MembersList members={chat.members} />
-      )}
+      {chat.type === ChatType.GROUP && chat.members && <MembersList />}
     </div>
   );
 };
