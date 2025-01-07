@@ -22,7 +22,7 @@ const ChatHeader = ({ onHeaderClick }: Properties): JSX.Element => {
 
   return (
     <button className={styles['chat-header']} onClick={onHeaderClick}>
-      <ChatPicture name={name} picture={chatPicture} />
+      <ChatPicture isCircular name={name} picture={chatPicture} />
       <div
         className={
           chat.type === ChatType.PRIVATE

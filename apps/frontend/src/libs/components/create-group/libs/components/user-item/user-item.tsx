@@ -18,7 +18,12 @@ const UserItem: React.FC<Properties> = ({
 }) => {
   return (
     <div className={styles['user-item-content']}>
-      <ChatPicture name={username} picture={profilePicture} size="48" />
+      <ChatPicture
+        isCircular
+        name={username}
+        picture={profilePicture}
+        size="48"
+      />
       <span className={styles['user-username']}>{username}</span>
       {isSelectable && (
         <div className={styles['user-checkbox']}>

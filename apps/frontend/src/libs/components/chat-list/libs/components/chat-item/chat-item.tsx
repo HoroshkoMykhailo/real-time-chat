@@ -16,7 +16,7 @@ const ChatItem: React.FC<Properties> = ({
 }) => {
   return (
     <div className={styles['chat-item-content']}>
-      <ChatPicture name={name} picture={chatPicture} />
+      <ChatPicture isCircular name={name} picture={chatPicture} />
       <div className={styles['chat-info']}>
         <p className={styles['chat-name']}>{name}</p>
         <p className={styles['chat-message']}>

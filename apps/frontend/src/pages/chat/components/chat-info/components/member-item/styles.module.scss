@@ -1,0 +1,18 @@
+.member-item-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.55rem;
+  gap: 1rem;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+
+
+  .member-username {
+    font-size: 1rem;
+    color: var(--main-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

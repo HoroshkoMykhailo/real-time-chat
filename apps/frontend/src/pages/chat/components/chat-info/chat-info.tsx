@@ -1,7 +1,9 @@
+import { ChatPicture } from '~/libs/components/components.js';
 import { useAppSelector } from '~/libs/hooks/hooks.js';
 import { ChatType } from '~/modules/chat/chat.js';
 
 import { ChatInfoHeader } from './components/chat-info-header/chat-info-header.js';
+import { MembersList } from './components/members-list/member-list.js';
 import styles from './styles.module.scss';
 
 type Properties = {
@@ -36,8 +38,17 @@ const ChatInfo = ({
         onOpenChatInfoChange={onOpenChatInfoChange}
       />
       <div className={styles['chat-info-content']}>
-        <p>Chat info goes here...</p>
+        <ChatPicture
+          height="250"
+          name={chat.name}
+          picture={chat.chatPicture}
+          width="349"
+        />
+        <h2 className={styles['chat-name']}>{chat.name}</h2>
       </div>
+      {chat.type === ChatType.GROUP && chat.members && (
+        <MembersList members={chat.members} />
+      )}
     </div>
   );
 };
