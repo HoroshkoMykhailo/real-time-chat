@@ -1,0 +1,17 @@
+.chat-info {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border-layout);
+  overflow-y: hidden;
+
+  width: 0;
+  transition: width 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+
+  &.open {
+    width: var(--chat-list-width);
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

@@ -1,5 +1,14 @@
 .chat-layout {
   display: flex;
+  flex-grow: 1;
+}
+
+.chat-content {
+  display: flex;
   flex-direction: column;
+  flex-grow: 1;
+}
+
+.chat-messages {
   flex-grow: 1;
 }

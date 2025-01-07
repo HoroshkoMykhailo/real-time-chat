@@ -23,7 +23,7 @@ const CreateGroupHeader = ({
         isPrimary
         onClick={onContinueClick}
       >
-        Continue
+        {isGroupInformation ? 'Create' : 'Continue'}
       </Button>
     </div>
   );

@@ -1,7 +1,9 @@
 .chat-header {
+  all: unset;
   display: flex;
   padding: 0.5rem;
   border-bottom: 1px solid var(--border-layout);
+  cursor: pointer;
 }
 
 .chat-info {
