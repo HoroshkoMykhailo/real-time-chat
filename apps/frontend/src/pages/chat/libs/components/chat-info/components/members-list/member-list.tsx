@@ -1,3 +1,5 @@
+import { Button } from '~/libs/components/components.js';
+import { ButtonColor } from '~/libs/enums/enums.js';
 import { useAppSelector, useCallback, useState } from '~/libs/hooks/hooks.js';
 import { type Profile } from '~/modules/profile/profile.js';
 
@@ -7,7 +9,11 @@ import styles from './styles.module.scss';
 
 const MEMBERS_OVERFLOW_COUNT = 3;
 
-const MembersList = (): JSX.Element => {
+type Properties = {
+  onOpenAddMembers: () => void;
+};
+
+const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
   const [popoverMemberId, setPopoverMemberId] = useState<null | string>(null);
   const { selectedChat: chat } = useAppSelector(state => state.chat);
   const { profile } = useAppSelector(state => state.profile);
@@ -48,7 +54,17 @@ const MembersList = (): JSX.Element => {
 
   return (
     <>
-      <h3 className={styles['members-title']}>Members</h3>
+      <div className={styles['members-list-header']}>
+        <h3 className={styles['members-title']}>Members</h3>
+        <Button
+          className={styles['add-members-button'] ?? ''}
+          color={ButtonColor.TEAL}
+          isPrimary
+          onClick={onOpenAddMembers}
+        >
+          Add members
+        </Button>
+      </div>
       <div
         className={` ${styles['members-list']} ${isOverflow ? styles['overflow'] : ''}`}
       >

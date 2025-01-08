@@ -1,4 +1,4 @@
-import { APIPath } from '~/libs/enums/enums.js';
+import { APIPath, ContentType } from '~/libs/enums/enums.js';
 import { convertToFormData } from '~/libs/helpers/helpers.js';
 import { HTTPMethod } from '~/modules/http/libs/enums/enums.js';
 
@@ -25,6 +25,24 @@ class Chat implements ChatApi {
   public constructor({ apiPath, httpApi }: Constructor) {
     this.#apiPath = apiPath;
     this.#httpApi = httpApi;
+  }
+
+  public addMembers(
+    chatId: string,
+    members: string[]
+  ): Promise<ChatGetResponseDto> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.CHAT}${ChatApiPath.MEMBERS}${ChatApiPath.$CHAT_ID.replace(
+        ':id',
+        chatId
+      )}`,
+      {
+        contentType: ContentType.JSON,
+        hasAuth: true,
+        method: HTTPMethod.PUT,
+        payload: JSON.stringify({ members })
+      }
+    );
   }
 
   public createChat(

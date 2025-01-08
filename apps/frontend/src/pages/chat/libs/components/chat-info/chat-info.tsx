@@ -16,12 +16,14 @@ import styles from './styles.module.scss';
 type Properties = {
   isOpen: boolean;
   onClose: () => void;
+  onOpenAddMembers: () => void;
   onOpenChatInfoChange: () => void;
 };
 
 const ChatInfo = ({
   isOpen,
   onClose,
+  onOpenAddMembers,
   onOpenChatInfoChange
 }: Properties): JSX.Element => {
   const navigate = useNavigate();
@@ -70,7 +72,9 @@ const ChatInfo = ({
           )}
         </div>
       </div>
-      {chat.type === ChatType.GROUP && chat.members && <MembersList />}
+      {chat.type === ChatType.GROUP && chat.members && (
+        <MembersList onOpenAddMembers={onOpenAddMembers} />
+      )}
     </div>
   );
 };

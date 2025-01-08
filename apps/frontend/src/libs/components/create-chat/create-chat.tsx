@@ -55,6 +55,7 @@ const CreateChat = (): JSX.Element => {
     if (createdChat) {
       dispatch(chatActions.setSelectedChat(createdChat));
       navigate(`${AppRoute.CHATS}/${createdChat.id}`);
+      dispatch(chatActions.resetCreatedChat());
     }
   }, [navigate, dispatch, createdChat]);
 

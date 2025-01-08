@@ -7,6 +7,16 @@
   color: var(--text-dark);
 }
 
+.add-members-button {
+  padding: 0.6rem 1rem;
+  margin-right: 0.5rem;
+}
+
+.members-list-header {
+  display: flex;
+  justify-content: space-between;
+}
+
 .members-list {
   overflow: hidden;
   padding: 0;

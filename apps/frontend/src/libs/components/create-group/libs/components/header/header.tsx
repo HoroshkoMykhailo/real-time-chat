@@ -4,12 +4,14 @@ import { ButtonColor } from '~/libs/enums/enums.js';
 import styles from './styles.module.scss';
 
 type Properties = {
-  isGroupInformation: boolean;
+  isContinueButtonEnabled?: boolean;
+  isGroupInformation?: boolean;
   onContinueClick: () => void;
 };
 
 const CreateGroupHeader = ({
-  isGroupInformation,
+  isContinueButtonEnabled = true,
+  isGroupInformation = false,
   onContinueClick
 }: Properties): JSX.Element => {
   return (
@@ -17,14 +19,16 @@ const CreateGroupHeader = ({
       <h2 className={styles['create-group-title']}>
         {isGroupInformation ? 'Group Information' : 'Add Members'}
       </h2>
-      <Button
-        className={styles['continue-button'] ?? ''}
-        color={ButtonColor.TEAL}
-        isPrimary
-        onClick={onContinueClick}
-      >
-        {isGroupInformation ? 'Create' : 'Continue'}
-      </Button>
+      {isContinueButtonEnabled && (
+        <Button
+          className={styles['continue-button'] ?? ''}
+          color={ButtonColor.TEAL}
+          isPrimary
+          onClick={onContinueClick}
+        >
+          {isGroupInformation ? 'Create' : 'Continue'}
+        </Button>
+      )}
     </div>
   );
 };

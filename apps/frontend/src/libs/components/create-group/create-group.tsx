@@ -105,6 +105,7 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
       dispatch(chatActions.setSelectedChat(createdChat));
       navigate(`${AppRoute.CHATS}/${createdChat.id}`);
       setActiveView(ActiveSideView.ChatList);
+      dispatch(chatActions.resetCreatedChat());
     }
   }, [navigate, dispatch, createdChat, setActiveView]);
 
@@ -130,3 +131,5 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
 };
 
 export { CreateGroup };
+export { CreateGroupHeader } from './libs/components/header/header.js';
+export { UserSearch } from './libs/components/user-search/user-search.js';

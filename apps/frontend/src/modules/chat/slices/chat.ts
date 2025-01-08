@@ -1,4 +1,5 @@
 import {
+  addMembers,
   createGroup,
   createPrivateChat,
   deleteGroup,
@@ -11,6 +12,7 @@ import { actions } from './chat.slice.js';
 
 const allActions = {
   ...actions,
+  addMembers,
   createGroup,
   createPrivateChat,
   deleteGroup,

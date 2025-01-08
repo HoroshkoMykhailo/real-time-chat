@@ -14,11 +14,13 @@ import styles from '../../../styles.module.scss';
 import { UserItem } from '../user-item/user-item.js';
 
 type Properties = {
+  excludedUsers?: Profile[];
   onUserSelect: (user: Profile) => void;
   selectedUsers: Profile[];
 };
 
 const UserSearch = ({
+  excludedUsers = [],
   onUserSelect,
   selectedUsers
 }: Properties): JSX.Element => {
@@ -55,7 +57,11 @@ const UserSearch = ({
   );
 
   const selectedUserIds = new Set(selectedUsers.map(user => user.id));
-  const filteredUsers = users.filter(user => user.id !== profile?.id);
+  const excludedUserIds = new Set(excludedUsers.map(user => user.id));
+
+  const filteredUsers = users.filter(
+    user => user.id !== profile?.id && !excludedUserIds.has(user.id)
+  );
   const nonSelectedUsers = filteredUsers.filter(
     user => !selectedUserIds.has(user.id)
   );

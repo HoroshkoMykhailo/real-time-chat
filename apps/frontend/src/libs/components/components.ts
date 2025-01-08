@@ -4,7 +4,11 @@ export { ChatList } from './chat-list/chat-list.js';
 export { ChatPicture } from './chat-picture/chat-picture.js';
 export { Checkbox } from './checkbox/checkbox.js';
 export { CreateChat } from './create-chat/create-chat.js';
-export { CreateGroup } from './create-group/create-group.js';
+export {
+  CreateGroup,
+  CreateGroupHeader,
+  UserSearch
+} from './create-group/create-group.js';
 export { DatePicker } from './date-picker/date-picker.js';
 export { Header } from './header/header.js';
 export { Icon } from './icon/icon.js';

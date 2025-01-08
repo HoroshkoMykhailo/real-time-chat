@@ -61,6 +61,14 @@ const removeMember = createAsyncThunk<
   }
 );
 
+const addMembers = createAsyncThunk<
+  ChatGetResponseDto,
+  { id: string; members: string[] },
+  AsyncThunkConfig
+>(ActionType.ADD_MEMBERS, async ({ id, members }, { extra: { chatApi } }) => {
+  return await chatApi.addMembers(id, members);
+});
+
 const createPrivateChat = createAsyncThunk<
   ChatCreationResponseDto,
   {
@@ -89,6 +97,7 @@ const createGroup = createAsyncThunk<
 });
 
 export {
+  addMembers,
   createGroup,
   createPrivateChat,
   deleteGroup,

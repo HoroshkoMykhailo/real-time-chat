@@ -64,20 +64,23 @@ const Main: React.FC = () => {
     onCreateChatClose();
   }, [onCreateChatClose]);
 
+  const viewMap = new Map<ValueOf<typeof ActiveSideView>, () => JSX.Element>([
+    [ActiveSideView.ChatList, (): JSX.Element => <ChatList />],
+    [ActiveSideView.CreateChat, (): JSX.Element => <CreateChat />],
+    [
+      ActiveSideView.CreateGroup,
+      (): JSX.Element => <CreateGroup setActiveView={setActiveView} />
+    ]
+  ]);
+
   const renderContent = (): JSX.Element => {
-    switch (activeView) {
-      case ActiveSideView.CreateGroup: {
-        return <CreateGroup setActiveView={setActiveView} />;
-      }
+    const renderFunction = viewMap.get(activeView);
 
-      case ActiveSideView.CreateChat: {
-        return <CreateChat />;
-      }
-
-      default: {
-        return <ChatList />;
-      }
+    if (renderFunction) {
+      return renderFunction();
     }
+
+    return <></>;
   };
 
   return (
@@ -89,7 +92,7 @@ const Main: React.FC = () => {
         {renderContent()}
         <RouterOutlet />
       </div>
-      <div className={styles['create-chat-wrapper'] ?? ''}>
+      <div className={styles['create-chat-wrapper']}>
         <CreateChatPopover
           isOpened={isCreateChatOpened}
           onClose={onCreateChatClose}

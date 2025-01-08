@@ -9,6 +9,7 @@ import {
   type ChatsResponseDto
 } from '../libs/types/types.js';
 import {
+  addMembers,
   createGroup,
   createPrivateChat,
   deleteGroup,
@@ -69,6 +70,7 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(createGroup.fulfilled), (state, action) => {
         state.createdChat = action.payload;
+        state.chats = [action.payload, ...state.chats];
       })
       .addMatcher(isAnyOf(createGroup.rejected), state => {
         state.createdChat = null;
@@ -95,12 +97,28 @@ const { actions, reducer } = createSlice({
         }
       })
       .addMatcher(isAnyOf(deleteGroup.rejected), state => {
+        state.selectedChat = null;
+        state.dataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(addMembers.fulfilled), (state, action) => {
+        if (state.selectedChat) {
+          state.selectedChat = {
+            ...state.selectedChat,
+            ...action.payload
+          };
+        }
+      })
+      .addMatcher(isAnyOf(addMembers.rejected), state => {
+        state.selectedChat = null;
         state.dataStatus = DataStatus.REJECTED;
       });
   },
   initialState,
   name: 'chats',
   reducers: {
+    resetCreatedChat: state => {
+      state.createdChat = null;
+    },
     resetSelectedChat: state => {
       state.selectedChat = null;
     },
