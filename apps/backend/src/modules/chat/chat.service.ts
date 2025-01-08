@@ -593,7 +593,7 @@ class Chat implements ChatService {
       id: updatedChat.id,
       type: updatedChat.type,
       updatedAt: updatedChat.updatedAt,
-      ...(groupPicture && { groupPicture: updatedChat.groupPicture }),
+      ...(groupPicture && { chatPicture: updatedChat.groupPicture }),
       ...(name && { name: name.value })
     };
 

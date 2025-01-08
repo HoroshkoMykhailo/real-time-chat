@@ -7,6 +7,8 @@ import {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatUpdateRequestDto,
+  type ChatUpdateResponseDto,
   type ChatsResponseDto
 } from '../libs/types/types.js';
 import { ActionType } from './common.js';
@@ -96,6 +98,14 @@ const createGroup = createAsyncThunk<
   return await chatApi.createChat(group);
 });
 
+const updateGroup = createAsyncThunk<
+  ChatUpdateResponseDto,
+  { id: string; payload: ChatUpdateRequestDto },
+  AsyncThunkConfig
+>(ActionType.UPDATE_GROUP, async ({ id, payload }, { extra: { chatApi } }) => {
+  return await chatApi.updateGroup(id, payload);
+});
+
 export {
   addMembers,
   createGroup,
@@ -104,5 +114,6 @@ export {
   getChat,
   getMyChats,
   leaveChat,
-  removeMember
+  removeMember,
+  updateGroup
 };

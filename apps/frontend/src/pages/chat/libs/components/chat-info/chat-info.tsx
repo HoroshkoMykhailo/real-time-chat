@@ -17,14 +17,14 @@ type Properties = {
   isOpen: boolean;
   onClose: () => void;
   onOpenAddMembers: () => void;
-  onOpenChatInfoChange: () => void;
+  onOpenGroupEdit: () => void;
 };
 
 const ChatInfo = ({
   isOpen,
   onClose,
   onOpenAddMembers,
-  onOpenChatInfoChange
+  onOpenGroupEdit
 }: Properties): JSX.Element => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -54,7 +54,7 @@ const ChatInfo = ({
         isAdmin={isAdmin}
         onClose={onClose}
         onDeleteChat={handleDelete}
-        onOpenChatInfoChange={onOpenChatInfoChange}
+        onOpenGroupEdit={onOpenGroupEdit}
       />
       <div className={styles['chat-info-content']}>
         <ChatPicture

@@ -3,8 +3,8 @@ import { type ValueOf } from '~/index.js';
 import { type ChatType } from '../../chat.js';
 
 type ChatUpdateResponseDto = {
+  chatPicture?: string;
   createdAt: string;
-  groupPicture?: string;
   id: string;
   name?: string;
   type: ValueOf<typeof ChatType>;

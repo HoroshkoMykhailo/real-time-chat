@@ -16,7 +16,8 @@ import {
   getChat,
   getMyChats,
   leaveChat,
-  removeMember
+  removeMember,
+  updateGroup
 } from './actions.js';
 
 type State = {
@@ -109,6 +110,22 @@ const { actions, reducer } = createSlice({
         }
       })
       .addMatcher(isAnyOf(addMembers.rejected), state => {
+        state.selectedChat = null;
+        state.dataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(updateGroup.fulfilled), (state, action) => {
+        if (state.selectedChat) {
+          state.selectedChat = {
+            ...state.selectedChat,
+            ...action.payload
+          };
+        }
+
+        state.chats = state.chats.map(chat =>
+          chat.id === action.payload.id ? { ...chat, ...action.payload } : chat
+        );
+      })
+      .addMatcher(isAnyOf(updateGroup.rejected), state => {
         state.selectedChat = null;
         state.dataStatus = DataStatus.REJECTED;
       });

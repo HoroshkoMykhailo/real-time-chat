@@ -15,9 +15,12 @@ import {
   useState
 } from '~/libs/hooks/hooks.js';
 import { type ValueOf } from '~/libs/types/types.js';
-import { ChatPayloadKey, chatActions } from '~/modules/chat/chat.js';
+import {
+  ChatPayloadKey,
+  chatActions,
+  chatCreationValidationSchema
+} from '~/modules/chat/chat.js';
 import { type ChatCreationRequestDto } from '~/modules/chat/libs/types/types.js';
-import { chatCreationValidationSchema } from '~/modules/chat/libs/validation-schemas/validation-schemas.js';
 import { type Profile } from '~/modules/profile/profile.js';
 import { ActiveSideView } from '~/pages/main/libs/enums/active-side-view.enum.js';
 
@@ -131,5 +134,6 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
 };
 
 export { CreateGroup };
+export { GroupForm } from './libs/components/group-form/group-form.js';
 export { CreateGroupHeader } from './libs/components/header/header.js';
 export { UserSearch } from './libs/components/user-search/user-search.js';

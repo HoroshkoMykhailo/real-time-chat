@@ -1,0 +1,7 @@
+.group-edit-container {
+  display: flex;
+  width: var(--chat-list-width);
+  flex-direction: column;
+  border-left: 1px solid var(--border-layout);
+  overflow-y: hidden;
+}

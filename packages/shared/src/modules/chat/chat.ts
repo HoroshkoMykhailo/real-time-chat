@@ -10,6 +10,7 @@ export {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
   type ChatsResponseDto
 } from './libs/types/types.js';
@@ -17,5 +18,6 @@ export {
   addMembers,
   chatCreation,
   chatCreationFront,
-  chatUpdate
+  chatUpdate,
+  chatUpdateFront
 } from './libs/validation-schemas/validation-schemas.js';

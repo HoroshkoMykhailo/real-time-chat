@@ -7,7 +7,7 @@ interface Properties {
   isAdmin: boolean;
   onClose: () => void;
   onDeleteChat: () => void;
-  onOpenChatInfoChange: () => void;
+  onOpenGroupEdit: () => void;
 }
 
 const ChatInfoHeader = ({
@@ -15,7 +15,7 @@ const ChatInfoHeader = ({
   isAdmin,
   onClose,
   onDeleteChat,
-  onOpenChatInfoChange
+  onOpenGroupEdit
 }: Properties): JSX.Element => {
   return (
     <div className={styles['chat-info-header']}>
@@ -31,7 +31,7 @@ const ChatInfoHeader = ({
       </div>
       {isAdmin && (
         <div className={styles['header-right']}>
-          <button className={styles['button']} onClick={onOpenChatInfoChange}>
+          <button className={styles['button']} onClick={onOpenGroupEdit}>
             <Icon height={16} name="pencil" width={16} />
           </button>
           <button

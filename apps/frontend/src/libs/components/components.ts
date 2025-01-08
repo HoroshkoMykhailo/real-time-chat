@@ -7,6 +7,7 @@ export { CreateChat } from './create-chat/create-chat.js';
 export {
   CreateGroup,
   CreateGroupHeader,
+  GroupForm,
   UserSearch
 } from './create-group/create-group.js';
 export { DatePicker } from './date-picker/date-picker.js';

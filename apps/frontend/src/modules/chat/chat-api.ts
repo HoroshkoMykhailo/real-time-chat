@@ -9,6 +9,8 @@ import {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatUpdateRequestDto,
+  type ChatUpdateResponseDto,
   type ChatsResponseDto
 } from './libs/types/types.js';
 
@@ -118,6 +120,25 @@ class Chat implements ChatApi {
       {
         hasAuth: true,
         method: HTTPMethod.DELETE
+      }
+    );
+  }
+
+  public updateGroup(
+    chatId: string,
+    payload: ChatUpdateRequestDto
+  ): Promise<ChatUpdateResponseDto> {
+    const formData = convertToFormData(payload);
+
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.CHAT}${ChatApiPath.$CHAT_ID.replace(
+        ':id',
+        chatId
+      )}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.PUT,
+        payload: formData
       }
     );
   }

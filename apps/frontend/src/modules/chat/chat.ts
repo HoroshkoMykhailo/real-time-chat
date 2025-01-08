@@ -11,6 +11,10 @@ const chatApi = new ChatApi({
 export { chatApi };
 export { ChatApiPath, ChatPayloadKey, ChatType } from './libs/enums/enums.js';
 export {
+  chatCreationValidationSchema,
+  chatUpdateValidationSchema
+} from './libs/validation-schemas/validation-schemas.js';
+export {
   actions as chatActions,
   reducer as chatReducer
 } from './slices/chat.js';

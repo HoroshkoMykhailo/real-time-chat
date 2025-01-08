@@ -12,6 +12,7 @@ import { type ValueOf } from '~/libs/types/types.js';
 import { AddMembers } from './libs/components/add-members/add-members.js';
 import { ChatHeader } from './libs/components/chat-header/chat-header.js';
 import { ChatInfo } from './libs/components/chat-info/chat-info.js';
+import { GroupEdit } from './libs/components/group-edit/group-edit.js';
 import { ActiveChatView } from './libs/enums/active-chat-view.js';
 import styles from './styles.module.scss';
 
@@ -35,11 +36,14 @@ const Chat: React.FC = () => {
           isOpen={isChatInfo}
           onClose={handleHeaderClick}
           onOpenAddMembers={handleOpenAddMembers}
-          onOpenChatInfoChange={handleHeaderClick}
+          onOpenGroupEdit={handleToGroupEdit}
         />
       )
     ],
-    [ActiveChatView.GroupEdit, (): JSX.Element => <p>GroupEdit</p>]
+    [
+      ActiveChatView.GroupEdit,
+      (): JSX.Element => <GroupEdit onCancel={handleToChatInfo} />
+    ]
   ]);
 
   const renderContent = (): JSX.Element => {
@@ -63,6 +67,10 @@ const Chat: React.FC = () => {
 
   const handleToChatInfo = useCallback(() => {
     setActiveChatView(ActiveChatView.ChatInfo);
+  }, []);
+
+  const handleToGroupEdit = useCallback(() => {
+    setActiveChatView(ActiveChatView.GroupEdit);
   }, []);
 
   useEffect(() => {
