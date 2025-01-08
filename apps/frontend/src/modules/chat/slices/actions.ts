@@ -94,7 +94,7 @@ const createGroup = createAsyncThunk<
   ChatCreationResponseDto,
   ChatCreationRequestDto,
   AsyncThunkConfig
->(ActionType.CREATE_PRIVATE_CHAT, async (group, { extra: { chatApi } }) => {
+>(ActionType.CREATE_GROUP, async (group, { extra: { chatApi } }) => {
   return await chatApi.createChat(group);
 });
 

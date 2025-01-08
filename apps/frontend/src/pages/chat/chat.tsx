@@ -2,12 +2,14 @@ import { Navigate, useParams } from 'react-router-dom';
 
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
+  useAppDispatch,
   useAppSelector,
   useCallback,
   useEffect,
   useState
 } from '~/libs/hooks/hooks.js';
 import { type ValueOf } from '~/libs/types/types.js';
+import { chatActions } from '~/modules/chat/chat.js';
 
 import { AddMembers } from './libs/components/add-members/add-members.js';
 import { ChatHeader } from './libs/components/chat-header/chat-header.js';
@@ -17,8 +19,11 @@ import { ActiveChatView } from './libs/enums/active-chat-view.js';
 import styles from './styles.module.scss';
 
 const Chat: React.FC = () => {
+  const dispatch = useAppDispatch();
   const { id: chatId } = useParams<{ id: string }>();
-  const { selectedChat: chat } = useAppSelector(state => state.chat);
+  const { createdChat, selectedChat: chat } = useAppSelector(
+    state => state.chat
+  );
   const [activeChatView, setActiveChatView] = useState<
     ValueOf<typeof ActiveChatView>
   >(ActiveChatView.ChatInfo);
@@ -75,9 +80,10 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     setActiveChatView(ActiveChatView.ChatInfo);
-  }, [chatId]);
+    dispatch(chatActions.resetCreatedChat());
+  }, [chatId, dispatch]);
 
-  if (chatId !== chat?.id) {
+  if (chatId !== chat?.id && !createdChat) {
     return <Navigate to={AppRoute.ROOT} />;
   }
 

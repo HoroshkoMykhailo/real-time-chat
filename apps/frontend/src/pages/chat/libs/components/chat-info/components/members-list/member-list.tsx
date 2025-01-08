@@ -1,7 +1,14 @@
 import { Button } from '~/libs/components/components.js';
-import { ButtonColor } from '~/libs/enums/enums.js';
-import { useAppSelector, useCallback, useState } from '~/libs/hooks/hooks.js';
-import { type Profile } from '~/modules/profile/profile.js';
+import { AppRoute, ButtonColor } from '~/libs/enums/enums.js';
+import {
+  useAppDispatch,
+  useAppSelector,
+  useCallback,
+  useEffect,
+  useNavigate,
+  useState
+} from '~/libs/hooks/hooks.js';
+import { chatActions } from '~/modules/chat/chat.js';
 
 import { MemberItem } from '../member-item/member-item.js';
 import { MemberPopover } from '../member-popover/member-popover.js';
@@ -14,31 +21,56 @@ type Properties = {
 };
 
 const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const [popoverMemberId, setPopoverMemberId] = useState<null | string>(null);
-  const { selectedChat: chat } = useAppSelector(state => state.chat);
+  const { createdChat, selectedChat: chat } = useAppSelector(
+    state => state.chat
+  );
   const { profile } = useAppSelector(state => state.profile);
 
   const handleMemberPopoverClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
-      const memberData = event.currentTarget.dataset['member'];
+      const { memberId } = event.currentTarget.dataset;
 
-      if (memberData) {
-        const member = JSON.parse(memberData) as Profile;
-
-        if (
-          chat &&
-          member.id !== chat.adminId &&
-          profile &&
-          member.id !== profile.id
-        ) {
-          event.stopPropagation();
-          event.preventDefault();
-          setPopoverMemberId(member.id);
-        }
+      if (
+        memberId &&
+        chat &&
+        memberId !== chat.adminId &&
+        profile &&
+        memberId !== profile.id
+      ) {
+        event.stopPropagation();
+        event.preventDefault();
+        setPopoverMemberId(memberId);
       }
     },
     [chat, profile]
   );
+
+  const handleUserClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>): void => {
+      const { memberId } = event.currentTarget.dataset;
+
+      if (memberId && profile && memberId !== profile.id) {
+        void dispatch(
+          chatActions.createPrivateChat({
+            otherId: memberId,
+            userId: profile.id
+          })
+        );
+      }
+    },
+    [profile, dispatch]
+  );
+
+  useEffect(() => {
+    if (createdChat) {
+      dispatch(chatActions.setSelectedChat(createdChat));
+      navigate(`${AppRoute.CHATS}/${createdChat.id}`);
+    }
+  }, [navigate, dispatch, createdChat]);
 
   const handleMemberPopoverClose = useCallback((): void => {
     setPopoverMemberId(null);
@@ -77,8 +109,8 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
           >
             <button
               className={styles['members-item']}
-              data-member={JSON.stringify(member)}
-              key={member.id}
+              data-member-id={member.id}
+              onClick={handleUserClick}
               onContextMenu={handleMemberPopoverClick}
             >
               <MemberItem

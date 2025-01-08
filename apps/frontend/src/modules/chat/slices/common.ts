@@ -1,5 +1,6 @@
 const ActionType = {
   ADD_MEMBERS: 'chat/add-members',
+  CREATE_GROUP: 'chat/create-group',
   CREATE_PRIVATE_CHAT: 'chat/create-private-chat',
   DELETE_GROUP: 'chat/delete-group',
   GET_CHAT: 'chat/get-chat',

@@ -43,7 +43,7 @@ const CreateChat = (): JSX.Element => {
 
       if (userId && profile) {
         void dispatch(
-          chatActions.createPrivateChat({ otherId: profile.id, userId })
+          chatActions.createPrivateChat({ otherId: userId, userId: profile.id })
         );
         dispatch(chatActions.resetSelectedChat());
       }
@@ -55,7 +55,6 @@ const CreateChat = (): JSX.Element => {
     if (createdChat) {
       dispatch(chatActions.setSelectedChat(createdChat));
       navigate(`${AppRoute.CHATS}/${createdChat.id}`);
-      dispatch(chatActions.resetCreatedChat());
     }
   }, [navigate, dispatch, createdChat]);
 
