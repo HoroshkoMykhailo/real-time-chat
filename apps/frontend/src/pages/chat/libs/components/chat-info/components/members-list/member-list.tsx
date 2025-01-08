@@ -81,7 +81,10 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
               key={member.id}
               onContextMenu={handleMemberPopoverClick}
             >
-              <MemberItem member={member} />
+              <MemberItem
+                isAdmin={chat.adminId === member.id}
+                member={member}
+              />
             </button>
           </MemberPopover>
         ))}
