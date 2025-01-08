@@ -1,3 +1,4 @@
+import { ENV } from '~/libs/enums/enums.js';
 import { Zero, getValidClassNames } from '~/libs/helpers/helpers.js';
 
 import { Image } from '../image/image.js';
@@ -12,7 +13,7 @@ const Avatar = ({ name, picture }: Properties): JSX.Element => {
   const firstLetter = name[Zero];
   const hasImage = Boolean(picture);
 
-  const imageUrl = `${import.meta.env['VITE_APP_PROXY_SERVER_URL']}${picture}`;
+  const imageUrl = `${ENV.SERVER_URL}${picture}`;
 
   return (
     <div

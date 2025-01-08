@@ -5,6 +5,7 @@ import {
 } from 'react-hook-form';
 
 import { Icon, Image, Input } from '~/libs/components/components.js';
+import { ENV } from '~/libs/enums/enums.js';
 import { checkGreaterThanZero } from '~/libs/helpers/helpers.js';
 import {
   useAppSelector,
@@ -33,9 +34,7 @@ const EditGroupForm = ({
 
   useEffect(() => {
     if (chat && chat.chatPicture) {
-      setImageUrl(
-        `${import.meta.env['VITE_APP_PROXY_SERVER_URL']}${chat.chatPicture}`
-      );
+      setImageUrl(`${ENV.SERVER_URL}${chat.chatPicture}`);
     }
   }, [chat]);
 

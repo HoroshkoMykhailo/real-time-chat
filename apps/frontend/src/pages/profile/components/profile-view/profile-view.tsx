@@ -1,5 +1,5 @@
 import { Button, Header, Icon, Image } from '~/libs/components/components.js';
-import { ButtonColor } from '~/libs/enums/enums.js';
+import { ButtonColor, ENV } from '~/libs/enums/enums.js';
 import { type Profile } from '~/modules/profile/libs/types/types.js';
 
 import styles from './styles.module.scss';
@@ -12,7 +12,7 @@ type Properties = {
 
 const ProfileView: React.FC<Properties> = ({ onBack, onEdit, profile }) => {
   const imageUrl = profile.profilePicture
-    ? `${import.meta.env['VITE_APP_PROXY_SERVER_URL']}${profile.profilePicture}`
+    ? `${ENV.SERVER_URL}${profile.profilePicture}`
     : null;
 
   return (

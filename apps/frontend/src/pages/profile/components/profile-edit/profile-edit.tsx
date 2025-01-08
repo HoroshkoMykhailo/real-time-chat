@@ -10,7 +10,7 @@ import {
   Input,
   Select
 } from '~/libs/components/components.js';
-import { AppRoute, ButtonColor } from '~/libs/enums/enums.js';
+import { AppRoute, ButtonColor, ENV } from '~/libs/enums/enums.js';
 import { checkGreaterThanZero } from '~/libs/helpers/check-greater-than-zero.helper.js';
 import { useAppForm, useCallback, useEffect } from '~/libs/hooks/hooks.js';
 import { type ValueOf } from '~/libs/types/types.js';
@@ -67,9 +67,7 @@ const ProfileEdit: React.FC<Properties> = ({
     });
 
     if (profile.profilePicture) {
-      setImageUrl(
-        `${import.meta.env['VITE_APP_PROXY_SERVER_URL']}${profile.profilePicture}`
-      );
+      setImageUrl(`${ENV.SERVER_URL}${profile.profilePicture}`);
     }
   }, [profile, reset]);
 
