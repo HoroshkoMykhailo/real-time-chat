@@ -11,6 +11,7 @@ import {
 import {
   createGroup,
   createPrivateChat,
+  deleteGroup,
   getChat,
   getMyChats,
   leaveChat,
@@ -82,6 +83,18 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(removeMember.rejected), state => {
         state.selectedChat = null;
+        state.dataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(deleteGroup.fulfilled), (state, action) => {
+        if (action.payload) {
+          state.chats = state.chats.filter(chat => chat.id !== action.payload);
+
+          if (state.selectedChat?.id === action.payload) {
+            state.selectedChat = null;
+          }
+        }
+      })
+      .addMatcher(isAnyOf(deleteGroup.rejected), state => {
         state.dataStatus = DataStatus.REJECTED;
       });
   },

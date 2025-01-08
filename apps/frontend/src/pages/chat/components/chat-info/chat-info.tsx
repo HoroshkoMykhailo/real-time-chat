@@ -1,6 +1,13 @@
+import { useNavigate } from 'react-router-dom';
+
 import { ChatPicture } from '~/libs/components/components.js';
-import { useAppSelector } from '~/libs/hooks/hooks.js';
-import { ChatType } from '~/modules/chat/chat.js';
+import { AppRoute } from '~/libs/enums/enums.js';
+import {
+  useAppDispatch,
+  useAppSelector,
+  useCallback
+} from '~/libs/hooks/hooks.js';
+import { ChatType, chatActions } from '~/modules/chat/chat.js';
 
 import { ChatInfoHeader } from './components/chat-info-header/chat-info-header.js';
 import { MembersList } from './components/members-list/member-list.js';
@@ -17,8 +24,17 @@ const ChatInfo = ({
   onClose,
   onOpenChatInfoChange
 }: Properties): JSX.Element => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { selectedChat: chat } = useAppSelector(state => state.chat);
   const { profile } = useAppSelector(state => state.profile);
+
+  const handleDelete = useCallback((): void => {
+    if (chat) {
+      void dispatch(chatActions.deleteGroup({ id: chat.id }));
+      navigate(AppRoute.ROOT);
+    }
+  }, [chat, dispatch, navigate]);
 
   if (!chat || !profile) {
     return <></>;
@@ -35,6 +51,7 @@ const ChatInfo = ({
         chatTypeLabel={chatTypeLabel}
         isAdmin={isAdmin}
         onClose={onClose}
+        onDeleteChat={handleDelete}
         onOpenChatInfoChange={onOpenChatInfoChange}
       />
       <div className={styles['chat-info-content']}>

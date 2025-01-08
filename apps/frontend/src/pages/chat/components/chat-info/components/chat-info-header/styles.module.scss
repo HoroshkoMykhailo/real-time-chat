@@ -12,6 +12,11 @@
   gap: 1rem;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
 .button {
   background: none;
   border: none;
@@ -28,6 +33,10 @@
   &:hover {
     background-color: var(--input-bg);
   }
+}
+
+.delete-button {
+  color: var(--text-red);
 }
 
 .chat-info-title {

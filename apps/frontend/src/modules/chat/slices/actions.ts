@@ -36,6 +36,20 @@ const leaveChat = createAsyncThunk<string, { id: string }, AsyncThunkConfig>(
   }
 );
 
+const deleteGroup = createAsyncThunk<
+  null | string,
+  { id: string },
+  AsyncThunkConfig
+>(ActionType.DELETE_GROUP, async ({ id }, { extra: { chatApi } }) => {
+  const isDeleted = await chatApi.deleteChat(id);
+
+  if (!isDeleted) {
+    return null;
+  }
+
+  return id;
+});
+
 const removeMember = createAsyncThunk<
   ChatGetResponseDto,
   { id: string; memberId: string },
@@ -77,6 +91,7 @@ const createGroup = createAsyncThunk<
 export {
   createGroup,
   createPrivateChat,
+  deleteGroup,
   getChat,
   getMyChats,
   leaveChat,

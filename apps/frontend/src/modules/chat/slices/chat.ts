@@ -1,6 +1,7 @@
 import {
   createGroup,
   createPrivateChat,
+  deleteGroup,
   getChat,
   getMyChats,
   leaveChat,
@@ -12,6 +13,7 @@ const allActions = {
   ...actions,
   createGroup,
   createPrivateChat,
+  deleteGroup,
   getChat,
   getMyChats,
   leaveChat,
