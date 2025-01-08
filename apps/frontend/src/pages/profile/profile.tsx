@@ -12,8 +12,8 @@ import {
 } from '~/libs/hooks/hooks.js';
 import { profileActions } from '~/modules/profile/profile.js';
 
-import { ProfileEdit } from './libs/profile-edit/profile-edit.js';
-import { ProfileView } from './libs/profile-view/profile-view.js';
+import { ProfileEdit } from './components/profile-edit/profile-edit.js';
+import { ProfileView } from './components/profile-view/profile-view.js';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();

@@ -48,6 +48,19 @@ class User extends Controller implements UserController {
     };
   };
 
+  public getUsersByUsername = async (
+    options: ControllerAPIHandlerOptions<{ query: { username: string } }>
+  ): Promise<
+    ControllerAPIHandlerResponse<UserProfileCreationResponseDto[]>
+  > => {
+    const { username } = options.query;
+
+    return {
+      payload: await this.#userService.getUsersByUsername(username),
+      status: HTTPCode.OK
+    };
+  };
+
   public updateMyProfile = async (
     options: ControllerAPIHandlerOptions<{
       body: UserProfileCreationRequestDto;
@@ -113,6 +126,12 @@ class User extends Controller implements UserController {
       handler: this.getUser as ControllerAPIHandler,
       method: HTTPMethod.GET,
       url: UserApiPath.ROOT
+    });
+
+    this.addRoute({
+      handler: this.getUsersByUsername as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: UserApiPath.USERNAME
     });
   }
 }

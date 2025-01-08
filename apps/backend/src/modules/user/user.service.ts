@@ -125,7 +125,6 @@ class User implements UserService {
 
     return await this.#userRepository.create(user);
   }
-
   public async find(id: string): Promise<TUser> {
     const user = await this.#userRepository.getById(id);
 
@@ -151,6 +150,7 @@ class User implements UserService {
 
     return user;
   }
+
   public async getMyProfile(
     user: TUser
   ): Promise<UserProfileCreationResponseDto> {
@@ -164,6 +164,11 @@ class User implements UserService {
     }
 
     return profile;
+  }
+  public async getUsersByUsername(
+    username: string
+  ): Promise<UserProfileCreationResponseDto[]> {
+    return await this.#profileRepository.getByUsername(username);
   }
 
   public mapUser(document: UserDocument): TUser {

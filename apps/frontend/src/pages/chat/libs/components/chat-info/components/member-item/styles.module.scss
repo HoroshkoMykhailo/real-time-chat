@@ -1,0 +1,33 @@
+.member-item-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.55rem;
+
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+
+  &:focus-visible,
+  &:hover {
+      background-color: var(--input-bg);
+  }
+  .member-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .member-username {
+      font-size: 1rem;
+      color: var(--main-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .admin-badge {
+    color: var(--gray);
+    font-size: 1rem;
+  }
+}

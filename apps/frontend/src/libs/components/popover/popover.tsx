@@ -4,6 +4,7 @@ import styles from './styles.module.scss';
 
 type Properties = {
   children: React.ReactNode;
+  className?: string;
   content: React.ReactNode;
   isOpened: boolean;
   onClose: () => void;
@@ -11,6 +12,7 @@ type Properties = {
 
 const Popover = ({
   children,
+  className,
   content,
   isOpened,
   onClose
@@ -29,7 +31,11 @@ const Popover = ({
           className={styles['popover-content-wrapper']}
           ref={popoverTargetReference}
         >
-          <div className={styles['popover-content']}>{content}</div>
+          <div
+            className={`${styles['popover-content']} ${styles[className ?? '']}`}
+          >
+            {content}
+          </div>
         </div>
       )}
     </div>

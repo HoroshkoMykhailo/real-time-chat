@@ -12,6 +12,10 @@ type UserService = {
   find(id: string): Promise<User>;
   getByEmail(email: string): Promise<UserDocument>;
   getMyProfile(user: User): Promise<UserProfileCreationResponseDto>;
+  getUsersByUsername(
+    username: string
+  ): Promise<UserProfileCreationResponseDto[]>;
+
   mapUser(document: UserDocument): User;
 
   updateMyProfile(

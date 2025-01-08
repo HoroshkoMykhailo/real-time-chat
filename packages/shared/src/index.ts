@@ -15,6 +15,37 @@ export {
 } from './libs/types/types.js';
 export { AuthApiPath, signIn, signUp } from './modules/auth/auth.js';
 export {
+  type Chat,
+  ChatApiPath,
+  type ChatCreationRequestDto,
+  type ChatCreationResponseDto,
+  type ChatGetResponseDto,
+  ChatPayloadKey,
+  ChatType,
+  type ChatUpdateRequestDto,
+  type ChatUpdateResponseDto,
+  ChatValidationMessage,
+  ChatValidationRule,
+  type ChatsResponseDto,
+  addMembers,
+  chatCreation,
+  chatCreationFront,
+  chatUpdate,
+  chatUpdateFront
+} from './modules/chat/chat.js';
+export {
+  type Message,
+  MessageApiPath,
+  type MessageCreationResponseDto,
+  MessagePayloadKey,
+  MessageStatus,
+  MessageType,
+  MessageValidationMessage,
+  MessageValidationRule,
+  type TextMessageRequestDto,
+  textMessage
+} from './modules/message/message.js';
+export {
   type Profile,
   ProfileLanguage,
   profile

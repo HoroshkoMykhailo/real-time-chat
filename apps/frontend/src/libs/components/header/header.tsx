@@ -6,7 +6,11 @@ import { useAppSelector, usePopover } from '~/libs/hooks/hooks.js';
 import { UserPopover } from './libs/components/components.js';
 import styles from './styles.module.scss';
 
-const Header = (): JSX.Element => {
+type Properties = {
+  onLogoClick?: () => void;
+};
+
+const Header = ({ onLogoClick }: Properties): JSX.Element => {
   const {
     isOpened: isUserOpened,
     onClose: onUserClose,
@@ -27,7 +31,11 @@ const Header = (): JSX.Element => {
 
   return (
     <header className={styles['header']}>
-      <NavLink className={styles['logo-link'] as string} to={AppRoute.ROOT}>
+      <NavLink
+        className={styles['logo-link'] as string}
+        onClick={onLogoClick}
+        to={AppRoute.ROOT}
+      >
         <Image
           alt="TeamLink logo"
           height="30"

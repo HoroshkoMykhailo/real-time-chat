@@ -14,7 +14,7 @@ import styles from './styles.module.scss';
 
 const TEXT_AREA_HEIGHT_ADJUSTMENT = 1.8;
 
-type InputProperties<T extends FieldValues> = {
+type Properties<T extends FieldValues> = {
   className?: string;
   control: Control<T>;
   disabled?: boolean;
@@ -34,7 +34,7 @@ const Input = <T extends FieldValues>({
   name,
   placeholder,
   type = 'text'
-}: InputProperties<T>): ReactElement => {
+}: Properties<T>): ReactElement => {
   const { field } = useController<T>({ control, name });
   const hasErrors = checkGreaterThanZero(Object.keys(errors).length);
 

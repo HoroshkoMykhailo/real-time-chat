@@ -1,0 +1,42 @@
+.members-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  margin-top: 0.2rem;
+  margin-left: 0.5rem;
+  color: var(--text-dark);
+}
+
+.add-members-button {
+  padding: 0.6rem 1rem;
+  margin-right: 0.5rem;
+}
+
+.members-list-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.members-list {
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+
+  .members-item {
+    background-color: var(--main-white);
+    padding: 0.2rem;
+    width: 100%;
+    border: none;
+    text-align: left;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &.overflow {
+    overflow-y: auto;
+  }
+}

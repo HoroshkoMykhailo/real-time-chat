@@ -5,7 +5,7 @@ import { type ValueOf } from '~/libs/types/types.js';
 
 import styles from './styles.module.scss';
 
-type ImageProperties = {
+type Properties = {
   alt: string;
   className?: string;
   height?: string;
@@ -16,7 +16,7 @@ type ImageProperties = {
   width?: string;
 };
 
-const Image: React.FC<ImageProperties> = ({
+const Image = ({
   alt,
   className,
   height,
@@ -25,7 +25,7 @@ const Image: React.FC<ImageProperties> = ({
   size,
   src,
   width
-}) => {
+}: Properties): JSX.Element => {
   return (
     <img
       alt={alt}

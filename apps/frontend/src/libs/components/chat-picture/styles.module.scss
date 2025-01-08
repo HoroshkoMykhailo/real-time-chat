@@ -1,0 +1,22 @@
+.chat-picture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  color: var(--main-dark);
+  text-align: center;
+  background-color: var(--input-bg);
+
+}
+.circular {
+  border-radius: 50%;
+}
+.no-image {
+  transition: border 0.3s ease;
+}
+
+.chat-picture-letter {
+  font-family: Inter, sans-serif;
+  user-select: none;
+}

@@ -1,0 +1,45 @@
+.chat-info-header {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  justify-content: space-between;
+  height: 4.5rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.button {
+  background: none;
+  border: none;
+  border-radius: 100%;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-dark);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--input-bg);
+  }
+}
+
+.delete-button {
+  color: var(--text-red);
+}
+
+.chat-info-title {
+  font-size: 1.2rem;
+  margin: 0;
+}

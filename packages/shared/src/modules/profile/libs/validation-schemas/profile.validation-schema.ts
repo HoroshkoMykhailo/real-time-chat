@@ -1,5 +1,7 @@
 import Joi from 'joi';
 
+import { multipartValueSchema } from '~/libs/validation-schemas/validation-schemas.js';
+
 import {
   ProfileLanguage,
   ProfileValidationMessage,
@@ -7,17 +9,6 @@ import {
 } from '../enums/enums.js';
 
 const dateRegex = /^(?:\d{2}\.){2}\d{4}$/;
-
-const multipartValueSchema = {
-  encoding: Joi.string().optional(),
-  fieldname: Joi.string().optional(),
-  fieldnameTruncated: Joi.boolean().optional(),
-  fields: Joi.object().optional(),
-  mimetype: Joi.string().optional(),
-  type: Joi.string().optional(),
-  value: Joi.any(),
-  valueTruncated: Joi.boolean().optional()
-};
 
 const profile = Joi.object({
   dateOfBirth: Joi.object({

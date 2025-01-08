@@ -22,6 +22,14 @@ type UserController = {
     }>
   ) => ControllerAPIHandlerResponse<User>;
 
+  getUsersByUsername: (
+    options: ControllerAPIHandlerOptions<{
+      query: {
+        username: string;
+      };
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<UserProfileCreationResponseDto[]>>;
+
   updateMyProfile: (
     options: ControllerAPIHandlerOptions<{
       body: UserProfileCreationRequestDto;

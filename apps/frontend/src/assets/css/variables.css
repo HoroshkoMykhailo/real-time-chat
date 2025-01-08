@@ -6,11 +6,17 @@
   --black: #000000;
   --gray: #6b7280;
   --gray-dark: #1e293b;
+  --gray-light: rgb(215 223 231);
   --border-layout: rgb(231 237 243);
   --light-shadow: rgba(34 36 38 / 15%);
   --main-dark: rgb(14 20 27);
   --main-white: rgb(248 250 252);
   --input-bg: rgb(231 237 243);
   --text-dark: #1e293b;
+  --text-red: #ef4444;
   --box-shadow: 0px 0px 25px 0px #00000080;
+  --chat-list-width: 350px;
+  --create-chat-button-bottom: 20px;
+  --create-chat-button-left: 200px;
+  --create-chat-button-width: 120px;
 }

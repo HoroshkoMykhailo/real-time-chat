@@ -17,6 +17,7 @@ import { type ValidationSchema, type WhiteRoute } from '~/libs/types/types.js';
 import { type UserService } from '~/modules/user/user.js';
 
 import { type DatabaseModule } from '../database/database.js';
+import { HTTPCode } from '../http/http.js';
 import { type LoggerModule } from '../logger/logger.js';
 import { getErrorInfo } from './libs/helpers/helpers.js';
 import { type ServerApi } from './libs/types/types.js';
@@ -99,7 +100,9 @@ class ServerApp {
     });
 
     this.#app.setNotFoundHandler(async (_request, response) => {
-      await response.sendFile('index.html', staticPath);
+      await response
+        .code(HTTPCode.NOT_FOUND)
+        .sendFile('index.html', staticPath);
     });
   };
 

@@ -8,7 +8,7 @@ import { type ButtonType, type ValueOf } from '~/libs/types/types.js';
 import { NavLink } from '../components.js';
 import styles from './styles.module.scss';
 
-type ButtonProperties = {
+type Properties = {
   children?: ReactNode;
   className?: string;
   color?: ValueOf<typeof ButtonColor>;
@@ -22,7 +22,7 @@ type ButtonProperties = {
   type?: ButtonType;
 };
 
-const Button: React.FC<ButtonProperties> = ({
+const Button = ({
   children,
   className,
   color,
@@ -34,7 +34,7 @@ const Button: React.FC<ButtonProperties> = ({
   isPrimary = false,
   onClick,
   type = 'button'
-}) => {
+}: Properties): JSX.Element => {
   if (href) {
     return (
       <NavLink

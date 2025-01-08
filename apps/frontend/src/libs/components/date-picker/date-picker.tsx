@@ -16,7 +16,7 @@ const DEFAULT_MAX_AGE = 100;
 const DEFAULT_MIN_AGE = 13;
 const DATE_FORMAT = 'yyyy-MM-dd';
 
-type DatePickerProperties<T extends FieldValues> = {
+type Properties<T extends FieldValues> = {
   control: Control<T>;
   errors?: object;
   maxAge?: number;
@@ -32,7 +32,7 @@ const DatePicker = <T extends FieldValues>({
   minAge = DEFAULT_MIN_AGE,
   name,
   placeholder = 'Select date'
-}: DatePickerProperties<T>): ReactElement => {
+}: Properties<T>): ReactElement => {
   const { field } = useController({ control, name });
   const today = new Date();
   const hasErrors = checkGreaterThanZero(Object.keys(errors).length);

@@ -1,5 +1,7 @@
 const AppRoute = {
   ANY: '*',
+  CHAT: '/:id',
+  CHATS: '/chats',
   PROFILE: '/profile',
   ROOT: '/',
   SIGN_IN: '/sign-in',
