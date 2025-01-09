@@ -6,6 +6,7 @@ import {
   useAppSelector,
   useCallback,
   useEffect,
+  useRef,
   useState
 } from '~/libs/hooks/hooks.js';
 import { chatActions } from '~/modules/chat/chat.js';
@@ -19,6 +20,7 @@ const MessageInput = (): JSX.Element => {
   const { selectedChat: chat } = useAppSelector(state => state.chat);
   const { profile } = useAppSelector(state => state.profile);
   const [message, setMessage] = useState<string>('');
+  const inputReference = useRef<HTMLInputElement>(null);
 
   const handleSend = useCallback(() => {
     if (message.trim() && chat) {
@@ -53,6 +55,8 @@ const MessageInput = (): JSX.Element => {
     if (writeDataStatus === DataStatus.FULFILLED) {
       const message = messages.at(ZERO_VALUE);
 
+      dispatch(messageActions.resetWriteDataStatus());
+
       if (message) {
         dispatch(
           chatActions.updateLastMessage({
@@ -68,6 +72,12 @@ const MessageInput = (): JSX.Element => {
     }
   }, [dispatch, messages, writeDataStatus]);
 
+  useEffect(() => {
+    if (inputReference.current) {
+      inputReference.current.focus();
+    }
+  }, [chat?.id]);
+
   if (!profile) {
     return <></>;
   }
@@ -82,6 +92,7 @@ const MessageInput = (): JSX.Element => {
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             placeholder="Type a message"
+            ref={inputReference}
             type="text"
             value={message}
           />

@@ -45,7 +45,11 @@ const { actions, reducer } = createSlice({
   },
   initialState,
   name: 'messages',
-  reducers: {}
+  reducers: {
+    resetWriteDataStatus: state => {
+      state.writeDataStatus = DataStatus.IDLE;
+    }
+  }
 });
 
 export { actions, reducer };
