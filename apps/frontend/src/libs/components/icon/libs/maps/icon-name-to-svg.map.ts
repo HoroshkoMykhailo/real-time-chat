@@ -5,6 +5,7 @@ import Camera from '~/assets/images/icons/camera.svg?react';
 import Cancel from '~/assets/images/icons/cancel.svg?react';
 import Error from '~/assets/images/icons/error.svg?react';
 import Group from '~/assets/images/icons/group.svg?react';
+import Image from '~/assets/images/icons/image.svg?react';
 import Pencil from '~/assets/images/icons/pencil.svg?react';
 import Person from '~/assets/images/icons/person.svg?react';
 import Remove from '~/assets/images/icons/remove.svg?react';
@@ -18,6 +19,7 @@ const iconNameToSvg: Record<IconName, FC<React.SVGProps<SVGSVGElement>>> = {
   cancel: Cancel,
   error: Error,
   group: Group,
+  image: Image,
   pencil: Pencil,
   person: Person,
   remove: Remove,

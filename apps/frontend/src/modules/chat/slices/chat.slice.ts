@@ -1,5 +1,6 @@
-import { createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { type PayloadAction, createSlice, isAnyOf } from '@reduxjs/toolkit';
 
+import { ONE_VALUE, ZERO_VALUE } from '~/libs/common/constants.js';
 import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
@@ -140,6 +141,30 @@ const { actions, reducer } = createSlice({
     },
     setSelectedChat: (state, action: { payload: State['selectedChat'] }) => {
       state.selectedChat = action.payload;
+    },
+    updateLastMessage(
+      state,
+      action: PayloadAction<{
+        chatId: string;
+        message: {
+          content: string;
+          createdAt: string;
+          senderName: string;
+        };
+      }>
+    ) {
+      const { chatId, message } = action.payload;
+      const chatIndex = state.chats.findIndex(chat => chat.id === chatId);
+
+      if (chatIndex >= ZERO_VALUE && state.chats[chatIndex]) {
+        const updatedChat = {
+          ...state.chats[chatIndex],
+          lastMessage: message
+        };
+
+        state.chats.splice(chatIndex, ONE_VALUE);
+        state.chats.unshift(updatedChat as ChatsResponseDto[number]);
+      }
     }
   }
 });

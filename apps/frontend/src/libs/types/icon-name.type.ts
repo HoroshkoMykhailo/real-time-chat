@@ -4,6 +4,7 @@ type IconName =
   | 'cancel'
   | 'error'
   | 'group'
+  | 'image'
   | 'pencil'
   | 'person'
   | 'remove'

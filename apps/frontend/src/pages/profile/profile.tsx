@@ -20,6 +20,8 @@ const Profile: React.FC = () => {
   const dispatch = useAppDispatch();
   const { dataStatus, profile } = useAppSelector(state => state.profile);
 
+  const ifNewProfile = profile?.createdAt === profile?.updatedAt;
+
   useEffect(() => {
     void dispatch(profileActions.getProfile());
   }, [dispatch]);
@@ -31,8 +33,12 @@ const Profile: React.FC = () => {
       }
 
       setIsEditing(false);
+
+      if (ifNewProfile) {
+        navigate(AppRoute.ROOT);
+      }
     },
-    [dispatch]
+    [dispatch, ifNewProfile, navigate]
   );
 
   const onEditClick = useCallback((): void => {
@@ -50,8 +56,6 @@ const Profile: React.FC = () => {
   if (dataStatus === DataStatus.PENDING || !profile) {
     return <Loader />;
   }
-
-  const ifNewProfile = profile.createdAt === profile.updatedAt;
 
   if (ifNewProfile) {
     return (

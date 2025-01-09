@@ -1,9 +1,10 @@
-import { getMessages } from './actions.js';
+import { getMessages, writeTextMessage } from './actions.js';
 import { actions } from './message.slice.js';
 
 const allActions = {
   ...actions,
-  getMessages
+  getMessages,
+  writeTextMessage
 };
 
 export { allActions as actions };

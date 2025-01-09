@@ -17,6 +17,7 @@ import { ChatHeader } from './libs/components/chat-header/chat-header.js';
 import { ChatInfo } from './libs/components/chat-info/chat-info.js';
 import { GroupEdit } from './libs/components/group-edit/group-edit.js';
 import { MessageHistory } from './libs/components/message-history/message-history.js';
+import { MessageInput } from './libs/components/message-input/message-input.js';
 import { ActiveChatView } from './libs/enums/active-chat-view.js';
 import styles from './styles.module.scss';
 
@@ -93,9 +94,8 @@ const Chat: React.FC = () => {
     <div className={styles['chat-layout']}>
       <div className={styles['chat-content']}>
         <ChatHeader onHeaderClick={handleHeaderClick} />
-        <div className={styles['chat-messages']}>
-          <MessageHistory />
-        </div>
+        <MessageHistory />
+        <MessageInput />
       </div>
       {renderContent()}
     </div>

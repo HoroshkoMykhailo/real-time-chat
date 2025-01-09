@@ -1,4 +1,5 @@
-import { Avatar } from '~/libs/components/components.js';
+import { Avatar, Loader } from '~/libs/components/components.js';
+import { DataStatus } from '~/libs/enums/enums.js';
 import { useAppSelector } from '~/libs/hooks/hooks.js';
 
 import styles from './styles.module.scss';
@@ -6,10 +7,14 @@ import styles from './styles.module.scss';
 const MessageHistory = (): JSX.Element => {
   const { selectedChat: chat } = useAppSelector(state => state.chat);
 
-  const { messages } = useAppSelector(state => state.message);
+  const { dataStatus, messages } = useAppSelector(state => state.message);
 
   if (!chat) {
     return <></>;
+  }
+
+  if (dataStatus === DataStatus.PENDING) {
+    return <Loader />;
   }
 
   return (

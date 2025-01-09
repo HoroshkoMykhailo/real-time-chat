@@ -72,7 +72,19 @@ class Message implements MessageService {
 
     await this.#chatRepository.setLastMessage(chatId, message.id);
 
-    return message;
+    const senderProfile = await this.#profileRepository.getById(userId);
+
+    if (!senderProfile) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    return {
+      ...message,
+      sender: senderProfile
+    };
   }
 
   public async getMessagesByChatId(

@@ -1,11 +1,13 @@
-import { APIPath } from '~/libs/enums/enums.js';
+import { APIPath, ContentType } from '~/libs/enums/enums.js';
 
 import { type HttpApi } from '../http/http.js';
 import { HTTPMethod } from '../http/libs/enums/enums.js';
 import { MessageApiPath } from './libs/enums/enums.js';
 import {
   type GetMessagesResponseDto,
-  type MessageApi
+  type MessageApi,
+  type MessageCreationResponseDto,
+  type TextMessageRequestDto
 } from './libs/types/types.js';
 
 type Constructor = {
@@ -29,6 +31,21 @@ class Message implements MessageApi {
       {
         hasAuth: true,
         method: HTTPMethod.GET
+      }
+    );
+  }
+
+  public writeTextMessage(
+    chatId: string,
+    content: TextMessageRequestDto
+  ): Promise<MessageCreationResponseDto> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(':chatId', chatId)}${MessageApiPath.TEXT}`,
+      {
+        contentType: ContentType.JSON,
+        hasAuth: true,
+        method: HTTPMethod.POST,
+        payload: JSON.stringify(content)
       }
     );
   }

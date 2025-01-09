@@ -1,5 +1,5 @@
-import { type Message } from '../../message.js';
+import { type GetMessagesResponseDto } from '../../message.js';
 
-type MessageCreationResponseDto = Message;
+type MessageCreationResponseDto = GetMessagesResponseDto[number];
 
 export { type MessageCreationResponseDto };

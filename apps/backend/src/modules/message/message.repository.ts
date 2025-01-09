@@ -75,7 +75,7 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
 
     const messages = await this.model
       .find({ ...queryFilter })
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 })
       .limit(limit ?? DEFAULT_LIMIT);
 
     return messages.map(message => this.mapToBusinessLogic(message));
