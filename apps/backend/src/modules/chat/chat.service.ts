@@ -86,6 +86,7 @@ class Chat implements ChatService {
       id: chat.id,
       name,
       type: chat.type,
+      ...(chat.type === ChatType.GROUP && { memberCount: chat.members.length }),
       ...(lastMessage && { lastMessage }),
       ...(chatPicture && { chatPicture })
     };

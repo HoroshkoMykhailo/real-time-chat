@@ -34,6 +34,7 @@ export {
   chatUpdateFront
 } from './modules/chat/chat.js';
 export {
+  type GetMessagesResponseDto,
   type Message,
   MessageApiPath,
   type MessageCreationResponseDto,

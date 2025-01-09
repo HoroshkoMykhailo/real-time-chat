@@ -1,6 +1,3 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import { Loader, Navigate } from '~/libs/components/components.js';
 import { AppRoute, DataStatus } from '~/libs/enums/enums.js';
 import { checkGreaterThanZero } from '~/libs/helpers/helpers.js';
@@ -8,7 +5,9 @@ import {
   useAppDispatch,
   useAppSelector,
   useCallback,
-  useEffect
+  useEffect,
+  useNavigate,
+  useState
 } from '~/libs/hooks/hooks.js';
 import { profileActions } from '~/modules/profile/profile.js';
 

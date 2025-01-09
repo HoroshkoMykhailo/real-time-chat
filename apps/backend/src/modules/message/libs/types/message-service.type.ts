@@ -1,7 +1,7 @@
 import { type User } from '~/modules/user/user.js';
 
 import {
-  type Message,
+  type GetMessagesResponseDto,
   type MessageCreationResponseDto,
   type TextMessageRequestDto
 } from './types.js';
@@ -21,7 +21,7 @@ type MessageService = {
       before?: string;
       limit?: number;
     }
-  ): Promise<Message[]>;
+  ): Promise<GetMessagesResponseDto>;
 };
 
 export { type MessageService };

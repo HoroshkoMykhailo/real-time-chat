@@ -4,13 +4,14 @@ import { ExceptionMessage } from '~/libs/enums/enums.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 
 import { type Chat as ChatRepository } from '../chat/chat.repository.js';
+import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
 import { type User } from '../user/user.js';
 import { DEFAULT_LIMIT } from './libs/constants/default-limit.constant.js';
 import { MessageStatus, MessageType } from './libs/enums/enums.js';
 import {
+  type GetMessagesResponseDto,
   type MessageCreationResponseDto,
   type MessageService,
-  type Message as TMessage,
   type TextMessageRequestDto
 } from './libs/types/types.js';
 import { type Message as MessageRepository } from './message.repository.js';
@@ -18,6 +19,7 @@ import { type Message as MessageRepository } from './message.repository.js';
 type Constructor = {
   chatRepository: ChatRepository;
   messageRepository: MessageRepository;
+  profileRepository: ProfileRepository;
 };
 
 class Message implements MessageService {
@@ -38,9 +40,16 @@ class Message implements MessageService {
 
   #messageRepository: MessageRepository;
 
-  public constructor({ chatRepository, messageRepository }: Constructor) {
+  #profileRepository: ProfileRepository;
+
+  public constructor({
+    chatRepository,
+    messageRepository,
+    profileRepository
+  }: Constructor) {
     this.#chatRepository = chatRepository;
     this.#messageRepository = messageRepository;
+    this.#profileRepository = profileRepository;
   }
 
   public async createText(
@@ -74,7 +83,7 @@ class Message implements MessageService {
       before?: string;
       limit?: number;
     }
-  ): Promise<TMessage[]> {
+  ): Promise<GetMessagesResponseDto> {
     const { after, before, limit = DEFAULT_LIMIT } = query;
 
     if (!Types.ObjectId.isValid(chatId)) {
@@ -102,12 +111,32 @@ class Message implements MessageService {
       });
     }
 
-    return await this.#messageRepository.getMessagesByChatId({
+    const messages = await this.#messageRepository.getMessagesByChatId({
       chatId,
       ...(after && { after }),
       ...(before && { before }),
       ...(limit && { limit })
     });
+
+    return await Promise.all(
+      messages.map(async message => {
+        const senderProfile = await this.#profileRepository.getById(
+          message.senderId
+        );
+
+        if (!senderProfile) {
+          throw new HTTPError({
+            message: ExceptionMessage.PROFILE_NOT_FOUND,
+            status: HTTPCode.NOT_FOUND
+          });
+        }
+
+        return {
+          ...message,
+          sender: senderProfile
+        };
+      })
+    );
   }
 }
 

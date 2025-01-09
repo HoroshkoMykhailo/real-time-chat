@@ -5,7 +5,7 @@ import {
 import { type User } from '~/modules/user/user.js';
 
 import {
-  type Message,
+  type GetMessagesResponseDto,
   type MessageCreationResponseDto,
   type TextMessageRequestDto
 } from './types.js';
@@ -29,7 +29,7 @@ type MessageController = {
       };
       user: User;
     }>
-  ) => Promise<ControllerAPIHandlerResponse<Message[]>>;
+  ) => Promise<ControllerAPIHandlerResponse<GetMessagesResponseDto>>;
 };
 
 export { type MessageController };

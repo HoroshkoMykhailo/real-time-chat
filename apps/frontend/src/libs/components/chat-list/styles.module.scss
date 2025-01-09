@@ -1,4 +1,5 @@
 .chat-list-container {
+  flex-shrink: 0;
   display: flex;
   width: var(--chat-list-width);
   flex-direction: column;

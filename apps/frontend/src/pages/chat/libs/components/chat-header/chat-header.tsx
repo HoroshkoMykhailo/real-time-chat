@@ -16,9 +16,10 @@ const ChatHeader = ({ onHeaderClick }: Properties): JSX.Element => {
     return <></>;
   }
 
-  const { chatPicture, name } = chat;
+  const { chatPicture, memberCount, name } = chat;
 
-  const memberLabel = chat.members?.length === ONE_VALUE ? 'member' : 'members';
+  const memberLabel =
+    (chat.members?.length || memberCount) === ONE_VALUE ? 'member' : 'members';
 
   return (
     <button className={styles['chat-header']} onClick={onHeaderClick}>
@@ -32,8 +33,8 @@ const ChatHeader = ({ onHeaderClick }: Properties): JSX.Element => {
       >
         <h2 className={styles['chat-name']}>{name}</h2>
         <p className={styles['chat-users']}>
-          {chat.members && chat.type === ChatType.GROUP
-            ? `${chat.members.length} ${memberLabel}`
+          {chat.type === ChatType.GROUP && (chat.members || memberCount)
+            ? `${chat.members?.length ?? memberCount} ${memberLabel}`
             : ''}
         </p>
       </div>

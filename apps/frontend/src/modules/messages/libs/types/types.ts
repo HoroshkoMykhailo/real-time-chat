@@ -1,5 +1,4 @@
-export { type FilterType } from './filter.type.js';
-export { type MessageService } from './message-service.type.js';
+export { type MessageApi } from './message-api.type.js';
 export {
   type GetMessagesResponseDto,
   type Message,

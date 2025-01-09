@@ -1,12 +1,11 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import { Button, Input, NavLink } from '~/libs/components/components.js';
 import { AppRoute, ButtonColor, DataStatus } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppForm,
-  useAppSelector
+  useAppSelector,
+  useEffect,
+  useNavigate
 } from '~/libs/hooks/hooks.js';
 import { type UserSignUpRequestDto } from '~/modules/auth/auth.js';
 import { signUp as signUpValidationSchema } from '~/modules/auth/libs/validation-schemas/validation-schemas.js';

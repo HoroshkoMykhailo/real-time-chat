@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router-dom';
-
 import { DEBOUNCE_DELAY } from '~/libs/common/constants.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
@@ -8,9 +6,11 @@ import {
   useCallback,
   useDebounce,
   useEffect,
+  useNavigate,
   useState
 } from '~/libs/hooks/hooks.js';
-import { chatActions } from '~/modules/chat/chat.js';
+import { ChatType, chatActions } from '~/modules/chat/chat.js';
+import { messageActions } from '~/modules/messages/message.js';
 import { userActions } from '~/modules/user/user.js';
 
 import { SearchBar } from '../components.js';
@@ -54,6 +54,12 @@ const CreateChat = (): JSX.Element => {
   useEffect(() => {
     if (createdChat) {
       dispatch(chatActions.setSelectedChat(createdChat));
+      void dispatch(messageActions.getMessages({ chatId: createdChat.id }));
+
+      if (createdChat.type === ChatType.GROUP) {
+        void dispatch(chatActions.getChat({ id: createdChat.id }));
+      }
+
       navigate(`${AppRoute.CHATS}/${createdChat.id}`);
     }
   }, [navigate, dispatch, createdChat]);

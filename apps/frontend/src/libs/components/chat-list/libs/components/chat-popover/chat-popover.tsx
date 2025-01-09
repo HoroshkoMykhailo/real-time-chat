@@ -1,11 +1,10 @@
-import { useNavigate } from 'react-router-dom';
-
 import { Icon, Popover } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useCallback,
   useEffect,
+  useNavigate,
   useRef,
   useState
 } from '~/libs/hooks/hooks.js';

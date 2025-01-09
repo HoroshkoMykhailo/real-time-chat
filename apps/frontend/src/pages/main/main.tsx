@@ -61,8 +61,9 @@ const Main: React.FC = () => {
 
   const handleLogoClick = useCallback((): void => {
     setActiveView(ActiveSideView.ChatList);
+    dispatch(chatActions.resetSelectedChat());
     onCreateChatClose();
-  }, [onCreateChatClose]);
+  }, [dispatch, onCreateChatClose]);
 
   const viewMap = new Map<ValueOf<typeof ActiveSideView>, () => JSX.Element>([
     [ActiveSideView.ChatList, (): JSX.Element => <ChatList />],

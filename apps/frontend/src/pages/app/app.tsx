@@ -20,6 +20,10 @@ const App: React.FC = () => {
             {
               children: [
                 {
+                  element: <></>,
+                  path: AppRoute.ROOT
+                },
+                {
                   element: <Chat />,
                   path: `${AppRoute.CHATS}${AppRoute.CHAT}`
                 }

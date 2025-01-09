@@ -1,4 +1,4 @@
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
@@ -6,6 +6,7 @@ import {
   useAppSelector,
   useCallback,
   useEffect,
+  useParams,
   useState
 } from '~/libs/hooks/hooks.js';
 import { type ValueOf } from '~/libs/types/types.js';
@@ -15,6 +16,7 @@ import { AddMembers } from './libs/components/add-members/add-members.js';
 import { ChatHeader } from './libs/components/chat-header/chat-header.js';
 import { ChatInfo } from './libs/components/chat-info/chat-info.js';
 import { GroupEdit } from './libs/components/group-edit/group-edit.js';
+import { MessageHistory } from './libs/components/message-history/message-history.js';
 import { ActiveChatView } from './libs/enums/active-chat-view.js';
 import styles from './styles.module.scss';
 
@@ -81,10 +83,10 @@ const Chat: React.FC = () => {
   useEffect(() => {
     setActiveChatView(ActiveChatView.ChatInfo);
     dispatch(chatActions.resetCreatedChat());
-  }, [chatId, dispatch]);
+  }, [chat, chatId, dispatch]);
 
   if (chatId !== chat?.id && !createdChat) {
-    return <Navigate to={AppRoute.ROOT} />;
+    return <Navigate replace to={AppRoute.ROOT} />;
   }
 
   return (
@@ -92,7 +94,7 @@ const Chat: React.FC = () => {
       <div className={styles['chat-content']}>
         <ChatHeader onHeaderClick={handleHeaderClick} />
         <div className={styles['chat-messages']}>
-          <p>Messages goes here...</p>
+          <MessageHistory />
         </div>
       </div>
       {renderContent()}

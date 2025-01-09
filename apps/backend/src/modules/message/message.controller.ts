@@ -14,8 +14,8 @@ import { MessageApiPath } from './libs/enums/enums.js';
 import { type MessageController } from './libs/types/message-controller.type.js';
 import { type MessageService } from './libs/types/message-service.type.js';
 import {
+  type GetMessagesResponseDto,
   type MessageCreationResponseDto,
-  type Message as TMessage,
   type TextMessageRequestDto
 } from './libs/types/types.js';
 import { textMessageValidationSchema } from './libs/validation-schemas/validation-schemas.js';
@@ -58,7 +58,7 @@ class Message extends Controller implements MessageController {
       };
       user: TUser;
     }>
-  ): Promise<ControllerAPIHandlerResponse<TMessage[]>> => {
+  ): Promise<ControllerAPIHandlerResponse<GetMessagesResponseDto>> => {
     const {
       params: { chatId },
       query,

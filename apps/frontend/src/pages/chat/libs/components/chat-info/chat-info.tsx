@@ -1,11 +1,10 @@
-import { useNavigate } from 'react-router-dom';
-
 import { ChatPicture } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppSelector,
-  useCallback
+  useCallback,
+  useNavigate
 } from '~/libs/hooks/hooks.js';
 import { ChatType, chatActions } from '~/modules/chat/chat.js';
 
