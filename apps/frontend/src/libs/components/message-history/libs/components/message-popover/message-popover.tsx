@@ -51,8 +51,19 @@ const MessagePopover = ({
     }
   }, [message, onClose]);
 
-  const handleEditClick = useCallback((): void => {
+  const handlePinClick = useCallback((): void => {
     if (message) {
+      void dispatch(
+        messageActions.updatePinMessage({
+          messageId: message.id
+        })
+      );
+      onClose();
+    }
+  }, [dispatch, message, onClose]);
+
+  const handleEditClick = useCallback((): void => {
+    if (message && message.type === MessageType.TEXT) {
       setEditingMessageId(message.id);
       onClose();
     }
@@ -82,9 +93,18 @@ const MessagePopover = ({
       content={
         <div className={styles[POPOVER_CLASS]} ref={popoverReference}>
           <div className={styles['buttons']}>
-            <button className={styles['pin-button']}>
-              <Icon height={24} name="pin" width={24} />
-              <span>Pin</span>
+            <button className={styles['pin-button']} onClick={handlePinClick}>
+              {message.isPinned ? (
+                <>
+                  <Icon height={24} name="unPin" width={24} />
+                  <span>Unpin</span>
+                </>
+              ) : (
+                <>
+                  <Icon height={24} name="pin" width={24} />
+                  <span>Pin</span>
+                </>
+              )}
             </button>
             {message.type === MessageType.TEXT && (
               <button

@@ -21,7 +21,7 @@ type MessageController = {
 
   deleteMessage: (
     options: ControllerAPIHandlerOptions<{
-      params: { messageId: string };
+      params: { id: string };
       user: User;
     }>
   ) => Promise<ControllerAPIHandlerResponse<boolean>>;
@@ -38,10 +38,17 @@ type MessageController = {
     }>
   ) => Promise<ControllerAPIHandlerResponse<GetMessagesResponseDto>>;
 
+  updatePinMessage: (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<boolean>>;
+
   updateTextMessage: (
     options: ControllerAPIHandlerOptions<{
       body: TextMessageRequestDto;
-      params: { messageId: string };
+      params: { id: string };
       user: User;
     }>
   ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;

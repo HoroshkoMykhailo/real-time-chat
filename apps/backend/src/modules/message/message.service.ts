@@ -195,6 +195,32 @@ class Message implements MessageService {
     );
   }
 
+  public async updatePin(user: User, messageId: string): Promise<boolean> {
+    const message = await this.#messageRepository.getById(messageId);
+
+    if (!message) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const isMember = await this.#isUserChatMember(user, message.chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const updatedMessage = await this.#messageRepository.updateById(messageId, {
+      isPinned: !message.isPinned
+    });
+
+    return !!updatedMessage;
+  }
+
   public async updateText(
     user: User,
     messageId: string,

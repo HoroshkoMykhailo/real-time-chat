@@ -1,3 +1,4 @@
+export { MessageApiParams } from './message-api-parameters.enum.js';
 export { MessageApiPath } from './message-api-path.enum.js';
 export { MessagePayloadKey } from './message-payload-key.enum.js';
 export { MessageStatus } from './message-status.enum.js';

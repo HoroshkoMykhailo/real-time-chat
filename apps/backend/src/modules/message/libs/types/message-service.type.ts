@@ -25,6 +25,8 @@ type MessageService = {
     }
   ): Promise<GetMessagesResponseDto>;
 
+  updatePin(user: User, messageId: string): Promise<boolean>;
+
   updateText(
     user: User,
     messageId: string,

@@ -1,4 +1,5 @@
 export {
+  MessageApiParams,
   MessageApiPath,
   MessagePayloadKey,
   MessageStatus,

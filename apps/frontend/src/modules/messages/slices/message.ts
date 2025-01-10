@@ -1,6 +1,7 @@
 import {
   deleteMessage,
   getMessages,
+  updatePinMessage,
   updateTextMessage,
   writeTextMessage
 } from './actions.js';
@@ -10,6 +11,7 @@ const allActions = {
   ...actions,
   deleteMessage,
   getMessages,
+  updatePinMessage,
   updateTextMessage,
   writeTextMessage
 };

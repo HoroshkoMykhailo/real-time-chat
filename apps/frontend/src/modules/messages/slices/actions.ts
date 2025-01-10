@@ -56,4 +56,27 @@ const updateTextMessage = createAsyncThunk<
   }
 );
 
-export { deleteMessage, getMessages, updateTextMessage, writeTextMessage };
+const updatePinMessage = createAsyncThunk<
+  null | string,
+  { messageId: string },
+  AsyncThunkConfig
+>(
+  ActionType.UPDATE_PIN_MESSAGE,
+  async ({ messageId }, { extra: { messageApi } }) => {
+    const isUpdated = await messageApi.updatePinMessage(messageId);
+
+    if (!isUpdated) {
+      return null;
+    }
+
+    return messageId;
+  }
+);
+
+export {
+  deleteMessage,
+  getMessages,
+  updatePinMessage,
+  updateTextMessage,
+  writeTextMessage
+};

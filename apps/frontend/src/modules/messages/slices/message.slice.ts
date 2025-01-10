@@ -8,6 +8,7 @@ import { type GetMessagesResponseDto } from '../libs/types/types.js';
 import {
   deleteMessage,
   getMessages,
+  updatePinMessage,
   updateTextMessage,
   writeTextMessage
 } from './actions.js';
@@ -72,6 +73,23 @@ const { actions, reducer } = createSlice({
         }
       })
       .addMatcher(isAnyOf(updateTextMessage.rejected), state => {
+        state.editDataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(updatePinMessage.fulfilled), (state, action) => {
+        const index = state.messages.findIndex(
+          message => message.id === action.payload
+        );
+        const message = state.messages[index];
+
+        if (index !== MINUS_ONE_VALUE && message) {
+          state.messages[index] = {
+            ...message,
+            isPinned: !message.isPinned
+          };
+          state.editDataStatus = DataStatus.FULFILLED;
+        }
+      })
+      .addMatcher(isAnyOf(updatePinMessage.rejected), state => {
         state.editDataStatus = DataStatus.REJECTED;
       });
   },

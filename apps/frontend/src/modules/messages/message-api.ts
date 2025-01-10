@@ -2,7 +2,10 @@ import { APIPath, ContentType } from '~/libs/enums/enums.js';
 
 import { type HttpApi } from '../http/http.js';
 import { HTTPMethod } from '../http/libs/enums/enums.js';
-import { MessageApiPath } from './libs/enums/enums.js';
+import {
+  MessageApiParams as MessageApiParameters,
+  MessageApiPath
+} from './libs/enums/enums.js';
 import {
   type GetMessagesResponseDto,
   type MessageApi,
@@ -27,7 +30,7 @@ class Message implements MessageApi {
 
   public deleteMessage(messageId: string): Promise<boolean> {
     return this.#httpApi.load(
-      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$MESSAGE_ID.replace(':messageId', messageId)}`,
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$MESSAGE_ID.replace(MessageApiParameters.MESSAGE_ID, messageId)}`,
       {
         hasAuth: true,
         method: HTTPMethod.DELETE
@@ -37,10 +40,20 @@ class Message implements MessageApi {
 
   public getMessages(chatId: string): Promise<GetMessagesResponseDto> {
     return this.#httpApi.load(
-      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(':chatId', chatId)}`,
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(MessageApiParameters.CHAT_ID, chatId)}`,
       {
         hasAuth: true,
         method: HTTPMethod.GET
+      }
+    );
+  }
+
+  public updatePinMessage(messageId: string): Promise<boolean> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$MESSAGE_ID.replace(MessageApiParameters.MESSAGE_ID, messageId)}${MessageApiPath.PIN}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.PUT
       }
     );
   }
@@ -50,7 +63,7 @@ class Message implements MessageApi {
     content: TextMessageRequestDto
   ): Promise<MessageCreationResponseDto> {
     return this.#httpApi.load(
-      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$MESSAGE_ID.replace(':messageId', messageId)}${MessageApiPath.TEXT}`,
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$MESSAGE_ID.replace(MessageApiParameters.MESSAGE_ID, messageId)}${MessageApiPath.TEXT}`,
       {
         contentType: ContentType.JSON,
         hasAuth: true,
@@ -59,13 +72,12 @@ class Message implements MessageApi {
       }
     );
   }
-
   public writeTextMessage(
     chatId: string,
     content: TextMessageRequestDto
   ): Promise<MessageCreationResponseDto> {
     return this.#httpApi.load(
-      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(':chatId', chatId)}${MessageApiPath.TEXT}`,
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(MessageApiParameters.CHAT_ID, chatId)}${MessageApiPath.TEXT}`,
       {
         contentType: ContentType.JSON,
         hasAuth: true,

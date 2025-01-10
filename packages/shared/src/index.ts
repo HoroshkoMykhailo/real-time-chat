@@ -36,6 +36,7 @@ export {
 export {
   type GetMessagesResponseDto,
   type Message,
+  MessageApiParams,
   MessageApiPath,
   type MessageCreationResponseDto,
   MessagePayloadKey,

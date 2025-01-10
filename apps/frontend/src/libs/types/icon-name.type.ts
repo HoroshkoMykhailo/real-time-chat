@@ -11,6 +11,7 @@ type IconName =
   | 'pin'
   | 'remove'
   | 'search'
-  | 'trashBin';
+  | 'trashBin'
+  | 'unPin';
 
 export { type IconName };

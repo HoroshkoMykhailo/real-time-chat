@@ -50,17 +50,17 @@ class Message extends Controller implements MessageController {
 
   public deleteMessage = async (
     options: ControllerAPIHandlerOptions<{
-      params: { messageId: string };
+      params: { id: string };
       user: TUser;
     }>
   ): Promise<ControllerAPIHandlerResponse<boolean>> => {
     const {
-      params: { messageId },
+      params: { id },
       user
     } = options;
 
     return {
-      payload: await this.#messageService.deleteMessage(user, messageId),
+      payload: await this.#messageService.deleteMessage(user, id),
       status: HTTPCode.OK
     };
   };
@@ -92,21 +92,38 @@ class Message extends Controller implements MessageController {
     };
   };
 
+  public updatePinMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<boolean>> => {
+    const {
+      params: { id },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.updatePin(user, id),
+      status: HTTPCode.OK
+    };
+  };
+
   public updateTextMessage = async (
     options: ControllerAPIHandlerOptions<{
       body: TextMessageRequestDto;
-      params: { messageId: string };
+      params: { id: string };
       user: TUser;
     }>
   ): Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>> => {
     const {
       body,
-      params: { messageId },
+      params: { id },
       user
     } = options;
 
     return {
-      payload: await this.#messageService.updateText(user, messageId, body),
+      payload: await this.#messageService.updateText(user, id, body),
       status: HTTPCode.OK
     };
   };
@@ -137,6 +154,12 @@ class Message extends Controller implements MessageController {
         body: textMessageValidationSchema
       },
       url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.TEXT}`
+    });
+
+    this.addRoute({
+      handler: this.updatePinMessage as ControllerAPIHandler,
+      method: HTTPMethod.PUT,
+      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.PIN}`
     });
 
     this.addRoute({
