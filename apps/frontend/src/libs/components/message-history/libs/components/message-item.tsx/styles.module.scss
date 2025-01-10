@@ -1,0 +1,41 @@
+.message-wrapper {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  position: relative;
+}
+
+.active {
+  background-color: var(--input-bg);
+}
+
+.message-content {
+  all: unset;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.message-header {
+  display: flex;
+}
+
+.user-name {
+  color: var(--text-dark);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.message-text {
+  user-select: text;
+  cursor: text;
+  color: var(--text-dark);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+}
