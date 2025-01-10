@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 
+import { MessageHistory } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
@@ -16,7 +17,6 @@ import { AddMembers } from './libs/components/add-members/add-members.js';
 import { ChatHeader } from './libs/components/chat-header/chat-header.js';
 import { ChatInfo } from './libs/components/chat-info/chat-info.js';
 import { GroupEdit } from './libs/components/group-edit/group-edit.js';
-import { MessageHistory } from './libs/components/message-history/message-history.js';
 import { MessageInput } from './libs/components/message-input/message-input.js';
 import { ActiveChatView } from './libs/enums/active-chat-view.js';
 import styles from './styles.module.scss';

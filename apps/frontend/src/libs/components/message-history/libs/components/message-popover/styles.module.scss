@@ -1,0 +1,35 @@
+.message-popover {
+  min-width: 200px;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
+
+  button:hover {
+    background-color: var(--input-bg);
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 8px 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+  }
+}
+
+.delete-button {
+  color: var(--text-red);
+}

@@ -2,6 +2,7 @@ type IconName =
   | 'arrow'
   | 'camera'
   | 'cancel'
+  | 'copy'
   | 'error'
   | 'group'
   | 'image'

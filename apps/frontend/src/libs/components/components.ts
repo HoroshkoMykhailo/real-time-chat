@@ -16,6 +16,7 @@ export { Icon } from './icon/icon.js';
 export { Image } from './image/image.js';
 export { Input } from './input/input.js';
 export { Loader } from './loader/loader.js';
+export { MessageHistory } from './message-history/message-history.js';
 export { Popover } from './popover/popover.js';
 export { ProtectedRoute } from './protected-route/protected-route.js';
 export { RouterProvider } from './router-provider/router-provider.js';

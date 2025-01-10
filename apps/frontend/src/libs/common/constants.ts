@@ -3,4 +3,15 @@ const MINUS_ONE_VALUE = -1;
 const ZERO_VALUE = 0;
 const ONE_VALUE = 1;
 
-export { DEBOUNCE_DELAY, MINUS_ONE_VALUE, ONE_VALUE, ZERO_VALUE };
+const POPOVER_OFFSET = 50;
+
+const POPOVER_CLASS = 'default-popover';
+
+export {
+  DEBOUNCE_DELAY,
+  MINUS_ONE_VALUE,
+  ONE_VALUE,
+  POPOVER_CLASS,
+  POPOVER_OFFSET,
+  ZERO_VALUE
+};

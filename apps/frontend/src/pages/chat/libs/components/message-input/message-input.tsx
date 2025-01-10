@@ -76,7 +76,31 @@ const MessageInput = (): JSX.Element => {
     if (inputReference.current) {
       inputReference.current.focus();
     }
+
+    setMessage('');
   }, [chat?.id]);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (event: KeyboardEvent): void => {
+      const isLetter = /^[A-Za-zЁЄІЇА-яёєіїҐґ]$/.test(event.key);
+
+      const activeElement = document.activeElement as HTMLElement;
+      const isInputActive =
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.isContentEditable;
+
+      if (isLetter && !isInputActive) {
+        inputReference.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleGlobalKeyDown);
+
+    return (): void => {
+      document.removeEventListener('keydown', handleGlobalKeyDown);
+    };
+  }, []);
 
   if (!profile) {
     return <></>;

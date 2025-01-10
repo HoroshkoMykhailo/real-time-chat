@@ -19,9 +19,9 @@ const CreateChatPopover = ({
 }: Properties): JSX.Element => {
   return (
     <Popover
-      className="create-chat-popover"
+      className="create-default-popover"
       content={
-        <div className={styles['create-chat-popover']}>
+        <div className={styles['create-default-popover']}>
           <div className={styles['buttons']}>
             <button className={styles['button']} onClick={onCreateGroup}>
               <Icon height={24} name="group" width={24} />
