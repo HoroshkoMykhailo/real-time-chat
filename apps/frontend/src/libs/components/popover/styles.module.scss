@@ -27,11 +27,14 @@
 }
 
 .message-popover {
-  transform: translateX(-280%);
+  transform: none;
+  left: 8rem;
 }
 
 .message-popover-up {
-  transform: translateX(-280%) translateY(-150%);
+  transform: none;
+  left: 8rem;
+  bottom: 3rem;
 }
 
 .create-default-popover {

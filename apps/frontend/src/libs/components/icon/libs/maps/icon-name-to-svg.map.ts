@@ -9,6 +9,7 @@ import Group from '~/assets/images/icons/group.svg?react';
 import Image from '~/assets/images/icons/image.svg?react';
 import Pencil from '~/assets/images/icons/pencil.svg?react';
 import Person from '~/assets/images/icons/person.svg?react';
+import Pin from '~/assets/images/icons/pin.svg?react';
 import Remove from '~/assets/images/icons/remove.svg?react';
 import Search from '~/assets/images/icons/search.svg?react';
 import TrashBin from '~/assets/images/icons/trash-bin.svg?react';
@@ -24,6 +25,7 @@ const iconNameToSvg: Record<IconName, FC<React.SVGProps<SVGSVGElement>>> = {
   image: Image,
   pencil: Pencil,
   person: Person,
+  pin: Pin,
   remove: Remove,
   search: Search,
   trashBin: TrashBin

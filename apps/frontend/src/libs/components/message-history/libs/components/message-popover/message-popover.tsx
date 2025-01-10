@@ -58,6 +58,10 @@ const MessagePopover = ({
       content={
         <div className={styles[POPOVER_CLASS]} ref={popoverReference}>
           <div className={styles['buttons']}>
+            <button className={styles['pin-button']}>
+              <Icon height={24} name="pin" width={24} />
+              <span>Pin</span>
+            </button>
             {message.type === MessageType.TEXT && (
               <button className={styles['copy-button']}>
                 <Icon height={24} name="copy" width={24} />

@@ -8,6 +8,7 @@ type IconName =
   | 'image'
   | 'pencil'
   | 'person'
+  | 'pin'
   | 'remove'
   | 'search'
   | 'trashBin';
