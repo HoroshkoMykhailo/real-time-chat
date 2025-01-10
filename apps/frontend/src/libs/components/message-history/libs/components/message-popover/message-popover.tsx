@@ -19,13 +19,15 @@ type Properties = {
   isOpened: boolean;
   messageId: string;
   onClose: () => void;
+  setEditingMessageId: (messageId: null | string) => void;
 };
 
 const MessagePopover = ({
   children,
   isOpened,
   messageId,
-  onClose
+  onClose,
+  setEditingMessageId
 }: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
   const popoverReference = useRef<HTMLDivElement | null>(null);
@@ -41,6 +43,12 @@ const MessagePopover = ({
       void dispatch(messageActions.deleteMessage({ messageId: message.id }));
     }
   }, [dispatch, message]);
+
+  const handleEditClick = useCallback((): void => {
+    if (message) {
+      setEditingMessageId(message.id);
+    }
+  }, [message, setEditingMessageId]);
 
   useEffect(() => {
     if (popoverReference.current) {
@@ -77,7 +85,10 @@ const MessagePopover = ({
               </button>
             )}
             {profile?.id === message.sender.id && (
-              <button className={styles['edit-button']}>
+              <button
+                className={styles['edit-button']}
+                onClick={handleEditClick}
+              >
                 <Icon height={24} name="pencil" width={24} />
                 <span>Edit</span>
               </button>

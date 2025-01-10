@@ -14,7 +14,11 @@ import { messageActions } from '~/modules/messages/message.js';
 import { MessagePopover } from './libs/components/message-popover/message-popover.js';
 import styles from './styles.module.scss';
 
-const MessageHistory = (): JSX.Element => {
+type Properties = {
+  setEditingMessageId: (messageId: null | string) => void;
+};
+
+const MessageHistory = ({ setEditingMessageId }: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
   const { selectedChat: chat } = useAppSelector(state => state.chat);
   const [popoverMessageId, setPopoverMessageId] = useState<null | string>(null);
@@ -83,6 +87,7 @@ const MessageHistory = (): JSX.Element => {
           key={message.id}
           messageId={message.id}
           onClose={handleChatPopoverClose}
+          setEditingMessageId={setEditingMessageId}
         >
           <div
             className={`${styles['message-wrapper']} ${message.id === popoverMessageId ? styles['active'] : ''}`}

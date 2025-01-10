@@ -45,6 +45,21 @@ class Message implements MessageApi {
     );
   }
 
+  public updateTextMessage(
+    messageId: string,
+    content: TextMessageRequestDto
+  ): Promise<MessageCreationResponseDto> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$MESSAGE_ID.replace(':messageId', messageId)}${MessageApiPath.TEXT}`,
+      {
+        contentType: ContentType.JSON,
+        hasAuth: true,
+        method: HTTPMethod.PUT,
+        payload: JSON.stringify(content)
+      }
+    );
+  }
+
   public writeTextMessage(
     chatId: string,
     content: TextMessageRequestDto

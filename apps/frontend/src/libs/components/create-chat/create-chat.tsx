@@ -67,7 +67,7 @@ const CreateChat = (): JSX.Element => {
   const filteredUsers = users.filter(user => user.id !== profile?.id);
 
   return (
-    <div className={styles['create-chat-container']}>
+    <>
       <SearchBar
         onChange={handleSearchChange}
         placeholder="Search users"
@@ -85,7 +85,7 @@ const CreateChat = (): JSX.Element => {
           </button>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 

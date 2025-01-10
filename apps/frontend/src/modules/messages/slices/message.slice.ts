@@ -1,10 +1,16 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 
+import { MINUS_ONE_VALUE } from '~/libs/common/constants.js';
 import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
 import { type GetMessagesResponseDto } from '../libs/types/types.js';
-import { deleteMessage, getMessages, writeTextMessage } from './actions.js';
+import {
+  deleteMessage,
+  getMessages,
+  updateTextMessage,
+  writeTextMessage
+} from './actions.js';
 
 type State = {
   dataStatus: ValueOf<typeof DataStatus>;
@@ -53,7 +59,19 @@ const { actions, reducer } = createSlice({
         }
       })
       .addMatcher(isAnyOf(deleteMessage.rejected), state => {
-        state.dataStatus = DataStatus.REJECTED;
+        state.editDataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(updateTextMessage.fulfilled), (state, action) => {
+        const index = state.messages.findIndex(
+          message => message.id === action.payload.id
+        );
+
+        if (index !== MINUS_ONE_VALUE) {
+          state.messages[index] = action.payload;
+          state.editDataStatus = DataStatus.FULFILLED;
+        }
+      })
+      .addMatcher(isAnyOf(updateTextMessage.rejected), state => {
         state.editDataStatus = DataStatus.REJECTED;
       });
   },

@@ -92,6 +92,25 @@ class Message extends Controller implements MessageController {
     };
   };
 
+  public updateTextMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      body: TextMessageRequestDto;
+      params: { messageId: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>> => {
+    const {
+      body,
+      params: { messageId },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.updateText(user, messageId, body),
+      status: HTTPCode.OK
+    };
+  };
+
   public constructor({ apiPath, logger, messageService }: Constructor) {
     super({ apiPath, logger });
     this.#messageService = messageService;
@@ -109,6 +128,15 @@ class Message extends Controller implements MessageController {
       handler: this.getMessagesByChatId as ControllerAPIHandler,
       method: HTTPMethod.GET,
       url: MessageApiPath.$CHAT_ID
+    });
+
+    this.addRoute({
+      handler: this.updateTextMessage as ControllerAPIHandler,
+      method: HTTPMethod.PUT,
+      schema: {
+        body: textMessageValidationSchema
+      },
+      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.TEXT}`
     });
 
     this.addRoute({

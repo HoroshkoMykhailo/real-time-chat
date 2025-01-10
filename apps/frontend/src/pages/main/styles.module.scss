@@ -23,6 +23,15 @@
   height: calc(100vh - var(--header-height));
 }
 
+.side-bar {
+  flex-shrink: 0;
+  display: flex;
+  width: var(--chat-list-width);
+  flex-direction: column;
+  border-right: 1px solid var(--border-layout);
+  overflow-y: hidden;
+}
+
 .create-chat-wrapper {
   position: fixed;
   bottom: var(--create-chat-button-bottom);

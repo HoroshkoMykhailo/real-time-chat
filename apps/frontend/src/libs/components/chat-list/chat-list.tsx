@@ -83,7 +83,7 @@ const ChatList = (): JSX.Element => {
   }
 
   return (
-    <div className={styles['chat-list-container']}>
+    <>
       <SearchBar
         onChange={handleSearchChange}
         placeholder="Search chats"
@@ -115,7 +115,7 @@ const ChatList = (): JSX.Element => {
           </ChatPopover>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 

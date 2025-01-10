@@ -45,4 +45,15 @@ const deleteMessage = createAsyncThunk<
   }
 );
 
-export { deleteMessage, getMessages, writeTextMessage };
+const updateTextMessage = createAsyncThunk<
+  MessageCreationResponseDto,
+  { content: TextMessageRequestDto; messageId: string },
+  AsyncThunkConfig
+>(
+  ActionType.UPDATE_TEXT_MESSAGE,
+  async ({ content, messageId }, { extra: { messageApi } }) => {
+    return await messageApi.updateTextMessage(messageId, content);
+  }
+);
+
+export { deleteMessage, getMessages, updateTextMessage, writeTextMessage };

@@ -31,6 +31,7 @@ const Chat: React.FC = () => {
     ValueOf<typeof ActiveChatView>
   >(ActiveChatView.ChatInfo);
   const [isChatInfo, setChatInfo] = useState<boolean>(false);
+  const [editingMessageId, setEditingMessageId] = useState<null | string>(null);
 
   const viewMap = new Map<ValueOf<typeof ActiveChatView>, () => JSX.Element>([
     [
@@ -94,8 +95,11 @@ const Chat: React.FC = () => {
     <div className={styles['chat-layout']}>
       <div className={styles['chat-content']}>
         <ChatHeader onHeaderClick={handleHeaderClick} />
-        <MessageHistory />
-        <MessageInput />
+        <MessageHistory setEditingMessageId={setEditingMessageId} />
+        <MessageInput
+          editingMessageId={editingMessageId}
+          setEditingMessageId={setEditingMessageId}
+        />
       </div>
       {renderContent()}
     </div>

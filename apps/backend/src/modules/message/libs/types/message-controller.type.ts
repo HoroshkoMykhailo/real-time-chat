@@ -37,6 +37,14 @@ type MessageController = {
       user: User;
     }>
   ) => Promise<ControllerAPIHandlerResponse<GetMessagesResponseDto>>;
+
+  updateTextMessage: (
+    options: ControllerAPIHandlerOptions<{
+      body: TextMessageRequestDto;
+      params: { messageId: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;
 };
 
 export { type MessageController };

@@ -8,6 +8,11 @@ type MessageApi = {
   deleteMessage(messageId: string): Promise<boolean>;
   getMessages(chatId: string): Promise<GetMessagesResponseDto>;
 
+  updateTextMessage(
+    messageId: string,
+    content: TextMessageRequestDto
+  ): Promise<MessageCreationResponseDto>;
+
   writeTextMessage(
     chatId: string,
     content: TextMessageRequestDto

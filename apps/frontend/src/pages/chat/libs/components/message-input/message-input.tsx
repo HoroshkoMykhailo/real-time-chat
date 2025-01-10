@@ -14,7 +14,15 @@ import { messageActions } from '~/modules/messages/message.js';
 
 import styles from './styles.module.scss';
 
-const MessageInput = (): JSX.Element => {
+type Properties = {
+  editingMessageId: null | string;
+  setEditingMessageId: (messageId: null | string) => void;
+};
+
+const MessageInput = ({
+  editingMessageId,
+  setEditingMessageId
+}: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
   const { messages, writeDataStatus } = useAppSelector(state => state.message);
   const { selectedChat: chat } = useAppSelector(state => state.chat);
@@ -24,15 +32,26 @@ const MessageInput = (): JSX.Element => {
 
   const handleSend = useCallback(() => {
     if (message.trim() && chat) {
-      void dispatch(
-        messageActions.writeTextMessage({
-          chatId: chat.id,
-          content: { content: message }
-        })
-      );
+      if (editingMessageId) {
+        void dispatch(
+          messageActions.updateTextMessage({
+            content: { content: message },
+            messageId: editingMessageId
+          })
+        );
+        setEditingMessageId(null);
+      } else {
+        void dispatch(
+          messageActions.writeTextMessage({
+            chatId: chat.id,
+            content: { content: message }
+          })
+        );
+      }
+
       setMessage('');
     }
-  }, [chat, dispatch, message]);
+  }, [chat, dispatch, editingMessageId, message, setEditingMessageId]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -73,12 +92,24 @@ const MessageInput = (): JSX.Element => {
   }, [dispatch, messages, writeDataStatus]);
 
   useEffect(() => {
+    if (editingMessageId) {
+      const message = messages.find(message => message.id === editingMessageId);
+
+      if (message) {
+        setMessage(message.content);
+        inputReference.current?.focus();
+      }
+    }
+  }, [editingMessageId, messages]);
+
+  useEffect(() => {
     if (inputReference.current) {
       inputReference.current.focus();
     }
 
     setMessage('');
-  }, [chat?.id]);
+    setEditingMessageId(null);
+  }, [chat?.id, setEditingMessageId]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent): void => {
@@ -130,7 +161,7 @@ const MessageInput = (): JSX.Element => {
               isPrimary
               onClick={handleSend}
             >
-              Send
+              {editingMessageId ? 'Edit' : 'Send'}
             </Button>
           </div>
         </div>

@@ -31,7 +31,6 @@ import { CreateGroupHeader } from './libs/components/header/header.js';
 import { MemberList } from './libs/components/member-list/member-list.js';
 import { UserSearch } from './libs/components/user-search/user-search.js';
 import { type GroupFormValues } from './libs/types/group-form-values.type.js';
-import styles from './styles.module.scss';
 
 type Properties = {
   setActiveView: (value: ValueOf<typeof ActiveSideView>) => void;
@@ -120,7 +119,7 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
   }, [navigate, dispatch, createdChat, setActiveView]);
 
   return (
-    <div className={styles['create-chat-container']}>
+    <>
       <CreateGroupHeader
         isGroupInformation={isGroupInformation}
         onContinueClick={handleContinueClick}
@@ -136,7 +135,7 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
           selectedUsers={selectedUsers}
         />
       )}
-    </div>
+    </>
   );
 };
 

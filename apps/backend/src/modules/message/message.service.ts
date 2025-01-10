@@ -194,6 +194,55 @@ class Message implements MessageService {
       })
     );
   }
+
+  public async updateText(
+    user: User,
+    messageId: string,
+    data: TextMessageRequestDto
+  ): Promise<MessageCreationResponseDto> {
+    const message = await this.#messageRepository.getById(messageId);
+
+    if (!message) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    if (message.senderId !== user.profileId) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const sender = await this.#profileRepository.getById(user.profileId);
+
+    if (!sender) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const text = data.content;
+
+    const updatedMessage = await this.#messageRepository.updateById(messageId, {
+      content: text
+    });
+
+    if (!updatedMessage) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    return {
+      ...updatedMessage,
+      sender
+    };
+  }
 }
 
 export { Message };

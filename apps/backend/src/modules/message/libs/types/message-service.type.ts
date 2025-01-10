@@ -24,6 +24,12 @@ type MessageService = {
       limit?: number;
     }
   ): Promise<GetMessagesResponseDto>;
+
+  updateText(
+    user: User,
+    messageId: string,
+    data: TextMessageRequestDto
+  ): Promise<MessageCreationResponseDto>;
 };
 
 export { type MessageService };
