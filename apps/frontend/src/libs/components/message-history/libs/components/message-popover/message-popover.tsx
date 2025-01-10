@@ -44,11 +44,19 @@ const MessagePopover = ({
     }
   }, [dispatch, message]);
 
+  const handleCopyClick = useCallback((): void => {
+    if (message?.type === MessageType.TEXT) {
+      void navigator.clipboard.writeText(message.content);
+      onClose();
+    }
+  }, [message, onClose]);
+
   const handleEditClick = useCallback((): void => {
     if (message) {
       setEditingMessageId(message.id);
+      onClose();
     }
-  }, [message, setEditingMessageId]);
+  }, [message, onClose, setEditingMessageId]);
 
   useEffect(() => {
     if (popoverReference.current) {
@@ -79,7 +87,10 @@ const MessagePopover = ({
               <span>Pin</span>
             </button>
             {message.type === MessageType.TEXT && (
-              <button className={styles['copy-button']}>
+              <button
+                className={styles['copy-button']}
+                onClick={handleCopyClick}
+              >
                 <Icon height={24} name="copy" width={24} />
                 <span>Copy text</span>
               </button>
