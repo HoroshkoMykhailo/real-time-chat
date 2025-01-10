@@ -8,7 +8,7 @@ import {
   useNavigate,
   useState
 } from '~/libs/hooks/hooks.js';
-import { ChatType, chatActions } from '~/modules/chat/chat.js';
+import { chatActions } from '~/modules/chat/chat.js';
 import { messageActions } from '~/modules/messages/message.js';
 
 import { MemberItem } from '../member-item/member-item.js';
@@ -68,14 +68,10 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
 
   useEffect(() => {
     if (createdChat) {
-      dispatch(chatActions.setSelectedChat(createdChat));
       void dispatch(messageActions.getMessages({ chatId: createdChat.id }));
 
-      if (createdChat.type === ChatType.GROUP) {
-        void dispatch(chatActions.getChat({ id: createdChat.id }));
-      }
-
       navigate(`${AppRoute.CHATS}/${createdChat.id}`);
+      dispatch(chatActions.setSelectedChat(createdChat));
     }
   }, [navigate, dispatch, createdChat]);
 

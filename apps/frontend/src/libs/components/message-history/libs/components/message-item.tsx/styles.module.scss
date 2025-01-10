@@ -10,6 +10,11 @@
   background-color: var(--input-bg);
 }
 
+.message-avatar {
+  all: unset;
+  cursor: pointer;
+}
+
 .message-content {
   all: unset;
   display: flex;
@@ -23,6 +28,8 @@
 }
 
 .user-name {
+  all: unset;
+  cursor: pointer;
   color: var(--text-dark);
   font-size: 1rem;
   font-weight: 700;

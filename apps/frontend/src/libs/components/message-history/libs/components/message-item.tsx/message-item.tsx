@@ -1,6 +1,15 @@
 import { Avatar } from '~/libs/components/components.js';
-import { useCallback } from '~/libs/hooks/hooks.js';
+import { AppRoute } from '~/libs/enums/enums.js';
+import {
+  useAppDispatch,
+  useAppSelector,
+  useCallback,
+  useEffect,
+  useNavigate
+} from '~/libs/hooks/hooks.js';
+import { chatActions } from '~/modules/chat/chat.js';
 import { type GetMessagesResponseDto } from '~/modules/messages/libs/types/types.js';
+import { messageActions } from '~/modules/messages/message.js';
 
 import { MessagePopover } from '../message-popover/message-popover.js';
 import { MessageFooter } from './components/message-footer/message-footer.js';
@@ -19,9 +28,14 @@ const MessageItem = ({
   setEditingMessageId,
   setPopoverMessageId
 }: Properties): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { profile } = useAppSelector(state => state.profile);
+  const { createdChat } = useAppSelector(state => state.chat);
+
   const handleChatPopoverClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
-      const { messageId } = event.currentTarget.dataset;
+      const { id: messageId } = message;
 
       if (messageId) {
         event.stopPropagation();
@@ -29,8 +43,41 @@ const MessageItem = ({
         setPopoverMessageId(messageId);
       }
     },
-    [setPopoverMessageId]
+    [message, setPopoverMessageId]
   );
+
+  const handleUserClick = useCallback((): void => {
+    const memberId = message.sender.id;
+
+    if (memberId && profile && memberId !== profile.id) {
+      void dispatch(
+        chatActions.createPrivateChat({
+          otherId: memberId,
+          userId: profile.id
+        })
+      );
+    }
+  }, [message, profile, dispatch]);
+
+  const handleMessageClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      const target = event.target as HTMLElement;
+
+      if (target.classList.contains(styles['user-name'] ?? '')) {
+        handleUserClick();
+      }
+    },
+    [handleUserClick]
+  );
+
+  useEffect(() => {
+    if (createdChat) {
+      void dispatch(messageActions.getMessages({ chatId: createdChat.id }));
+
+      navigate(`${AppRoute.CHATS}/${createdChat.id}`);
+      dispatch(chatActions.setSelectedChat(createdChat));
+    }
+  }, [navigate, dispatch, createdChat]);
 
   const handleChatPopoverClose = useCallback((): void => {
     setPopoverMessageId(null);
@@ -47,13 +94,15 @@ const MessageItem = ({
       <div
         className={`${styles['message-wrapper']} ${message.id === popoverMessageId ? styles['active'] : ''}`}
       >
-        <Avatar
-          name={message.sender.username}
-          picture={message.sender.profilePicture}
-        />
+        <button className={styles['message-avatar']} onClick={handleUserClick}>
+          <Avatar
+            name={message.sender.username}
+            picture={message.sender.profilePicture}
+          />
+        </button>
         <button
           className={styles['message-content']}
-          data-message-id={message.id}
+          onClick={handleMessageClick}
           onContextMenu={handleChatPopoverClick}
         >
           <div className={styles['message-header']}>

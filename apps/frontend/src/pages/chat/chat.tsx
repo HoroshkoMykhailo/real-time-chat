@@ -85,7 +85,7 @@ const Chat: React.FC = () => {
   useEffect(() => {
     setActiveChatView(ActiveChatView.ChatInfo);
     dispatch(chatActions.resetCreatedChat());
-  }, [chat, chatId, dispatch]);
+  }, [chatId, dispatch]);
 
   if (chatId !== chat?.id && !createdChat) {
     return <Navigate replace to={AppRoute.ROOT} />;

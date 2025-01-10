@@ -21,7 +21,7 @@ const CreateChat = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, DEBOUNCE_DELAY);
-  const { createdChat } = useAppSelector(state => state.chat);
+  const { createdChat, selectedChat } = useAppSelector(state => state.chat);
   const { users } = useAppSelector(state => state.user);
   const { profile } = useAppSelector(state => state.profile);
   const navigate = useNavigate();
@@ -41,6 +41,14 @@ const CreateChat = (): JSX.Element => {
     (event: React.MouseEvent<HTMLButtonElement>): void => {
       const { userId } = event.currentTarget.dataset;
 
+      if (selectedChat && selectedChat.members) {
+        const user = selectedChat.members.find(member => member.id === userId);
+
+        if (user && selectedChat.type === ChatType.PRIVATE) {
+          return;
+        }
+      }
+
       if (userId && profile) {
         void dispatch(
           chatActions.createPrivateChat({ otherId: userId, userId: profile.id })
@@ -48,7 +56,7 @@ const CreateChat = (): JSX.Element => {
         dispatch(chatActions.resetSelectedChat());
       }
     },
-    [profile, dispatch]
+    [selectedChat, profile, dispatch]
   );
 
   useEffect(() => {
@@ -56,10 +64,7 @@ const CreateChat = (): JSX.Element => {
       dispatch(chatActions.setSelectedChat(createdChat));
       void dispatch(messageActions.getMessages({ chatId: createdChat.id }));
 
-      if (createdChat.type === ChatType.GROUP) {
-        void dispatch(chatActions.getChat({ id: createdChat.id }));
-      }
-
+      dispatch(chatActions.resetCreatedChat());
       navigate(`${AppRoute.CHATS}/${createdChat.id}`);
     }
   }, [navigate, dispatch, createdChat]);
