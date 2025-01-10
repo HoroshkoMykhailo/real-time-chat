@@ -41,3 +41,44 @@
   font-size: 1rem;
   color: var(--text-muted);
 }
+
+.detailsContainer {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detailsGroup {
+  display: flex;
+  width: 100%;
+}
+
+.detailsWrapper {
+  width: 200px;
+}
+
+.detailsBox {
+  padding: 8px 12px;
+  border: 1px solid var(--gray);
+  border-radius: 4px;
+  background-color: var(--white);
+  color: var(--main-dark);
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+
+  &:hover {
+    border-color: var(--gray-dark);
+  }
+}
+
+.detailsLabel {
+  min-width: 100px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--main-dark);
+}

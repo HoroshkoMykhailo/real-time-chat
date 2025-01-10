@@ -16,7 +16,6 @@ import {
 import { type ValueOf } from '~/libs/types/types.js';
 import {
   ChatPayloadKey,
-  ChatType,
   chatActions,
   chatCreationValidationSchema
 } from '~/modules/chat/chat.js';
@@ -108,9 +107,7 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
       dispatch(chatActions.setSelectedChat(createdChat));
       void dispatch(messageActions.getMessages({ chatId: createdChat.id }));
 
-      if (createdChat.type === ChatType.GROUP) {
-        void dispatch(chatActions.getChat({ id: createdChat.id }));
-      }
+      void dispatch(chatActions.getChat({ id: createdChat.id }));
 
       navigate(`${AppRoute.CHATS}/${createdChat.id}`);
       setActiveView(ActiveSideView.ChatList);

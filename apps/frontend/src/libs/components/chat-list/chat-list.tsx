@@ -7,7 +7,7 @@ import {
   useParams,
   useState
 } from '~/libs/hooks/hooks.js';
-import { ChatType, chatActions } from '~/modules/chat/chat.js';
+import { chatActions } from '~/modules/chat/chat.js';
 import { type ChatsResponseDto } from '~/modules/chat/libs/types/types.js';
 import { messageActions } from '~/modules/messages/message.js';
 
@@ -49,9 +49,7 @@ const ChatList = (): JSX.Element => {
 
           void dispatch(messageActions.getMessages({ chatId: chat.id }));
 
-          if (chat.type === ChatType.GROUP) {
-            void dispatch(chatActions.getChat({ id: chat.id }));
-          }
+          void dispatch(chatActions.getChat({ id: chat.id }));
 
           navigate(`${AppRoute.CHATS}/${chat.id}`);
         }
