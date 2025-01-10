@@ -1,8 +1,9 @@
-import { getMessages, writeTextMessage } from './actions.js';
+import { deleteMessage, getMessages, writeTextMessage } from './actions.js';
 import { actions } from './message.slice.js';
 
 const allActions = {
   ...actions,
+  deleteMessage,
   getMessages,
   writeTextMessage
 };

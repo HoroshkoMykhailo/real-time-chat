@@ -5,7 +5,7 @@ import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 
 import { type Chat as ChatRepository } from '../chat/chat.repository.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
-import { type User } from '../user/user.js';
+import { type User, UserRole } from '../user/user.js';
 import { DEFAULT_LIMIT } from './libs/constants/default-limit.constant.js';
 import { MessageStatus, MessageType } from './libs/enums/enums.js';
 import {
@@ -85,6 +85,50 @@ class Message implements MessageService {
       ...message,
       sender: senderProfile
     };
+  }
+
+  public async deleteMessage(user: User, messageId: string): Promise<boolean> {
+    const message = await this.#messageRepository.getById(messageId);
+
+    if (!message) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const chat = await this.#chatRepository.getById(message.chatId);
+
+    if (!chat) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    if (
+      message.senderId !== user.profileId &&
+      user.role !== UserRole.ADMIN &&
+      chat.adminId !== user.profileId
+    ) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const isDeleted = !!(await this.#messageRepository.deleteById(messageId));
+
+    if (isDeleted) {
+      const lastMessage = await this.#messageRepository.getLastMessage(chat.id);
+
+      await this.#chatRepository.setLastMessage(
+        chat.id,
+        lastMessage?.id ?? null
+      );
+    }
+
+    return isDeleted;
   }
 
   public async getMessagesByChatId(

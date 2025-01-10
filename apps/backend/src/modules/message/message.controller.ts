@@ -48,6 +48,23 @@ class Message extends Controller implements MessageController {
     };
   };
 
+  public deleteMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      params: { messageId: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<boolean>> => {
+    const {
+      params: { messageId },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.deleteMessage(user, messageId),
+      status: HTTPCode.OK
+    };
+  };
+
   public getMessagesByChatId = async (
     options: ControllerAPIHandlerOptions<{
       params: { chatId: string };
@@ -92,6 +109,12 @@ class Message extends Controller implements MessageController {
       handler: this.getMessagesByChatId as ControllerAPIHandler,
       method: HTTPMethod.GET,
       url: MessageApiPath.$CHAT_ID
+    });
+
+    this.addRoute({
+      handler: this.deleteMessage as ControllerAPIHandler,
+      method: HTTPMethod.DELETE,
+      url: MessageApiPath.$MESSAGE_ID
     });
   }
 }

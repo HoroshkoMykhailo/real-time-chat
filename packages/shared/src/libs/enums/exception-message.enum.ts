@@ -14,6 +14,7 @@ const ExceptionMessage = {
   INVALID_TOKEN: 'Invalid token.',
   INVALID_TOKEN_NO_USER_ID: 'Token is invalid: userId missing.',
   MEMBER_NOT_FOUND: 'Member not found.',
+  MESSAGE_NOT_FOUND: 'Message not found.',
   NO_TOKEN_PROVIDED: 'No token provided.',
   NOT_VALID_MEMBERS_COUNT: 'Not valid members count.',
   NOTIFICATION_NOT_FOUND: 'Notification not found.',

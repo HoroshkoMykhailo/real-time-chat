@@ -9,6 +9,8 @@ import {
 } from './libs/types/types.js';
 import { type MessageDocument, type MessageModel } from './message.model.js';
 
+const POSITIVE_VALUE = 1;
+
 type Constructor = Record<'messageModel', typeof MessageModel>;
 
 class Message extends AbstractRepository<MessageDocument, TMessage> {
@@ -18,6 +20,15 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
 
   public async deleteByChatId(chatId: string): Promise<void> {
     await this.model.deleteMany({ chatId });
+  }
+
+  public async getLastMessage(chatId: string): Promise<TMessage | null> {
+    const lastMessage = await this.model
+      .findOne({ chatId })
+      .sort({ createdAt: -1 })
+      .limit(POSITIVE_VALUE);
+
+    return lastMessage ? this.mapToBusinessLogic(lastMessage) : null;
   }
 
   public async getMessagesByChatId({

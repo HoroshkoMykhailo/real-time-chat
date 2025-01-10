@@ -28,4 +28,21 @@ const writeTextMessage = createAsyncThunk<
   }
 );
 
-export { getMessages, writeTextMessage };
+const deleteMessage = createAsyncThunk<
+  null | string,
+  { messageId: string },
+  AsyncThunkConfig
+>(
+  ActionType.DELETE_MESSAGE,
+  async ({ messageId }, { extra: { messageApi } }) => {
+    const isDeleted = await messageApi.deleteMessage(messageId);
+
+    if (!isDeleted) {
+      return null;
+    }
+
+    return messageId;
+  }
+);
+
+export { deleteMessage, getMessages, writeTextMessage };

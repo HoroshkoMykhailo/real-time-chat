@@ -13,6 +13,8 @@ type MessageService = {
     chatId: string
   ): Promise<MessageCreationResponseDto>;
 
+  deleteMessage(user: User, messageId: string): Promise<boolean>;
+
   getMessagesByChatId(
     user: User,
     chatId: string,

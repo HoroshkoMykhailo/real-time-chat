@@ -1,6 +1,10 @@
 import { type PayloadAction, createSlice, isAnyOf } from '@reduxjs/toolkit';
 
-import { ONE_VALUE, ZERO_VALUE } from '~/libs/common/constants.js';
+import {
+  MINUS_ONE_VALUE,
+  ONE_VALUE,
+  ZERO_VALUE
+} from '~/libs/common/constants.js';
 import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
@@ -136,6 +140,34 @@ const { actions, reducer } = createSlice({
     resetCreatedChat: state => {
       state.createdChat = null;
     },
+    resetLastMessage(state, action: PayloadAction<{ chatId: string }>) {
+      const { chatId } = action.payload;
+      const chatIndex = state.chats.findIndex(chat => chat.id === chatId);
+
+      if (chatIndex >= ZERO_VALUE) {
+        const chat = state.chats[chatIndex];
+
+        if (chat?.lastMessage) {
+          const { lastMessage, ...updatedChat } = chat;
+
+          state.chats.splice(chatIndex, ONE_VALUE);
+
+          const insertIndex = state.chats.findIndex(
+            chat => !chat.lastMessage?.createdAt
+          );
+
+          if (insertIndex === MINUS_ONE_VALUE) {
+            state.chats.push(updatedChat as ChatsResponseDto[number]);
+          } else {
+            state.chats.splice(
+              insertIndex,
+              ZERO_VALUE,
+              updatedChat as ChatsResponseDto[number]
+            );
+          }
+        }
+      }
+    },
     resetSelectedChat: state => {
       state.selectedChat = null;
     },
@@ -163,7 +195,21 @@ const { actions, reducer } = createSlice({
         };
 
         state.chats.splice(chatIndex, ONE_VALUE);
-        state.chats.unshift(updatedChat as ChatsResponseDto[number]);
+        const insertIndex = state.chats.findIndex(
+          chat =>
+            !chat.lastMessage?.createdAt ||
+            new Date(chat.lastMessage.createdAt) < new Date(message.createdAt)
+        );
+
+        if (insertIndex === MINUS_ONE_VALUE) {
+          state.chats.push(updatedChat as ChatsResponseDto[number]);
+        } else {
+          state.chats.splice(
+            insertIndex,
+            ZERO_VALUE,
+            updatedChat as ChatsResponseDto[number]
+          );
+        }
       }
     }
   }

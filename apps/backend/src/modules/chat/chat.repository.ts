@@ -85,12 +85,17 @@ class Chat extends AbstractRepository<ChatDocument, TChat> {
 
   public async setLastMessage(
     chatId: string,
-    messageId: string
+    messageId: null | string
   ): Promise<void> {
-    await this.model.updateOne(
-      { _id: chatId },
-      { $set: { lastMessageId: messageId } }
-    );
+    await (messageId
+      ? this.model.updateOne(
+          { _id: chatId },
+          { $set: { lastMessageId: messageId } }
+        )
+      : this.model.updateOne(
+          { _id: chatId },
+          { $unset: { lastMessageId: '' } }
+        ));
   }
 }
 

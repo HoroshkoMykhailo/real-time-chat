@@ -4,16 +4,18 @@ import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
 import { type GetMessagesResponseDto } from '../libs/types/types.js';
-import { getMessages, writeTextMessage } from './actions.js';
+import { deleteMessage, getMessages, writeTextMessage } from './actions.js';
 
 type State = {
   dataStatus: ValueOf<typeof DataStatus>;
+  editDataStatus: ValueOf<typeof DataStatus>;
   messages: GetMessagesResponseDto;
   writeDataStatus: ValueOf<typeof DataStatus>;
 };
 
 const initialState: State = {
   dataStatus: DataStatus.IDLE,
+  editDataStatus: DataStatus.IDLE,
   messages: [],
   writeDataStatus: DataStatus.IDLE
 };
@@ -41,11 +43,26 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(writeTextMessage.rejected), state => {
         state.writeDataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(deleteMessage.fulfilled), (state, action) => {
+        if (action.payload) {
+          state.messages = state.messages.filter(
+            message => message.id !== action.payload
+          );
+          state.editDataStatus = DataStatus.FULFILLED;
+        }
+      })
+      .addMatcher(isAnyOf(deleteMessage.rejected), state => {
+        state.dataStatus = DataStatus.REJECTED;
+        state.editDataStatus = DataStatus.REJECTED;
       });
   },
   initialState,
   name: 'messages',
   reducers: {
+    resetEditDataStatus: state => {
+      state.editDataStatus = DataStatus.IDLE;
+    },
     resetWriteDataStatus: state => {
       state.writeDataStatus = DataStatus.IDLE;
     }

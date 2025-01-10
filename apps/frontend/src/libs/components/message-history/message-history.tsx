@@ -1,15 +1,27 @@
+import { ZERO_VALUE } from '~/libs/common/constants.js';
 import { Avatar, Loader } from '~/libs/components/components.js';
 import { DataStatus } from '~/libs/enums/enums.js';
-import { useAppSelector, useCallback, useState } from '~/libs/hooks/hooks.js';
+import {
+  useAppDispatch,
+  useAppSelector,
+  useCallback,
+  useEffect,
+  useState
+} from '~/libs/hooks/hooks.js';
+import { chatActions } from '~/modules/chat/chat.js';
+import { messageActions } from '~/modules/messages/message.js';
 
 import { MessagePopover } from './libs/components/message-popover/message-popover.js';
 import styles from './styles.module.scss';
 
 const MessageHistory = (): JSX.Element => {
+  const dispatch = useAppDispatch();
   const { selectedChat: chat } = useAppSelector(state => state.chat);
   const [popoverMessageId, setPopoverMessageId] = useState<null | string>(null);
 
-  const { dataStatus, messages } = useAppSelector(state => state.message);
+  const { dataStatus, editDataStatus, messages } = useAppSelector(
+    state => state.message
+  );
 
   const handleChatPopoverClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -27,6 +39,33 @@ const MessageHistory = (): JSX.Element => {
   const handleChatPopoverClose = useCallback((): void => {
     setPopoverMessageId(null);
   }, []);
+
+  useEffect(() => {
+    if (editDataStatus === DataStatus.FULFILLED) {
+      const message = messages.at(ZERO_VALUE);
+
+      dispatch(messageActions.resetEditDataStatus());
+
+      if (message) {
+        dispatch(
+          chatActions.updateLastMessage({
+            chatId: message.chatId,
+            message: {
+              content: message.content,
+              createdAt: message.createdAt,
+              senderName: message.sender.username
+            }
+          })
+        );
+      } else if (chat) {
+        dispatch(
+          chatActions.resetLastMessage({
+            chatId: chat.id
+          })
+        );
+      }
+    }
+  }, [chat, dispatch, editDataStatus, messages]);
 
   if (!chat) {
     return <></>;

@@ -25,6 +25,16 @@ class Message implements MessageApi {
     this.#httpApi = httpApi;
   }
 
+  public deleteMessage(messageId: string): Promise<boolean> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$MESSAGE_ID.replace(':messageId', messageId)}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.DELETE
+      }
+    );
+  }
+
   public getMessages(chatId: string): Promise<GetMessagesResponseDto> {
     return this.#httpApi.load(
       `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(':chatId', chatId)}`,

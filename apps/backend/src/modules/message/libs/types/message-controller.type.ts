@@ -19,6 +19,13 @@ type MessageController = {
     }>
   ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;
 
+  deleteMessage: (
+    options: ControllerAPIHandlerOptions<{
+      params: { messageId: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<boolean>>;
+
   getMessagesByChatId: (
     options: ControllerAPIHandlerOptions<{
       params: { chatId: string };
