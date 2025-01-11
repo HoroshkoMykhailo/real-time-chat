@@ -85,8 +85,20 @@ const writeFileMessage = createAsyncThunk<
   }
 );
 
+const downloadFile = createAsyncThunk<
+  Blob,
+  { messageId: string },
+  AsyncThunkConfig
+>(
+  ActionType.DOWNLOAD_FILE,
+  async ({ messageId }, { extra: { messageApi } }) => {
+    return await messageApi.downloadFile(messageId);
+  }
+);
+
 export {
   deleteMessage,
+  downloadFile,
   getMessages,
   updatePinMessage,
   updateTextMessage,

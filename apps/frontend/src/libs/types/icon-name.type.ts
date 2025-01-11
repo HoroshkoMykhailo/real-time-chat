@@ -3,6 +3,7 @@ type IconName =
   | 'camera'
   | 'cancel'
   | 'copy'
+  | 'download'
   | 'error'
   | 'file'
   | 'group'

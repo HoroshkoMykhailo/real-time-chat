@@ -1,0 +1,15 @@
+.file-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.file-name {
+  user-select: text;
+  cursor: text;
+  color: var(--text-dark);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+}

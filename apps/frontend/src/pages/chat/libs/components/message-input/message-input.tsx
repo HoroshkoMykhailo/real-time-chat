@@ -95,7 +95,8 @@ const MessageInput = ({
             message: {
               content: message.content,
               createdAt: message.createdAt,
-              senderName: message.sender.username
+              senderName: message.sender.username,
+              type: message.type
             }
           })
         );

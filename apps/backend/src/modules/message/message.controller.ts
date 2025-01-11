@@ -88,6 +88,23 @@ class Message extends Controller implements MessageController {
     };
   };
 
+  public downloadFileMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<Blob>> => {
+    const {
+      params: { id },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.downloadFile(user, id),
+      status: HTTPCode.OK
+    };
+  };
+
   public getMessagesByChatId = async (
     options: ControllerAPIHandlerOptions<{
       params: { chatId: string };
@@ -168,6 +185,12 @@ class Message extends Controller implements MessageController {
       handler: this.getMessagesByChatId as ControllerAPIHandler,
       method: HTTPMethod.GET,
       url: MessageApiPath.$CHAT_ID
+    });
+
+    this.addRoute({
+      handler: this.downloadFileMessage as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.FILE}`
     });
 
     this.addRoute({

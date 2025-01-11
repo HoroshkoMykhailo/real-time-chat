@@ -40,6 +40,16 @@ class Message implements MessageApi {
     );
   }
 
+  public downloadFile(messageId: string): Promise<Blob> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$MESSAGE_ID.replace(MessageApiParameters.MESSAGE_ID, messageId)}${MessageApiPath.FILE}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.GET
+      }
+    );
+  }
+
   public getMessages(chatId: string): Promise<GetMessagesResponseDto> {
     return this.#httpApi.load(
       `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(MessageApiParameters.CHAT_ID, chatId)}`,

@@ -22,6 +22,8 @@ type MessageService = {
 
   deleteMessage(user: User, messageId: string): Promise<boolean>;
 
+  downloadFile(user: User, messageId: string): Promise<Blob>;
+
   getMessagesByChatId(
     user: User,
     chatId: string,

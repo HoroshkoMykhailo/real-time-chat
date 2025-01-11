@@ -39,7 +39,8 @@ const MessageHistory = ({ setEditingMessageId }: Properties): JSX.Element => {
             message: {
               content: message.content,
               createdAt: message.createdAt,
-              senderName: message.sender.username
+              senderName: message.sender.username,
+              type: message.type
             }
           })
         );

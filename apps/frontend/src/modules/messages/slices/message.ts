@@ -1,5 +1,6 @@
 import {
   deleteMessage,
+  downloadFile,
   getMessages,
   updatePinMessage,
   updateTextMessage,
@@ -11,6 +12,7 @@ import { actions } from './message.slice.js';
 const allActions = {
   ...actions,
   deleteMessage,
+  downloadFile,
   getMessages,
   updatePinMessage,
   updateTextMessage,

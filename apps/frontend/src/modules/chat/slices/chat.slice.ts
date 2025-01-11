@@ -7,6 +7,7 @@ import {
 } from '~/libs/common/constants.js';
 import { DataStatus, StorageKey } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
+import { type MessageType } from '~/modules/messages/message.js';
 import { storageApi } from '~/modules/storage/storage.js';
 
 import { type Drafts } from '../libs/types/drafts.type.js';
@@ -293,6 +294,7 @@ const { actions, reducer } = createSlice({
           content: string;
           createdAt: string;
           senderName: string;
+          type: ValueOf<typeof MessageType>;
         };
       }>
     ) {

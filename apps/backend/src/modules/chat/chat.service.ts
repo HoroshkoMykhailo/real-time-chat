@@ -180,7 +180,8 @@ class Chat implements ChatService {
     const lastMessage = {
       content: message.content,
       createdAt: message.createdAt,
-      senderName: ''
+      senderName: '',
+      type: message.type
     };
 
     if (chat.type === ChatType.GROUP) {

@@ -26,7 +26,7 @@ const saveFile = async (
   fs.writeFile(filePath, uint8Array, error => {
     if (error) {
       throw new HTTPError({
-        message: ExceptionMessage.ERROR_SAVING_IMAGE,
+        message: ExceptionMessage.ERROR_SAVING_FILE,
         status: HTTPCode.INTERNAL_SERVER_ERROR
       });
     }

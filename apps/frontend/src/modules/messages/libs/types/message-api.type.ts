@@ -7,6 +7,8 @@ import {
 
 type MessageApi = {
   deleteMessage(messageId: string): Promise<boolean>;
+  downloadFile(messageId: string): Promise<Blob>;
+
   getMessages(chatId: string): Promise<GetMessagesResponseDto>;
 
   updatePinMessage(messageId: string): Promise<boolean>;

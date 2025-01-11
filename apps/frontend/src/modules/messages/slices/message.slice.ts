@@ -7,6 +7,7 @@ import { type ValueOf } from '~/libs/types/types.js';
 import { type GetMessagesResponseDto } from '../libs/types/types.js';
 import {
   deleteMessage,
+  downloadFile,
   getMessages,
   updatePinMessage,
   updateTextMessage,
@@ -17,6 +18,7 @@ import {
 type State = {
   dataStatus: ValueOf<typeof DataStatus>;
   editDataStatus: ValueOf<typeof DataStatus>;
+  fileBlob: Blob | null;
   messages: GetMessagesResponseDto;
   writeDataStatus: ValueOf<typeof DataStatus>;
 };
@@ -24,6 +26,7 @@ type State = {
 const initialState: State = {
   dataStatus: DataStatus.IDLE,
   editDataStatus: DataStatus.IDLE,
+  fileBlob: null,
   messages: [],
   writeDataStatus: DataStatus.IDLE
 };
@@ -101,6 +104,13 @@ const { actions, reducer } = createSlice({
         }
       })
       .addMatcher(isAnyOf(updatePinMessage.rejected), state => {
+        state.editDataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(downloadFile.fulfilled), (state, action) => {
+        state.fileBlob = action.payload;
+        state.editDataStatus = DataStatus.FULFILLED;
+      })
+      .addMatcher(isAnyOf(downloadFile.rejected), state => {
         state.editDataStatus = DataStatus.REJECTED;
       });
   },

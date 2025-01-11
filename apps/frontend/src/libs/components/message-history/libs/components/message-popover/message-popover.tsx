@@ -115,15 +115,16 @@ const MessagePopover = ({
                 <span>Copy text</span>
               </button>
             )}
-            {profile?.id === message.sender.id && (
-              <button
-                className={styles['edit-button']}
-                onClick={handleEditClick}
-              >
-                <Icon height={24} name="pencil" width={24} />
-                <span>Edit</span>
-              </button>
-            )}
+            {profile?.id === message.sender.id &&
+              message.type === MessageType.TEXT && (
+                <button
+                  className={styles['edit-button']}
+                  onClick={handleEditClick}
+                >
+                  <Icon height={24} name="pencil" width={24} />
+                  <span>Edit</span>
+                </button>
+              )}
             {(profile?.id === message.sender.id ||
               profile?.id === chat?.adminId) && (
               <button

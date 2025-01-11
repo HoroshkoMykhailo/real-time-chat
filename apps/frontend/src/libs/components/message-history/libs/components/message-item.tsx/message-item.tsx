@@ -7,11 +7,13 @@ import {
   useEffect,
   useNavigate
 } from '~/libs/hooks/hooks.js';
+import { type ValueOf } from '~/libs/types/types.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import { type GetMessagesResponseDto } from '~/modules/messages/libs/types/types.js';
-import { messageActions } from '~/modules/messages/message.js';
+import { MessageType, messageActions } from '~/modules/messages/message.js';
 
 import { MessagePopover } from '../message-popover/message-popover.js';
+import { FileMessage } from './components/file-message/file-message.js';
 import { MessageFooter } from './components/message-footer/message-footer.js';
 import { TextMessage } from './components/text-message/text-message.js';
 import styles from './styles.module.scss';
@@ -85,6 +87,30 @@ const MessageItem = ({
     setPopoverMessageId(null);
   }, [setPopoverMessageId]);
 
+  const messageRenderers = new Map<
+    ValueOf<typeof MessageType>,
+    () => JSX.Element
+  >([
+    [
+      MessageType.FILE,
+      (): JSX.Element => <FileMessage fileMessage={message} />
+    ],
+    [
+      MessageType.TEXT,
+      (): JSX.Element => <TextMessage text={message.content} />
+    ]
+  ]);
+
+  const renderMessageContent = (): JSX.Element => {
+    const renderFunction = messageRenderers.get(message.type);
+
+    if (renderFunction) {
+      return renderFunction();
+    }
+
+    return <p>Unsupported message type</p>;
+  };
+
   return (
     <MessagePopover
       isOpened={message.id === popoverMessageId}
@@ -110,7 +136,7 @@ const MessageItem = ({
           <div className={styles['message-header']}>
             <p className={styles['user-name']}>{message.sender.username}</p>
           </div>
-          <TextMessage text={message.content} />
+          {renderMessageContent()}
           <MessageFooter message={message} />
         </button>
       </div>

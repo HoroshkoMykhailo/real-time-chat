@@ -35,6 +35,13 @@ type MessageController = {
     }>
   ) => Promise<ControllerAPIHandlerResponse<boolean>>;
 
+  downloadFileMessage: (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<Blob>>;
+
   getMessagesByChatId: (
     options: ControllerAPIHandlerOptions<{
       params: { chatId: string };

@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 
 import { ExceptionMessage } from '~/libs/enums/enums.js';
-import { saveFile } from '~/libs/modules/helpers/helpers.js';
+import { getBlob, saveFile } from '~/libs/modules/helpers/helpers.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 
 import { type Chat as ChatRepository } from '../chat/chat.repository.js';
@@ -81,11 +81,12 @@ class Message implements MessageService {
       });
     }
 
-    const content = await saveFile(file, file.mimetype, 'file-');
+    const fileUrl = await saveFile(file, file.mimetype, 'file-');
 
     const message = await this.#messageRepository.create({
       chatId,
-      content,
+      content: file.filename,
+      fileUrl,
       isPinned: false,
       senderId: userId,
       status: MessageStatus.SENT,
@@ -186,6 +187,35 @@ class Message implements MessageService {
     }
 
     return isDeleted;
+  }
+
+  public async downloadFile(user: User, messageId: string): Promise<Blob> {
+    const message = await this.#messageRepository.getById(messageId);
+
+    if (!message) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const isMember = await this.#isUserChatMember(user, message.chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    if (!message.fileUrl) {
+      throw new HTTPError({
+        message: ExceptionMessage.FILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    return await getBlob(message.fileUrl);
   }
 
   public async getMessagesByChatId(

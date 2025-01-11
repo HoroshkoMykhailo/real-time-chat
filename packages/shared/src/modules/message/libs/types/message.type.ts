@@ -6,6 +6,7 @@ type Message = {
   chatId: string;
   content: string;
   createdAt: string;
+  fileUrl?: string;
   id: string;
   isPinned: boolean;
   senderId: string;
