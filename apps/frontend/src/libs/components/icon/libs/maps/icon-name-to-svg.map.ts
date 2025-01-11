@@ -7,6 +7,7 @@ import Copy from '~/assets/images/icons/copy.svg?react';
 import Error from '~/assets/images/icons/error.svg?react';
 import Group from '~/assets/images/icons/group.svg?react';
 import Image from '~/assets/images/icons/image.svg?react';
+import PaperClip from '~/assets/images/icons/paper-clip.svg?react';
 import Pencil from '~/assets/images/icons/pencil.svg?react';
 import Person from '~/assets/images/icons/person.svg?react';
 import Pin from '~/assets/images/icons/pin.svg?react';
@@ -24,6 +25,7 @@ const iconNameToSvg: Record<IconName, FC<React.SVGProps<SVGSVGElement>>> = {
   error: Error,
   group: Group,
   image: Image,
+  paperClip: PaperClip,
   pencil: Pencil,
   person: Person,
   pin: Pin,

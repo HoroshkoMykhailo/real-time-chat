@@ -37,6 +37,10 @@
   bottom: 3rem;
 }
 
+.file-popover {
+  transform: translateX(-100%) translateY(-190%);
+}
+
 .create-default-popover {
   transform: translateX(-100%) translateY(-160%);
 }

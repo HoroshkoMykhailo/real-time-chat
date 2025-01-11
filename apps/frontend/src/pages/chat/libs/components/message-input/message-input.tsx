@@ -1,5 +1,5 @@
 import { ZERO_VALUE } from '~/libs/common/constants.js';
-import { Avatar, Button, Icon } from '~/libs/components/components.js';
+import { Avatar, Button } from '~/libs/components/components.js';
 import { ButtonColor, DataStatus } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
@@ -12,6 +12,7 @@ import {
 import { chatActions } from '~/modules/chat/chat.js';
 import { messageActions } from '~/modules/messages/message.js';
 
+import { FilesInput } from './components/files-input/files-input.js';
 import styles from './styles.module.scss';
 
 type Properties = {
@@ -195,9 +196,7 @@ const MessageInput = ({
             value={message}
           />
           <div className={styles['button-container']}>
-            <button className={styles['icon-button']} title="Attach Image">
-              <Icon height={24} name="image" width={24} />
-            </button>
+            <FilesInput />
             <Button
               className={styles['send-button'] ?? ''}
               color={ButtonColor.TEAL}

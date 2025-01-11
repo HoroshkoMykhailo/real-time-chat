@@ -1,4 +1,8 @@
-import { useHandleClickOutside, useRef } from '~/libs/hooks/hooks.js';
+import {
+  useHandleClickOutside,
+  useHandleMouseLeave,
+  useRef
+} from '~/libs/hooks/hooks.js';
 
 import styles from './styles.module.scss';
 
@@ -8,6 +12,7 @@ type Properties = {
   content: React.ReactNode;
   isOpened: boolean;
   onClose: () => void;
+  onMouseLeave?: () => void;
 };
 
 const Popover = ({
@@ -15,12 +20,15 @@ const Popover = ({
   className,
   content,
   isOpened,
-  onClose
+  onClose,
+  onMouseLeave
 }: Properties): JSX.Element => {
   const popoverReference = useRef<HTMLDivElement>(null);
   const popoverTargetReference = useRef<HTMLDivElement>(null);
 
   useHandleClickOutside(popoverReference, onClose, popoverTargetReference);
+
+  useHandleMouseLeave({ onMouseLeave, reference: popoverReference });
 
   return (
     <div className={styles['popover-wrapper']} ref={popoverReference}>

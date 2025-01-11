@@ -6,6 +6,7 @@ type IconName =
   | 'error'
   | 'group'
   | 'image'
+  | 'paperClip'
   | 'pencil'
   | 'person'
   | 'pin'
