@@ -10,6 +10,7 @@ import {
   getMessages,
   updatePinMessage,
   updateTextMessage,
+  writeFileMessage,
   writeTextMessage
 } from './actions.js';
 
@@ -49,6 +50,16 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(writeTextMessage.rejected), state => {
+        state.writeDataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(writeFileMessage.fulfilled), (state, action) => {
+        state.messages.unshift(action.payload);
+        state.writeDataStatus = DataStatus.FULFILLED;
+      })
+      .addMatcher(isAnyOf(writeFileMessage.pending), state => {
+        state.writeDataStatus = DataStatus.PENDING;
+      })
+      .addMatcher(isAnyOf(writeFileMessage.rejected), state => {
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(deleteMessage.fulfilled), (state, action) => {

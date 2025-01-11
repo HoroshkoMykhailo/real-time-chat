@@ -1,4 +1,5 @@
 import {
+  type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
   type TextMessageRequestDto
@@ -13,6 +14,11 @@ type MessageApi = {
   updateTextMessage(
     messageId: string,
     content: TextMessageRequestDto
+  ): Promise<MessageCreationResponseDto>;
+
+  writeFileMessage(
+    chatId: string,
+    payload: FileMessageRequestDto
   ): Promise<MessageCreationResponseDto>;
 
   writeTextMessage(

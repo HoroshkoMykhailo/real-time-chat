@@ -3,6 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { type AsyncThunkConfig } from '~/libs/types/types.js';
 
 import {
+  type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
   type TextMessageRequestDto
@@ -73,10 +74,22 @@ const updatePinMessage = createAsyncThunk<
   }
 );
 
+const writeFileMessage = createAsyncThunk<
+  MessageCreationResponseDto,
+  { chatId: string; payload: FileMessageRequestDto },
+  AsyncThunkConfig
+>(
+  ActionType.WRITE_FILE_MESSAGE,
+  async ({ chatId, payload }, { extra: { messageApi } }) => {
+    return await messageApi.writeFileMessage(chatId, payload);
+  }
+);
+
 export {
   deleteMessage,
   getMessages,
   updatePinMessage,
   updateTextMessage,
+  writeFileMessage,
   writeTextMessage
 };

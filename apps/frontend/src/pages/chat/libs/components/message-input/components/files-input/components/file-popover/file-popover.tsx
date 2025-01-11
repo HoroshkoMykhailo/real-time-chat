@@ -1,4 +1,11 @@
 import { Icon, Popover } from '~/libs/components/components.js';
+import { checkGreaterThanZero } from '~/libs/helpers/helpers.js';
+import {
+  useAppDispatch,
+  useAppSelector,
+  useCallback
+} from '~/libs/hooks/hooks.js';
+import { messageActions } from '~/modules/messages/message.js';
 
 import styles from './styles.module.scss';
 
@@ -13,20 +20,57 @@ const FilePopover = ({
   isOpened,
   onClose
 }: Properties): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const { selectedChat: chat } = useAppSelector(state => state.chat);
+
+  const handleFileChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>): void => {
+      if (
+        chat &&
+        event.target.files &&
+        checkGreaterThanZero(event.target.files.length)
+      ) {
+        const [file] = event.target.files;
+
+        if (file) {
+          void dispatch(
+            messageActions.writeFileMessage({
+              chatId: chat.id,
+              payload: {
+                file
+              }
+            })
+          );
+        }
+      }
+    },
+    [chat, dispatch]
+  );
+
   return (
     <Popover
       className="file-popover"
       content={
         <div className={styles['file-popover']}>
           <div className={styles['buttons']}>
-            <button className={styles['button']}>
+            <label className={styles['button']}>
               <Icon height={24} name="image" width={24} />
               Photo or video
-            </button>
-            <button className={styles['button']}>
+              <input
+                accept="image/*,video/*"
+                style={{ display: 'none' }}
+                type="file"
+              />
+            </label>
+            <label className={styles['button']}>
               <Icon height={24} name="file" width={24} />
               File
-            </button>
+              <input
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+                type="file"
+              />
+            </label>
           </div>
         </div>
       }

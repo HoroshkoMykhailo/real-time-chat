@@ -8,6 +8,7 @@ export {
   MessageValidationRule
 } from './libs/enums/enums.js';
 export {
+  type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type Message,
   type MessageCreationResponseDto,

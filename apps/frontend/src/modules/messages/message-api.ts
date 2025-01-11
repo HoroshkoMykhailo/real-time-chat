@@ -1,4 +1,5 @@
 import { APIPath, ContentType } from '~/libs/enums/enums.js';
+import { convertToFormData } from '~/libs/helpers/helpers.js';
 
 import { type HttpApi } from '../http/http.js';
 import { HTTPMethod } from '../http/libs/enums/enums.js';
@@ -7,6 +8,7 @@ import {
   MessageApiPath
 } from './libs/enums/enums.js';
 import {
+  type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageApi,
   type MessageCreationResponseDto,
@@ -69,6 +71,22 @@ class Message implements MessageApi {
         hasAuth: true,
         method: HTTPMethod.PUT,
         payload: JSON.stringify(content)
+      }
+    );
+  }
+
+  public writeFileMessage(
+    chatId: string,
+    payload: FileMessageRequestDto
+  ): Promise<MessageCreationResponseDto> {
+    const formData = convertToFormData(payload);
+
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(MessageApiParameters.CHAT_ID, chatId)}${MessageApiPath.FILE}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.POST,
+        payload: formData
       }
     );
   }
