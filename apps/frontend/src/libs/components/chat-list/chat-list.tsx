@@ -8,7 +8,7 @@ import {
   useState
 } from '~/libs/hooks/hooks.js';
 import { chatActions } from '~/modules/chat/chat.js';
-import { type ChatsResponseDto } from '~/modules/chat/libs/types/types.js';
+import { type Chats } from '~/modules/chat/libs/types/types.js';
 import { messageActions } from '~/modules/messages/message.js';
 
 import { Loader, SearchBar } from '../components.js';
@@ -42,7 +42,7 @@ const ChatList = (): JSX.Element => {
       const chatData = event.currentTarget.dataset['chat'];
 
       if (chatData) {
-        const chat = JSON.parse(chatData) as ChatsResponseDto[number];
+        const chat = JSON.parse(chatData) as Chats[number];
 
         if (chat.id !== selectedChat?.id) {
           dispatch(chatActions.setSelectedChat(chat));
@@ -63,7 +63,7 @@ const ChatList = (): JSX.Element => {
       const chatData = event.currentTarget.dataset['chat'];
 
       if (chatData) {
-        const chat = JSON.parse(chatData) as ChatsResponseDto[number];
+        const chat = JSON.parse(chatData) as Chats[number];
         event.stopPropagation();
         event.preventDefault();
         setPopoverChatId(chat.id);

@@ -27,8 +27,10 @@ const MessageInput = ({
   const { messages, writeDataStatus } = useAppSelector(state => state.message);
   const { selectedChat: chat } = useAppSelector(state => state.chat);
   const { profile } = useAppSelector(state => state.profile);
+  const [currentChatId, setCurrentChatId] = useState<null | string>(null);
   const [message, setMessage] = useState<string>('');
   const inputReference = useRef<HTMLInputElement>(null);
+  const messageReference = useRef(message);
 
   const handleSend = useCallback(() => {
     if (message.trim() && chat) {
@@ -49,6 +51,11 @@ const MessageInput = ({
         );
       }
 
+      dispatch(
+        chatActions.deleteDraft({
+          chatId: chat.id
+        })
+      );
       setMessage('');
     }
   }, [chat, dispatch, editingMessageId, message, setEditingMessageId]);
@@ -69,6 +76,10 @@ const MessageInput = ({
     },
     []
   );
+
+  useEffect(() => {
+    messageReference.current = message;
+  }, [message]);
 
   useEffect(() => {
     if (writeDataStatus === DataStatus.FULFILLED) {
@@ -103,13 +114,45 @@ const MessageInput = ({
   }, [editingMessageId, messages]);
 
   useEffect(() => {
+    if (currentChatId) {
+      const message = messageReference.current;
+      const chatId = currentChatId;
+
+      if (message.trim()) {
+        dispatch(
+          chatActions.saveDraft({
+            chatId,
+            draft: {
+              content: messageReference.current,
+              createdAt: new Date().toISOString()
+            }
+          })
+        );
+      } else {
+        dispatch(
+          chatActions.deleteDraft({
+            chatId
+          })
+        );
+      }
+    }
+
     if (inputReference.current) {
       inputReference.current.focus();
     }
 
-    setMessage('');
+    if (chat?.draft) {
+      setMessage(chat.draft.content);
+    } else {
+      setMessage('');
+    }
+
+    if (chat?.id) {
+      setCurrentChatId(chat.id);
+    }
+
     setEditingMessageId(null);
-  }, [chat?.id, setEditingMessageId]);
+  }, [chat, currentChatId, dispatch, setEditingMessageId]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent): void => {

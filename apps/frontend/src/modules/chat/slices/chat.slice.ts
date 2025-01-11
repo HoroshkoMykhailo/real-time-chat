@@ -5,13 +5,17 @@ import {
   ONE_VALUE,
   ZERO_VALUE
 } from '~/libs/common/constants.js';
-import { DataStatus } from '~/libs/enums/enums.js';
+import { DataStatus, StorageKey } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
+import { storageApi } from '~/modules/storage/storage.js';
 
+import { type Drafts } from '../libs/types/drafts.type.js';
 import {
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
-  type ChatsResponseDto
+  type Chats,
+  type ChatsResponseDto,
+  type Draft
 } from '../libs/types/types.js';
 import {
   addMembers,
@@ -25,11 +29,32 @@ import {
   updateGroup
 } from './actions.js';
 
+const sortChats = (chats: Chats): Chats => {
+  return chats.sort((a, b) => {
+    const aDate = a.draft?.createdAt ?? a.lastMessage?.createdAt ?? null;
+    const bDate = b.draft?.createdAt ?? b.lastMessage?.createdAt ?? null;
+
+    if (!aDate && !bDate) {
+      return ZERO_VALUE;
+    }
+
+    if (!aDate) {
+      return ONE_VALUE;
+    }
+
+    if (!bDate) {
+      return MINUS_ONE_VALUE;
+    }
+
+    return new Date(bDate).getTime() - new Date(aDate).getTime();
+  });
+};
+
 type State = {
-  chats: ChatsResponseDto;
+  chats: Chats;
   createdChat: ChatCreationResponseDto | null;
   dataStatus: ValueOf<typeof DataStatus>;
-  selectedChat: (ChatsResponseDto[number] & Partial<ChatGetResponseDto>) | null;
+  selectedChat: (Chats[number] & Partial<ChatGetResponseDto>) | null;
 };
 
 const initialState: State = {
@@ -46,7 +71,19 @@ const { actions, reducer } = createSlice({
         state.dataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(getMyChats.fulfilled), (state, action) => {
-        state.chats = action.payload;
+        const draftsJson = storageApi.get(StorageKey.DRAFTS);
+        const drafts = draftsJson ? (JSON.parse(draftsJson) as Drafts) : {};
+
+        state.chats = sortChats(
+          action.payload.map(chat => {
+            const draft = drafts[chat.id];
+
+            return {
+              ...chat,
+              ...(draft && { draft })
+            };
+          })
+        );
         state.dataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(getMyChats.rejected), state => {
@@ -137,6 +174,43 @@ const { actions, reducer } = createSlice({
   initialState,
   name: 'chats',
   reducers: {
+    deleteDraft: (state, action: PayloadAction<{ chatId: string }>) => {
+      const { chatId } = action.payload;
+      const draftsJson = storageApi.get(StorageKey.DRAFTS);
+      const drafts = draftsJson ? (JSON.parse(draftsJson) as Drafts) : {};
+
+      const updatedDrafts = Object.fromEntries(
+        Object.entries(drafts).filter(([key]) => key !== chatId)
+      );
+
+      storageApi.set(StorageKey.DRAFTS, JSON.stringify(updatedDrafts));
+
+      const chatIndex = state.chats.findIndex(chat => chat.id === chatId);
+
+      if (chatIndex >= ZERO_VALUE) {
+        const chat = state.chats[chatIndex];
+
+        if (chat?.draft) {
+          const { draft, ...updatedChat } = chat;
+
+          state.chats.splice(chatIndex, ONE_VALUE);
+
+          const insertIndex = state.chats.findIndex(
+            chat => !chat.draft?.createdAt && !chat.lastMessage?.createdAt
+          );
+
+          if (insertIndex === MINUS_ONE_VALUE) {
+            state.chats.push(updatedChat as ChatsResponseDto[number]);
+          } else {
+            state.chats.splice(
+              insertIndex,
+              ZERO_VALUE,
+              updatedChat as ChatsResponseDto[number]
+            );
+          }
+        }
+      }
+    },
     resetCreatedChat: state => {
       state.createdChat = null;
     },
@@ -153,7 +227,7 @@ const { actions, reducer } = createSlice({
           state.chats.splice(chatIndex, ONE_VALUE);
 
           const insertIndex = state.chats.findIndex(
-            chat => !chat.lastMessage?.createdAt
+            chat => !chat.draft?.createdAt && !chat.lastMessage?.createdAt
           );
 
           if (insertIndex === MINUS_ONE_VALUE) {
@@ -171,8 +245,45 @@ const { actions, reducer } = createSlice({
     resetSelectedChat: state => {
       state.selectedChat = null;
     },
+    saveDraft: (
+      state,
+      action: PayloadAction<{ chatId: string; draft: Draft }>
+    ) => {
+      const draftsJson = storageApi.get(StorageKey.DRAFTS);
+      const drafts = draftsJson ? (JSON.parse(draftsJson) as Drafts) : {};
+
+      drafts[action.payload.chatId] = action.payload.draft;
+
+      storageApi.set(StorageKey.DRAFTS, JSON.stringify(drafts));
+
+      const chatIndex = state.chats.findIndex(
+        chat => chat.id === action.payload.chatId
+      );
+
+      if (chatIndex >= ZERO_VALUE && state.chats[chatIndex]) {
+        const chat = state.chats[chatIndex];
+
+        if (chat) {
+          state.chats.splice(chatIndex, ONE_VALUE);
+
+          state.chats.unshift({
+            ...chat,
+            draft: action.payload.draft
+          });
+        }
+      }
+    },
     setSelectedChat: (state, action: { payload: State['selectedChat'] }) => {
-      state.selectedChat = action.payload;
+      const draftsJson = storageApi.get(StorageKey.DRAFTS);
+      const drafts = draftsJson ? (JSON.parse(draftsJson) as Drafts) : {};
+
+      if (action.payload) {
+        const draft = drafts[action.payload.id];
+        state.selectedChat = {
+          ...action.payload,
+          ...(draft && { draft })
+        };
+      }
     },
     updateLastMessage(
       state,
@@ -197,8 +308,11 @@ const { actions, reducer } = createSlice({
         state.chats.splice(chatIndex, ONE_VALUE);
         const insertIndex = state.chats.findIndex(
           chat =>
-            !chat.lastMessage?.createdAt ||
-            new Date(chat.lastMessage.createdAt) < new Date(message.createdAt)
+            (!chat.lastMessage?.createdAt ||
+              new Date(chat.lastMessage.createdAt) <
+                new Date(message.createdAt)) &&
+            (!chat.draft?.createdAt ||
+              new Date(chat.draft.createdAt) < new Date(message.createdAt))
         );
 
         if (insertIndex === MINUS_ONE_VALUE) {
