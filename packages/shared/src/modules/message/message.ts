@@ -14,4 +14,7 @@ export {
   type MessageCreationResponseDto,
   type TextMessageRequestDto
 } from './libs/types/types.js';
-export { textMessage } from './libs/validation-schemas/validation-schemas.js';
+export {
+  fileMessage,
+  textMessage
+} from './libs/validation-schemas/validation-schemas.js';

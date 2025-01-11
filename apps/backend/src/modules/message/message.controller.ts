@@ -14,11 +14,15 @@ import { MessageApiPath } from './libs/enums/enums.js';
 import { type MessageController } from './libs/types/message-controller.type.js';
 import { type MessageService } from './libs/types/message-service.type.js';
 import {
+  type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
   type TextMessageRequestDto
 } from './libs/types/types.js';
-import { textMessageValidationSchema } from './libs/validation-schemas/validation-schemas.js';
+import {
+  fileMessageValidationSchema,
+  textMessageValidationSchema
+} from './libs/validation-schemas/validation-schemas.js';
 
 type Constructor = {
   apiPath: ValueOf<typeof APIPath>;
@@ -28,6 +32,25 @@ type Constructor = {
 
 class Message extends Controller implements MessageController {
   #messageService: MessageService;
+
+  public createFileMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      body: FileMessageRequestDto;
+      params: { chatId: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>> => {
+    const {
+      body,
+      params: { chatId },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.createFile(user, body, chatId),
+      status: HTTPCode.CREATED
+    };
+  };
 
   public createTextMessage = async (
     options: ControllerAPIHandlerOptions<{
@@ -147,6 +170,14 @@ class Message extends Controller implements MessageController {
       url: MessageApiPath.$CHAT_ID
     });
 
+    this.addRoute({
+      handler: this.createFileMessage as ControllerAPIHandler,
+      method: HTTPMethod.POST,
+      schema: {
+        body: fileMessageValidationSchema
+      },
+      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.FILE}`
+    });
     this.addRoute({
       handler: this.updateTextMessage as ControllerAPIHandler,
       method: HTTPMethod.PUT,

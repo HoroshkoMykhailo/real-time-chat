@@ -1,12 +1,19 @@
 import { type User } from '~/modules/user/user.js';
 
 import {
+  type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
   type TextMessageRequestDto
 } from './types.js';
 
 type MessageService = {
+  createFile(
+    user: User,
+    data: FileMessageRequestDto,
+    chatId: string
+  ): Promise<MessageCreationResponseDto>;
+
   createText(
     user: User,
     data: TextMessageRequestDto,

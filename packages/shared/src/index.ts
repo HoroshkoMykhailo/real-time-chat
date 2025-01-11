@@ -46,6 +46,7 @@ export {
   MessageValidationMessage,
   MessageValidationRule,
   type TextMessageRequestDto,
+  fileMessage,
   textMessage
 } from './modules/message/message.js';
 export {

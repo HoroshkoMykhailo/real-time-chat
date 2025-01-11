@@ -5,12 +5,21 @@ import {
 import { type User } from '~/modules/user/user.js';
 
 import {
+  type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
   type TextMessageRequestDto
 } from './types.js';
 
 type MessageController = {
+  createFileMessage: (
+    options: ControllerAPIHandlerOptions<{
+      body: FileMessageRequestDto;
+      params: { chatId: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;
+
   createTextMessage: (
     options: ControllerAPIHandlerOptions<{
       body: TextMessageRequestDto;
