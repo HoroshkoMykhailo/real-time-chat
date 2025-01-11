@@ -13,6 +13,7 @@ import { messageActions } from '~/modules/messages/message.js';
 
 import { MessagePopover } from '../message-popover/message-popover.js';
 import { MessageFooter } from './components/message-footer/message-footer.js';
+import { TextMessage } from './components/text-message/text-message.js';
 import styles from './styles.module.scss';
 
 type Properties = {
@@ -109,7 +110,7 @@ const MessageItem = ({
           <div className={styles['message-header']}>
             <p className={styles['user-name']}>{message.sender.username}</p>
           </div>
-          <p className={styles['message-text']}>{message.content}</p>
+          <TextMessage text={message.content} />
           <MessageFooter message={message} />
         </button>
       </div>
