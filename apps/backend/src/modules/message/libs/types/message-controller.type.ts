@@ -5,7 +5,7 @@ import {
 import { type User } from '~/modules/user/user.js';
 
 import {
-  type Message,
+  type GetMessagesResponseDto,
   type MessageCreationResponseDto,
   type TextMessageRequestDto
 } from './types.js';
@@ -19,6 +19,13 @@ type MessageController = {
     }>
   ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;
 
+  deleteMessage: (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<boolean>>;
+
   getMessagesByChatId: (
     options: ControllerAPIHandlerOptions<{
       params: { chatId: string };
@@ -29,7 +36,22 @@ type MessageController = {
       };
       user: User;
     }>
-  ) => Promise<ControllerAPIHandlerResponse<Message[]>>;
+  ) => Promise<ControllerAPIHandlerResponse<GetMessagesResponseDto>>;
+
+  updatePinMessage: (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<boolean>>;
+
+  updateTextMessage: (
+    options: ControllerAPIHandlerOptions<{
+      body: TextMessageRequestDto;
+      params: { id: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;
 };
 
 export { type MessageController };

@@ -14,8 +14,8 @@ import { MessageApiPath } from './libs/enums/enums.js';
 import { type MessageController } from './libs/types/message-controller.type.js';
 import { type MessageService } from './libs/types/message-service.type.js';
 import {
+  type GetMessagesResponseDto,
   type MessageCreationResponseDto,
-  type Message as TMessage,
   type TextMessageRequestDto
 } from './libs/types/types.js';
 import { textMessageValidationSchema } from './libs/validation-schemas/validation-schemas.js';
@@ -48,6 +48,23 @@ class Message extends Controller implements MessageController {
     };
   };
 
+  public deleteMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<boolean>> => {
+    const {
+      params: { id },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.deleteMessage(user, id),
+      status: HTTPCode.OK
+    };
+  };
+
   public getMessagesByChatId = async (
     options: ControllerAPIHandlerOptions<{
       params: { chatId: string };
@@ -58,7 +75,7 @@ class Message extends Controller implements MessageController {
       };
       user: TUser;
     }>
-  ): Promise<ControllerAPIHandlerResponse<TMessage[]>> => {
+  ): Promise<ControllerAPIHandlerResponse<GetMessagesResponseDto>> => {
     const {
       params: { chatId },
       query,
@@ -71,6 +88,42 @@ class Message extends Controller implements MessageController {
         chatId,
         query
       ),
+      status: HTTPCode.OK
+    };
+  };
+
+  public updatePinMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<boolean>> => {
+    const {
+      params: { id },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.updatePin(user, id),
+      status: HTTPCode.OK
+    };
+  };
+
+  public updateTextMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      body: TextMessageRequestDto;
+      params: { id: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>> => {
+    const {
+      body,
+      params: { id },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.updateText(user, id, body),
       status: HTTPCode.OK
     };
   };
@@ -92,6 +145,27 @@ class Message extends Controller implements MessageController {
       handler: this.getMessagesByChatId as ControllerAPIHandler,
       method: HTTPMethod.GET,
       url: MessageApiPath.$CHAT_ID
+    });
+
+    this.addRoute({
+      handler: this.updateTextMessage as ControllerAPIHandler,
+      method: HTTPMethod.PUT,
+      schema: {
+        body: textMessageValidationSchema
+      },
+      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.TEXT}`
+    });
+
+    this.addRoute({
+      handler: this.updatePinMessage as ControllerAPIHandler,
+      method: HTTPMethod.PUT,
+      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.PIN}`
+    });
+
+    this.addRoute({
+      handler: this.deleteMessage as ControllerAPIHandler,
+      method: HTTPMethod.DELETE,
+      url: MessageApiPath.$MESSAGE_ID
     });
   }
 }

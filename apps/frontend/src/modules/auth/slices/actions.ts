@@ -49,7 +49,7 @@ const signIn = createAsyncThunk<User, UserSignInRequestDto, AsyncThunkConfig>(
 const logout = createAsyncThunk<undefined, undefined, AsyncThunkConfig>(
   ActionType.LOGOUT,
   async (_payload, { extra: { storageApi } }): Promise<undefined> => {
-    storageApi.drop(StorageKey.TOKEN);
+    storageApi.clear();
     await Promise.resolve();
   }
 );

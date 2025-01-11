@@ -1,6 +1,3 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import { Loader, Navigate } from '~/libs/components/components.js';
 import { AppRoute, DataStatus } from '~/libs/enums/enums.js';
 import { checkGreaterThanZero } from '~/libs/helpers/helpers.js';
@@ -8,7 +5,9 @@ import {
   useAppDispatch,
   useAppSelector,
   useCallback,
-  useEffect
+  useEffect,
+  useNavigate,
+  useState
 } from '~/libs/hooks/hooks.js';
 import { profileActions } from '~/modules/profile/profile.js';
 
@@ -21,6 +20,8 @@ const Profile: React.FC = () => {
   const dispatch = useAppDispatch();
   const { dataStatus, profile } = useAppSelector(state => state.profile);
 
+  const ifNewProfile = profile?.createdAt === profile?.updatedAt;
+
   useEffect(() => {
     void dispatch(profileActions.getProfile());
   }, [dispatch]);
@@ -32,8 +33,14 @@ const Profile: React.FC = () => {
       }
 
       setIsEditing(false);
+
+      if (ifNewProfile) {
+        navigate(AppRoute.ROOT);
+      } else {
+        navigate(AppRoute.PROFILE);
+      }
     },
-    [dispatch]
+    [dispatch, ifNewProfile, navigate]
   );
 
   const onEditClick = useCallback((): void => {
@@ -51,8 +58,6 @@ const Profile: React.FC = () => {
   if (dataStatus === DataStatus.PENDING || !profile) {
     return <Loader />;
   }
-
-  const ifNewProfile = profile.createdAt === profile.updatedAt;
 
   if (ifNewProfile) {
     return (

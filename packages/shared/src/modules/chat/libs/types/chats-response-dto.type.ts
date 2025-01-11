@@ -10,6 +10,7 @@ type ChatsResponseDto = {
     createdAt: string;
     senderName: string;
   };
+  memberCount?: number;
   name: string;
   type: ValueOf<typeof ChatType>;
 }[];

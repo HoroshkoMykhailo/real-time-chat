@@ -1,0 +1,17 @@
+.message-footer {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--gray);
+}
+
+.message-time {
+  font-size: 0.8rem;
+}
+
+.edited-marker {
+  font-size: 0.8rem;
+}

@@ -9,6 +9,7 @@ import {
   useState
 } from '~/libs/hooks/hooks.js';
 import { chatActions } from '~/modules/chat/chat.js';
+import { messageActions } from '~/modules/messages/message.js';
 
 import { MemberItem } from '../member-item/member-item.js';
 import { MemberPopover } from '../member-popover/member-popover.js';
@@ -67,8 +68,11 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
 
   useEffect(() => {
     if (createdChat) {
-      dispatch(chatActions.setSelectedChat(createdChat));
+      void dispatch(messageActions.getMessages({ chatId: createdChat.id }));
+      void dispatch(chatActions.getChat({ id: createdChat.id }));
+
       navigate(`${AppRoute.CHATS}/${createdChat.id}`);
+      dispatch(chatActions.setSelectedChat(createdChat));
     }
   }, [navigate, dispatch, createdChat]);
 

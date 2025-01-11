@@ -1,7 +1,22 @@
 .group-edit-container {
+  flex-shrink: 0;
+  position: relative;
   display: flex;
   width: var(--chat-list-width);
   flex-direction: column;
   border-left: 1px solid var(--border-layout);
   overflow-y: hidden;
+}
+
+.cancel-button-wrapper {
+  position: absolute;
+  bottom: var(--create-chat-button-bottom);
+  left: var(--create-chat-button-left);
+  width: var(--create-chat-button-width);
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.cancel-button {
+  padding: 0.6rem 1rem;
 }

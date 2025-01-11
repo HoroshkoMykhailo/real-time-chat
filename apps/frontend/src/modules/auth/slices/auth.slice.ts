@@ -3,6 +3,7 @@ import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { type User } from '~/modules/auth/auth.js';
+import { storageApi } from '~/modules/storage/storage.js';
 
 import { getAuthenticatedUser, logout, signIn, signUp } from './actions.js';
 
@@ -39,6 +40,7 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(getAuthenticatedUser.rejected), state => {
         state.user = null;
+        storageApi.clear();
         state.dataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(signIn.pending), state => {

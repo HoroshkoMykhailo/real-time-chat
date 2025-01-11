@@ -1,15 +1,15 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import { AppRoute, DataStatus } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppSelector,
   useCallback,
+  useNavigate,
+  useParams,
   useState
 } from '~/libs/hooks/hooks.js';
 import { chatActions } from '~/modules/chat/chat.js';
-import { type ChatsResponseDto } from '~/modules/chat/libs/types/types.js';
+import { type Chats } from '~/modules/chat/libs/types/types.js';
+import { messageActions } from '~/modules/messages/message.js';
 
 import { Loader, SearchBar } from '../components.js';
 import { ChatItem } from './libs/components/chat-item/chat-item.js';
@@ -18,8 +18,10 @@ import styles from './styles.module.scss';
 
 const ChatList = (): JSX.Element => {
   const dispatch = useAppDispatch();
-  const { chats, dataStatus } = useAppSelector(state => state.chat);
-  const { selectedChat } = useAppSelector(state => state.chat);
+  const { id: chatId } = useParams<{ id: string }>();
+  const { chats, dataStatus, selectedChat } = useAppSelector(
+    state => state.chat
+  );
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [popoverChatId, setPopoverChatId] = useState<null | string>(null);
   const navigate = useNavigate();
@@ -40,13 +42,20 @@ const ChatList = (): JSX.Element => {
       const chatData = event.currentTarget.dataset['chat'];
 
       if (chatData) {
-        const chat = JSON.parse(chatData) as ChatsResponseDto[number];
-        dispatch(chatActions.setSelectedChat(chat));
-        void dispatch(chatActions.getChat({ id: chat.id }));
-        navigate(`${AppRoute.CHATS}/${chat.id}`);
+        const chat = JSON.parse(chatData) as Chats[number];
+
+        if (chat.id !== selectedChat?.id) {
+          dispatch(chatActions.setSelectedChat(chat));
+
+          void dispatch(messageActions.getMessages({ chatId: chat.id }));
+
+          void dispatch(chatActions.getChat({ id: chat.id }));
+
+          navigate(`${AppRoute.CHATS}/${chat.id}`);
+        }
       }
     },
-    [dispatch, navigate]
+    [dispatch, navigate, selectedChat?.id]
   );
 
   const handleChatPopoverClick = useCallback(
@@ -54,7 +63,7 @@ const ChatList = (): JSX.Element => {
       const chatData = event.currentTarget.dataset['chat'];
 
       if (chatData) {
-        const chat = JSON.parse(chatData) as ChatsResponseDto[number];
+        const chat = JSON.parse(chatData) as Chats[number];
         event.stopPropagation();
         event.preventDefault();
         setPopoverChatId(chat.id);
@@ -72,7 +81,7 @@ const ChatList = (): JSX.Element => {
   }
 
   return (
-    <div className={styles['chat-list-container']}>
+    <>
       <SearchBar
         onChange={handleSearchChange}
         placeholder="Search chats"
@@ -89,7 +98,8 @@ const ChatList = (): JSX.Element => {
           >
             <button
               className={`${styles['chat-item']} ${
-                selectedChat?.id === chat.id || chat.id === popoverChatId
+                (selectedChat?.id === chat.id && chatId === chat.id) ||
+                chat.id === popoverChatId
                   ? styles['selected']
                   : ''
               }`}
@@ -103,7 +113,7 @@ const ChatList = (): JSX.Element => {
           </ChatPopover>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 

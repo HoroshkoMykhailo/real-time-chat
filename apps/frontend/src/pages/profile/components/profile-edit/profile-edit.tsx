@@ -1,6 +1,3 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import {
   Button,
   DatePicker,
@@ -10,9 +7,14 @@ import {
   Input,
   Select
 } from '~/libs/components/components.js';
-import { AppRoute, ButtonColor, ENV } from '~/libs/enums/enums.js';
+import { ButtonColor, ENV } from '~/libs/enums/enums.js';
 import { checkGreaterThanZero } from '~/libs/helpers/check-greater-than-zero.helper.js';
-import { useAppForm, useCallback, useEffect } from '~/libs/hooks/hooks.js';
+import {
+  useAppForm,
+  useCallback,
+  useEffect,
+  useState
+} from '~/libs/hooks/hooks.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import {
   type Profile,
@@ -44,7 +46,6 @@ const ProfileEdit: React.FC<Properties> = ({
   onUpdate,
   profile
 }) => {
-  const navigate = useNavigate();
   const [imageUrl, setImageUrl] = useState<null | string>(null);
 
   const { control, errors, handleSubmit, reset, setValue } =
@@ -113,7 +114,6 @@ const ProfileEdit: React.FC<Properties> = ({
 
     onUpdate(updateProfile);
     reset();
-    navigate(AppRoute.PROFILE);
   };
 
   return (

@@ -78,7 +78,7 @@ class Chat implements ChatService {
   async #formatChat(
     chat: TChat,
     userId: string
-  ): Promise<ChatsResponseDto[typeof DEFAULT_VALUE]> {
+  ): Promise<ChatsResponseDto[number]> {
     const lastMessage = await this.#getLastMessage(chat);
     const { chatPicture, name } = await this.#getChatMetadata(chat, userId);
 
@@ -86,6 +86,7 @@ class Chat implements ChatService {
       id: chat.id,
       name,
       type: chat.type,
+      ...(chat.type === ChatType.GROUP && { memberCount: chat.members.length }),
       ...(lastMessage && { lastMessage }),
       ...(chatPicture && { chatPicture })
     };
@@ -165,9 +166,7 @@ class Chat implements ChatService {
 
   async #getLastMessage(
     chat: TChat
-  ): Promise<
-    ChatsResponseDto[typeof DEFAULT_VALUE]['lastMessage'] | undefined
-  > {
+  ): Promise<ChatsResponseDto[number]['lastMessage'] | undefined> {
     if (!chat.lastMessageId) {
       return undefined;
     }

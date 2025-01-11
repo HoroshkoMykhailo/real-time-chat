@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router-dom';
-
 import { DEBOUNCE_DELAY } from '~/libs/common/constants.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
@@ -8,9 +6,11 @@ import {
   useCallback,
   useDebounce,
   useEffect,
+  useNavigate,
   useState
 } from '~/libs/hooks/hooks.js';
-import { chatActions } from '~/modules/chat/chat.js';
+import { ChatType, chatActions } from '~/modules/chat/chat.js';
+import { messageActions } from '~/modules/messages/message.js';
 import { userActions } from '~/modules/user/user.js';
 
 import { SearchBar } from '../components.js';
@@ -21,7 +21,7 @@ const CreateChat = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(searchQuery, DEBOUNCE_DELAY);
-  const { createdChat } = useAppSelector(state => state.chat);
+  const { createdChat, selectedChat } = useAppSelector(state => state.chat);
   const { users } = useAppSelector(state => state.user);
   const { profile } = useAppSelector(state => state.profile);
   const navigate = useNavigate();
@@ -41,6 +41,14 @@ const CreateChat = (): JSX.Element => {
     (event: React.MouseEvent<HTMLButtonElement>): void => {
       const { userId } = event.currentTarget.dataset;
 
+      if (selectedChat && selectedChat.members) {
+        const user = selectedChat.members.find(member => member.id === userId);
+
+        if (user && selectedChat.type === ChatType.PRIVATE) {
+          return;
+        }
+      }
+
       if (userId && profile) {
         void dispatch(
           chatActions.createPrivateChat({ otherId: userId, userId: profile.id })
@@ -48,12 +56,17 @@ const CreateChat = (): JSX.Element => {
         dispatch(chatActions.resetSelectedChat());
       }
     },
-    [profile, dispatch]
+    [selectedChat, profile, dispatch]
   );
 
   useEffect(() => {
     if (createdChat) {
       dispatch(chatActions.setSelectedChat(createdChat));
+      void dispatch(messageActions.getMessages({ chatId: createdChat.id }));
+
+      void dispatch(chatActions.getChat({ id: createdChat.id }));
+
+      dispatch(chatActions.resetCreatedChat());
       navigate(`${AppRoute.CHATS}/${createdChat.id}`);
     }
   }, [navigate, dispatch, createdChat]);
@@ -61,7 +74,7 @@ const CreateChat = (): JSX.Element => {
   const filteredUsers = users.filter(user => user.id !== profile?.id);
 
   return (
-    <div className={styles['create-chat-container']}>
+    <>
       <SearchBar
         onChange={handleSearchChange}
         placeholder="Search users"
@@ -79,7 +92,7 @@ const CreateChat = (): JSX.Element => {
           </button>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 

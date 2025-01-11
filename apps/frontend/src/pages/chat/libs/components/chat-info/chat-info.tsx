@@ -1,11 +1,10 @@
-import { useNavigate } from 'react-router-dom';
-
 import { ChatPicture } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppSelector,
-  useCallback
+  useCallback,
+  useNavigate
 } from '~/libs/hooks/hooks.js';
 import { ChatType, chatActions } from '~/modules/chat/chat.js';
 
@@ -38,7 +37,7 @@ const ChatInfo = ({
     }
   }, [chat, dispatch, navigate]);
 
-  if (!chat || !profile) {
+  if (!chat?.members || !profile) {
     return <></>;
   }
 
@@ -46,6 +45,11 @@ const ChatInfo = ({
 
   const chatTypeLabel =
     chat.type === ChatType.GROUP ? 'Group Info' : 'User Info';
+
+  const otherMember =
+    chat.type === ChatType.PRIVATE
+      ? chat.members.find(member => member.id !== profile.id)
+      : null;
 
   return (
     <div className={`${styles['chat-info']} ${isOpen ? styles['open'] : ''}`}>
@@ -65,14 +69,46 @@ const ChatInfo = ({
         />
         <div className={styles['chat-name-wrapper']}>
           <h2 className={styles['chat-name']}>{chat.name}</h2>
-          {chat.type === ChatType.GROUP && chat.members && (
+          {chat.type === ChatType.GROUP && (
             <span className={styles['member-count']}>
               {chat.members.length} members
             </span>
           )}
         </div>
+        {otherMember && (
+          <div className={styles['detailsContainer']}>
+            {otherMember.description && (
+              <div className={styles['detailsGroup']}>
+                <span className={styles['detailsLabel']}>Description</span>
+                <div className={styles['detailsWrapper']}>
+                  <div className={styles['detailsBox']}>
+                    {otherMember.description}
+                  </div>
+                </div>
+              </div>
+            )}
+            {otherMember.dateOfBirth && (
+              <div className={styles['detailsGroup']}>
+                <span className={styles['detailsLabel']}>Date of Birth</span>
+                <div className={styles['detailsWrapper']}>
+                  <div className={styles['detailsBox']}>
+                    {otherMember.dateOfBirth}
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className={styles['detailsGroup']}>
+              <span className={styles['detailsLabel']}>Language</span>
+              <div className={styles['detailsWrapper']}>
+                <div className={styles['detailsBox']}>
+                  {otherMember.language === 'en' ? 'English' : 'Ukrainian'}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      {chat.type === ChatType.GROUP && chat.members && (
+      {chat.type === ChatType.GROUP && (
         <MembersList onOpenAddMembers={onOpenAddMembers} />
       )}
     </div>

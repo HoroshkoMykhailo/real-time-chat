@@ -4,6 +4,7 @@ import { AppEnvironment } from '~/libs/enums/enums.js';
 import { type ConfigModule } from '~/libs/modules/config/config.js';
 import { authApi, authReducer } from '~/modules/auth/auth.js';
 import { chatApi, chatReducer } from '~/modules/chat/chat.js';
+import { messageApi, messageReducer } from '~/modules/messages/message.js';
 import { profileApi, profileReducer } from '~/modules/profile/profile.js';
 import { storageApi } from '~/modules/storage/storage.js';
 import { userApi, userReducer } from '~/modules/user/user.js';
@@ -30,6 +31,7 @@ class Store implements StoreModule {
       reducer: {
         auth: authReducer,
         chat: chatReducer,
+        message: messageReducer,
         profile: profileReducer,
         user: userReducer
       }
@@ -40,6 +42,7 @@ class Store implements StoreModule {
     return {
       authApi,
       chatApi,
+      messageApi,
       profileApi,
       storageApi,
       userApi

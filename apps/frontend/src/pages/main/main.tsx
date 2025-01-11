@@ -34,11 +34,22 @@ const Main: React.FC = () => {
     ActiveSideView.ChatList
   );
 
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+
   useEffect(() => {
     void dispatch(profileActions.getProfile());
     void dispatch(chatActions.getMyChats());
     dispatch(chatActions.resetSelectedChat());
   }, [dispatch]);
+
+  const handleMouseEnter = useCallback((): void => {
+    setIsHovered(true);
+  }, []);
+
+  const handleMouseLeave = useCallback((): void => {
+    setIsHovered(false);
+    onCreateChatClose();
+  }, [onCreateChatClose]);
 
   const handleOpenCreateGroup = useCallback((): void => {
     setActiveView(ActiveSideView.CreateGroup);
@@ -61,8 +72,9 @@ const Main: React.FC = () => {
 
   const handleLogoClick = useCallback((): void => {
     setActiveView(ActiveSideView.ChatList);
+    dispatch(chatActions.resetSelectedChat());
     onCreateChatClose();
-  }, [onCreateChatClose]);
+  }, [dispatch, onCreateChatClose]);
 
   const viewMap = new Map<ValueOf<typeof ActiveSideView>, () => JSX.Element>([
     [ActiveSideView.ChatList, (): JSX.Element => <ChatList />],
@@ -89,27 +101,36 @@ const Main: React.FC = () => {
         <Header onLogoClick={handleLogoClick} />
       </div>
       <div className={styles['page-content']}>
-        {renderContent()}
-        <RouterOutlet />
-      </div>
-      <div className={styles['create-chat-wrapper']}>
-        <CreateChatPopover
-          isOpened={isCreateChatOpened}
-          onClose={onCreateChatClose}
-          onCreateChat={handleOpenCreateChat}
-          onCreateGroup={handleOpenCreateGroup}
+        <nav
+          className={styles['side-bar']}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          <Button
-            className={styles['create-chat-button'] ?? ''}
-            color={ButtonColor.TEAL}
-            isPrimary
-            onClick={handleCancelClick}
+          {renderContent()}
+          <div
+            className={styles['create-chat-wrapper']}
+            style={{ display: isHovered ? 'block' : 'none' }}
           >
-            {!isCreateChatOpened && activeView === ActiveSideView.ChatList
-              ? 'Create Chat'
-              : 'Cancel'}
-          </Button>
-        </CreateChatPopover>
+            <CreateChatPopover
+              isOpened={isCreateChatOpened}
+              onClose={onCreateChatClose}
+              onCreateChat={handleOpenCreateChat}
+              onCreateGroup={handleOpenCreateGroup}
+            >
+              <Button
+                className={styles['create-chat-button'] ?? ''}
+                color={ButtonColor.TEAL}
+                isPrimary
+                onClick={handleCancelClick}
+              >
+                {!isCreateChatOpened && activeView === ActiveSideView.ChatList
+                  ? 'Create Chat'
+                  : 'Cancel'}
+              </Button>
+            </CreateChatPopover>
+          </div>
+        </nav>
+        <RouterOutlet />
       </div>
     </div>
   );

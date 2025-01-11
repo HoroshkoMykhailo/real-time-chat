@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router-dom';
-
 import {
   MINUS_ONE_VALUE,
   ONE_VALUE,
@@ -12,6 +10,7 @@ import {
   useAppSelector,
   useCallback,
   useEffect,
+  useNavigate,
   useState
 } from '~/libs/hooks/hooks.js';
 import { type ValueOf } from '~/libs/types/types.js';
@@ -21,6 +20,7 @@ import {
   chatCreationValidationSchema
 } from '~/modules/chat/chat.js';
 import { type ChatCreationRequestDto } from '~/modules/chat/libs/types/types.js';
+import { messageActions } from '~/modules/messages/message.js';
 import { type Profile } from '~/modules/profile/profile.js';
 import { ActiveSideView } from '~/pages/main/libs/enums/active-side-view.enum.js';
 
@@ -30,7 +30,6 @@ import { CreateGroupHeader } from './libs/components/header/header.js';
 import { MemberList } from './libs/components/member-list/member-list.js';
 import { UserSearch } from './libs/components/user-search/user-search.js';
 import { type GroupFormValues } from './libs/types/group-form-values.type.js';
-import styles from './styles.module.scss';
 
 type Properties = {
   setActiveView: (value: ValueOf<typeof ActiveSideView>) => void;
@@ -106,6 +105,10 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
   useEffect(() => {
     if (createdChat) {
       dispatch(chatActions.setSelectedChat(createdChat));
+      void dispatch(messageActions.getMessages({ chatId: createdChat.id }));
+
+      void dispatch(chatActions.getChat({ id: createdChat.id }));
+
       navigate(`${AppRoute.CHATS}/${createdChat.id}`);
       setActiveView(ActiveSideView.ChatList);
       dispatch(chatActions.resetCreatedChat());
@@ -113,7 +116,7 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
   }, [navigate, dispatch, createdChat, setActiveView]);
 
   return (
-    <div className={styles['create-chat-container']}>
+    <>
       <CreateGroupHeader
         isGroupInformation={isGroupInformation}
         onContinueClick={handleContinueClick}
@@ -129,7 +132,7 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
           selectedUsers={selectedUsers}
         />
       )}
-    </div>
+    </>
   );
 };
 

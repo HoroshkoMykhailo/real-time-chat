@@ -3,14 +3,16 @@ import { logger } from '~/libs/modules/logger/logger.js';
 
 import {
   chatRepository,
-  messageRepository
+  messageRepository,
+  profileRepository
 } from '../initializations/repositories.js';
 import { Message as MessageController } from './message.controller.js';
 import { Message as MessageService } from './message.service.js';
 
 const messageService = new MessageService({
   chatRepository,
-  messageRepository
+  messageRepository,
+  profileRepository
 });
 
 const messageController = new MessageController({

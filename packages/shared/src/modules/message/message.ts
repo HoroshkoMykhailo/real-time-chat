@@ -1,4 +1,5 @@
 export {
+  MessageApiParams,
   MessageApiPath,
   MessagePayloadKey,
   MessageStatus,
@@ -7,6 +8,7 @@ export {
   MessageValidationRule
 } from './libs/enums/enums.js';
 export {
+  type GetMessagesResponseDto,
   type Message,
   type MessageCreationResponseDto,
   type TextMessageRequestDto

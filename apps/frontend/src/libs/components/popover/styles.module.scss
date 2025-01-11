@@ -18,14 +18,25 @@
   transform: translateX(-100%);
 }
 
-.chat-popover {
+.default-popover {
   transform: translateX(-120%);
 }
 
-.chat-popover-up {
+.default-popover-up {
   transform: translateX(-120%) translateY(-200%);
 }
 
-.create-chat-popover {
+.message-popover {
+  transform: none;
+  left: 8rem;
+}
+
+.message-popover-up {
+  transform: none;
+  left: 8rem;
+  bottom: 3rem;
+}
+
+.create-default-popover {
   transform: translateX(-100%) translateY(-160%);
 }

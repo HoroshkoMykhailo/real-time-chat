@@ -1,4 +1,5 @@
-import { CreateGroupHeader } from '~/libs/components/components.js';
+import { Button, CreateGroupHeader } from '~/libs/components/components.js';
+import { ButtonColor } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppForm,
@@ -59,6 +60,16 @@ const GroupEdit = ({ onCancel }: Properties): JSX.Element => {
     <div className={styles['group-edit-container']}>
       <CreateGroupHeader isEditGroup onContinueClick={handleContinueClick} />
       <EditGroupForm control={control} errors={errors} setValue={setValue} />
+      <div className={styles['cancel-button-wrapper'] ?? ''}>
+        <Button
+          className={styles['cancel-button'] ?? ''}
+          color={ButtonColor.TEAL}
+          isPrimary
+          onClick={onCancel}
+        >
+          Cancel
+        </Button>
+      </div>
     </div>
   );
 };
