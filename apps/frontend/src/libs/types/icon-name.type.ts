@@ -4,6 +4,7 @@ type IconName =
   | 'cancel'
   | 'copy'
   | 'error'
+  | 'file'
   | 'group'
   | 'image'
   | 'paperClip'

@@ -1,5 +1,5 @@
 .file-popover {
-  min-width: 150px;
+  min-width: 200px;
 }
 
 .buttons {
@@ -16,13 +16,14 @@
   width: 100%;
   padding: 8px 12px;
   font-family: inherit;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
   line-height: 1.2;
   text-decoration: none;
   cursor: pointer;
   background-color: transparent;
   border: none;
+  word-spacing: 4px;
   border-radius: 4px;
 }
 

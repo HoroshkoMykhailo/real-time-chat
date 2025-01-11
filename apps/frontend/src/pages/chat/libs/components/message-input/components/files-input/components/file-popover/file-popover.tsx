@@ -1,6 +1,4 @@
 import { Icon, Popover } from '~/libs/components/components.js';
-import { useAppDispatch, useCallback } from '~/libs/hooks/hooks.js';
-import { authActions } from '~/modules/auth/auth.js';
 
 import styles from './styles.module.scss';
 
@@ -15,21 +13,19 @@ const FilePopover = ({
   isOpened,
   onClose
 }: Properties): JSX.Element => {
-  const dispatch = useAppDispatch();
-
-  const handleLogout = useCallback((): void => {
-    void dispatch(authActions.logout());
-  }, [dispatch]);
-
   return (
     <Popover
       className="file-popover"
       content={
         <div className={styles['file-popover']}>
           <div className={styles['buttons']}>
-            <button className={styles['button']} onClick={handleLogout}>
+            <button className={styles['button']}>
               <Icon height={24} name="image" width={24} />
-              Picture
+              Photo or video
+            </button>
+            <button className={styles['button']}>
+              <Icon height={24} name="file" width={24} />
+              File
             </button>
           </div>
         </div>

@@ -15,7 +15,7 @@ const FilesInput = (): JSX.Element => {
     <FilePopover isOpened={isFileOpened} onClose={onFileClose}>
       <button
         className={styles['icon-button']}
-        onClick={onFileClose}
+        onClick={isFileOpened ? onFileClose : onFileOpen}
         onMouseEnter={onFileOpen}
       >
         <Icon height={24} name="paperClip" width={24} />
