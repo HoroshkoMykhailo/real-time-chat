@@ -36,6 +36,8 @@ const Profile: React.FC = () => {
 
       if (ifNewProfile) {
         navigate(AppRoute.ROOT);
+      } else {
+        navigate(AppRoute.PROFILE);
       }
     },
     [dispatch, ifNewProfile, navigate]
