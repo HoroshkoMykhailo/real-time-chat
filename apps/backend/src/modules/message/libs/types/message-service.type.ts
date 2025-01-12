@@ -26,6 +26,12 @@ type MessageService = {
     chatId: string
   ): Promise<MessageCreationResponseDto>;
 
+  createVideo(
+    user: User,
+    data: FileMessageRequestDto,
+    chatId: string
+  ): Promise<MessageCreationResponseDto>;
+
   deleteMessage(user: User, messageId: string): Promise<boolean>;
 
   downloadFile(user: User, messageId: string): Promise<Blob>;

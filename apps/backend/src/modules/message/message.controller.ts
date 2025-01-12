@@ -90,6 +90,25 @@ class Message extends Controller implements MessageController {
     };
   };
 
+  public createVideoMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      body: FileMessageRequestDto;
+      params: { chatId: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>> => {
+    const {
+      body,
+      params: { chatId },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.createVideo(user, body, chatId),
+      status: HTTPCode.CREATED
+    };
+  };
+
   public deleteMessage = async (
     options: ControllerAPIHandlerOptions<{
       params: { id: string };
@@ -219,6 +238,15 @@ class Message extends Controller implements MessageController {
         body: fileMessageValidationSchema
       },
       url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.IMAGE}`
+    });
+
+    this.addRoute({
+      handler: this.createVideoMessage as ControllerAPIHandler,
+      method: HTTPMethod.POST,
+      schema: {
+        body: fileMessageValidationSchema
+      },
+      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.VIDEO}`
     });
 
     this.addRoute({

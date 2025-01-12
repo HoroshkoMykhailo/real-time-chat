@@ -36,6 +36,14 @@ type MessageController = {
     }>
   ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;
 
+  createVideoMessage: (
+    options: ControllerAPIHandlerOptions<{
+      body: FileMessageRequestDto;
+      params: { chatId: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;
+
   deleteMessage: (
     options: ControllerAPIHandlerOptions<{
       params: { id: string };

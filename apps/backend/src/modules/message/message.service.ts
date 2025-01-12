@@ -4,7 +4,8 @@ import { ExceptionMessage } from '~/libs/enums/enums.js';
 import {
   getBlob,
   saveFile,
-  savePicture
+  savePicture,
+  saveVideo
 } from '~/libs/modules/helpers/helpers.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 
@@ -186,6 +187,53 @@ class Message implements MessageService {
       senderId: userId,
       status: MessageStatus.SENT,
       type: MessageType.TEXT
+    });
+
+    await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    return {
+      ...message,
+      sender: senderProfile
+    };
+  }
+
+  public async createVideo(
+    user: User,
+    data: FileMessageRequestDto,
+    chatId: string
+  ): Promise<MessageCreationResponseDto> {
+    const { profileId: userId } = user;
+
+    const { file } = data;
+
+    const isMember = await this.#isUserChatMember(user, chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const senderProfile = await this.#profileRepository.getById(userId);
+
+    if (!senderProfile) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const fileUrl = await saveVideo(file);
+
+    const message = await this.#messageRepository.create({
+      chatId,
+      content: file.filename,
+      fileUrl,
+      isPinned: false,
+      senderId: userId,
+      status: MessageStatus.SENT,
+      type: MessageType.VIDEO
     });
 
     await this.#chatRepository.setLastMessage(chatId, message.id);
