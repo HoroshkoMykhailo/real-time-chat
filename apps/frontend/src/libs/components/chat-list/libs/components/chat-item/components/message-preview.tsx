@@ -19,6 +19,7 @@ const MessagePreview = ({ message, type }: Properties): JSX.Element => {
   const isFile = message.type === MessageType.FILE;
   const isImage = message.type === MessageType.IMAGE;
   const isVideo = message.type === MessageType.VIDEO;
+  const isAudio = message.type === MessageType.AUDIO;
   const imageUrl = isImage ? `${ENV.SERVER_URL}${message.fileUrl}` : '';
   const videoUrl = isVideo ? `${ENV.SERVER_URL}${message.fileUrl}` : '';
 
@@ -28,6 +29,7 @@ const MessagePreview = ({ message, type }: Properties): JSX.Element => {
         <span className={styles['sender-name']}>{message.senderName}:</span>
         <MessagePreviewContent
           imageUrl={imageUrl}
+          isAudio={isAudio}
           isFile={isFile}
           isImage={isImage}
           isVideo={isVideo}
@@ -41,6 +43,7 @@ const MessagePreview = ({ message, type }: Properties): JSX.Element => {
   return (
     <MessagePreviewContent
       imageUrl={imageUrl}
+      isAudio={isAudio}
       isFile={isFile}
       isImage={isImage}
       isVideo={isVideo}

@@ -1,4 +1,4 @@
-import { FileIcon, Image } from '~/libs/components/components.js';
+import { FileIcon, Icon, Image } from '~/libs/components/components.js';
 import { type Chats } from '~/modules/chat/libs/types/types.js';
 
 const MESSAGE_CONTENT = 'message-content';
@@ -7,6 +7,7 @@ import styles from '../../../../../styles.module.scss';
 
 type Properties = {
   imageUrl: string;
+  isAudio: boolean;
   isFile: boolean;
   isImage: boolean;
   isVideo: boolean;
@@ -16,6 +17,7 @@ type Properties = {
 
 const MessagePreviewContent = ({
   imageUrl,
+  isAudio,
   isFile,
   isImage,
   isVideo,
@@ -60,7 +62,17 @@ const MessagePreviewContent = ({
         Video
       </span>
     ),
-    !isFile && !isImage && !isVideo && (
+    isAudio && (
+      <div className={styles['audio-preview']} key="audio-preview">
+        <Icon height={24} name="microphonePreview" width={24} />
+      </div>
+    ),
+    isAudio && (
+      <span className={styles[MESSAGE_CONTENT]} key="audio-label">
+        Voice Message
+      </span>
+    ),
+    !isFile && !isImage && !isVideo && !isAudio && (
       <span className={styles[MESSAGE_CONTENT]} key="text-content">
         {message.content}
       </span>

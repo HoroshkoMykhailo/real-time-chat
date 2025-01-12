@@ -9,6 +9,7 @@ type IconName =
   | 'group'
   | 'image'
   | 'microphone'
+  | 'microphonePreview'
   | 'paperClip'
   | 'pencil'
   | 'person'

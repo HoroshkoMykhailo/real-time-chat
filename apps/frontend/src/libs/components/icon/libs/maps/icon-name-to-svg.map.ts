@@ -10,6 +10,7 @@ import File from '~/assets/images/icons/file.svg?react';
 import Group from '~/assets/images/icons/group.svg?react';
 import Image from '~/assets/images/icons/image.svg?react';
 import Microphone from '~/assets/images/icons/microphone.svg?react';
+import MicrophonePreview from '~/assets/images/icons/microphone-preview.svg?react';
 import PaperClip from '~/assets/images/icons/paper-clip.svg?react';
 import Pencil from '~/assets/images/icons/pencil.svg?react';
 import Person from '~/assets/images/icons/person.svg?react';
@@ -31,6 +32,7 @@ const iconNameToSvg: Record<IconName, FC<React.SVGProps<SVGSVGElement>>> = {
   group: Group,
   image: Image,
   microphone: Microphone,
+  microphonePreview: MicrophonePreview,
   paperClip: PaperClip,
   pencil: Pencil,
   person: Person,

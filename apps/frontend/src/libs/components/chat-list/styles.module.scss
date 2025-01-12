@@ -40,6 +40,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
+      gap: 0.5rem;
       overflow: hidden;
 
       .chat-name {
@@ -54,6 +55,10 @@
         font-size: 0.875rem;
         display: flex;
         gap: 0.5rem;
+
+        .audio-preview {
+          margin-top: -0.3rem;
+        }
 
         .video-preview {
           max-width: 2rem;
