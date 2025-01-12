@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { ChatPicture, FileIcon } from '~/libs/components/components.js';
+import { ChatPicture, FileIcon, Image } from '~/libs/components/components.js';
+import { ENV } from '~/libs/enums/enums.js';
 import { ChatType } from '~/modules/chat/chat.js';
 import { type Chats } from '~/modules/chat/libs/types/types.js';
 import { MessageType } from '~/modules/messages/message.js';
@@ -18,18 +19,46 @@ const ChatItem: React.FC<Properties> = ({
   chat: { chatPicture, draft, lastMessage, name, type }
 }) => {
   const isFile = lastMessage?.type === MessageType.FILE;
+  const isImage = lastMessage?.type === MessageType.IMAGE;
+  let imageUrl = '';
+
+  if (isImage) {
+    imageUrl = `${ENV.SERVER_URL}${lastMessage.fileUrl}`;
+  }
 
   const groupMessageContent =
     type === ChatType.GROUP && lastMessage?.senderName ? (
       <>
         <span className={styles['sender-name']}>{lastMessage.senderName}:</span>
         {isFile ? <FileIcon height={15} width={15} /> : null}
-        <span className={styles[MESSAGE_CONTENT]}>{lastMessage.content}</span>
+        {isImage ? (
+          <>
+            <Image
+              alt={lastMessage.content}
+              className={styles['message-image'] ?? ''}
+              src={imageUrl}
+            />
+            <span className={styles[MESSAGE_CONTENT]}>Image</span>
+          </>
+        ) : (
+          <span className={styles[MESSAGE_CONTENT]}>{lastMessage.content}</span>
+        )}
       </>
     ) : (
       <>
         {isFile ? <FileIcon height={15} width={15} /> : null}
-        <p className={styles[MESSAGE_CONTENT]}>{lastMessage?.content}</p>
+        {isImage ? (
+          <>
+            <Image
+              alt={lastMessage.content}
+              className={styles['message-image'] ?? ''}
+              src={imageUrl}
+            />
+            <span className={styles[MESSAGE_CONTENT]}>Image</span>
+          </>
+        ) : (
+          <p className={styles[MESSAGE_CONTENT]}>{lastMessage?.content}</p>
+        )}
       </>
     );
 

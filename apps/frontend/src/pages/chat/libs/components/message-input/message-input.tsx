@@ -96,7 +96,8 @@ const MessageInput = ({
               content: message.content,
               createdAt: message.createdAt,
               senderName: message.sender.username,
-              type: message.type
+              type: message.type,
+              ...(message.fileUrl && { fileUrl: message.fileUrl })
             }
           })
         );

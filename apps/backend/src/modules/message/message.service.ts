@@ -136,7 +136,8 @@ class Message implements MessageService {
 
     const message = await this.#messageRepository.create({
       chatId,
-      content: fileUrl,
+      content: file.filename,
+      fileUrl,
       isPinned: false,
       senderId: userId,
       status: MessageStatus.SENT,

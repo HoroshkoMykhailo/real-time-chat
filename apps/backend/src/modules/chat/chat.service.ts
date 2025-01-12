@@ -181,7 +181,8 @@ class Chat implements ChatService {
       content: message.content,
       createdAt: message.createdAt,
       senderName: '',
-      type: message.type
+      type: message.type,
+      ...(message.fileUrl && { fileUrl: message.fileUrl })
     };
 
     if (chat.type === ChatType.GROUP) {

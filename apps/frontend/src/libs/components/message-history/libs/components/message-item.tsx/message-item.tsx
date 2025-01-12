@@ -14,6 +14,7 @@ import { MessageType, messageActions } from '~/modules/messages/message.js';
 
 import { MessagePopover } from '../message-popover/message-popover.js';
 import { FileMessage } from './components/file-message/file-message.js';
+import { ImageMessage } from './components/image-message/image-message.js';
 import { MessageFooter } from './components/message-footer/message-footer.js';
 import { TextMessage } from './components/text-message/text-message.js';
 import styles from './styles.module.scss';
@@ -38,6 +39,12 @@ const MessageItem = ({
 
   const handleChatPopoverClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
+      const target = event.target as HTMLElement;
+
+      if (target.tagName === 'IMG') {
+        return;
+      }
+
       const { id: messageId } = message;
 
       if (messageId) {
@@ -62,15 +69,21 @@ const MessageItem = ({
     }
   }, [message, profile, dispatch]);
 
+  const handleChatPopoverClose = useCallback((): void => {
+    setPopoverMessageId(null);
+  }, [setPopoverMessageId]);
+
   const handleMessageClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       const target = event.target as HTMLElement;
+
+      handleChatPopoverClose();
 
       if (target.classList.contains(styles['user-name'] ?? '')) {
         handleUserClick();
       }
     },
-    [handleUserClick]
+    [handleChatPopoverClose, handleUserClick]
   );
 
   useEffect(() => {
@@ -83,10 +96,6 @@ const MessageItem = ({
     }
   }, [navigate, dispatch, createdChat]);
 
-  const handleChatPopoverClose = useCallback((): void => {
-    setPopoverMessageId(null);
-  }, [setPopoverMessageId]);
-
   const messageRenderers = new Map<
     ValueOf<typeof MessageType>,
     () => JSX.Element
@@ -94,6 +103,10 @@ const MessageItem = ({
     [
       MessageType.FILE,
       (): JSX.Element => <FileMessage fileMessage={message} />
+    ],
+    [
+      MessageType.IMAGE,
+      (): JSX.Element => <ImageMessage imageMessage={message} />
     ],
     [
       MessageType.TEXT,

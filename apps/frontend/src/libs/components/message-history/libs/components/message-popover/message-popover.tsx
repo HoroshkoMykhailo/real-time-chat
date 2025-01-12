@@ -12,7 +12,7 @@ import { MessageType, messageActions } from '~/modules/messages/message.js';
 import styles from './styles.module.scss';
 
 const POPOVER_CLASS = 'message-popover';
-const POPOVER_OFFSET = 100;
+const POPOVER_OFFSET = 200;
 
 type Properties = {
   children: React.ReactNode;

@@ -53,6 +53,12 @@
       .chat-message {
         font-size: 0.875rem;
         display: flex;
+        gap: 0.5rem;
+
+        .message-image {
+          width: auto;
+          max-height: 1rem;
+        }
 
 
         .message-draft {

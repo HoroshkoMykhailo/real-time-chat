@@ -293,6 +293,7 @@ const { actions, reducer } = createSlice({
         message: {
           content: string;
           createdAt: string;
+          fileUrl?: string;
           senderName: string;
           type: ValueOf<typeof MessageType>;
         };
