@@ -32,6 +32,11 @@ type MessageApi = {
     chatId: string,
     content: TextMessageRequestDto
   ): Promise<MessageCreationResponseDto>;
+
+  writeVideoMessage(
+    chatId: string,
+    payload: FileMessageRequestDto
+  ): Promise<MessageCreationResponseDto>;
 };
 
 export { type MessageApi };

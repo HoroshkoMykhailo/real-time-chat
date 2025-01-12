@@ -116,6 +116,7 @@ class Message implements MessageApi {
       }
     );
   }
+
   public writeTextMessage(
     chatId: string,
     content: TextMessageRequestDto
@@ -127,6 +128,21 @@ class Message implements MessageApi {
         hasAuth: true,
         method: HTTPMethod.POST,
         payload: JSON.stringify(content)
+      }
+    );
+  }
+  public writeVideoMessage(
+    chatId: string,
+    payload: FileMessageRequestDto
+  ): Promise<MessageCreationResponseDto> {
+    const formData = convertToFormData(payload);
+
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(MessageApiParameters.CHAT_ID, chatId)}${MessageApiPath.VIDEO}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.POST,
+        payload: formData
       }
     );
   }

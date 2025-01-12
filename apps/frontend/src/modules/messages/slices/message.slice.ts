@@ -13,7 +13,8 @@ import {
   updateTextMessage,
   writeFileMessage,
   writeImageMessage,
-  writeTextMessage
+  writeTextMessage,
+  writeVideoMessage
 } from './actions.js';
 
 type State = {
@@ -64,6 +65,16 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(writeImageMessage.rejected), state => {
+        state.writeDataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(writeVideoMessage.fulfilled), (state, action) => {
+        state.messages.unshift(action.payload);
+        state.writeDataStatus = DataStatus.FULFILLED;
+      })
+      .addMatcher(isAnyOf(writeVideoMessage.pending), state => {
+        state.writeDataStatus = DataStatus.PENDING;
+      })
+      .addMatcher(isAnyOf(writeVideoMessage.rejected), state => {
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(writeFileMessage.fulfilled), (state, action) => {

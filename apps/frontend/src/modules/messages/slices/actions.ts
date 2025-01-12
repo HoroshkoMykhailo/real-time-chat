@@ -96,6 +96,17 @@ const writeFileMessage = createAsyncThunk<
   }
 );
 
+const writeVideoMessage = createAsyncThunk<
+  MessageCreationResponseDto,
+  { chatId: string; payload: FileMessageRequestDto },
+  AsyncThunkConfig
+>(
+  ActionType.WRITE_VIDEO_MESSAGE,
+  async ({ chatId, payload }, { extra: { messageApi } }) => {
+    return await messageApi.writeVideoMessage(chatId, payload);
+  }
+);
+
 const downloadFile = createAsyncThunk<
   Blob,
   { messageId: string },
@@ -115,5 +126,6 @@ export {
   updateTextMessage,
   writeFileMessage,
   writeImageMessage,
-  writeTextMessage
+  writeTextMessage,
+  writeVideoMessage
 };

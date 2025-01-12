@@ -6,7 +6,8 @@ const ActionType = {
   UPDATE_TEXT_MESSAGE: 'messages/update-text-message',
   WRITE_FILE_MESSAGE: 'messages/write-file-message',
   WRITE_IMAGE_MESSAGE: 'messages/write-image-message',
-  WRITE_TEXT_MESSAGE: 'messages/write-text-message'
+  WRITE_TEXT_MESSAGE: 'messages/write-text-message',
+  WRITE_VIDEO_MESSAGE: 'messages/write-video-message'
 } as const;
 
 export { ActionType };

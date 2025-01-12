@@ -4,7 +4,8 @@ const MessageApiPath = {
   FILE: '/file',
   IMAGE: '/image',
   PIN: '/pin',
-  TEXT: '/text'
+  TEXT: '/text',
+  VIDEO: '/video'
 } as const;
 
 export { MessageApiPath };

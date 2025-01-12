@@ -44,6 +44,15 @@ const FilePopover = ({
                 }
               })
             );
+          } else {
+            void dispatch(
+              messageActions.writeVideoMessage({
+                chatId: chat.id,
+                payload: {
+                  file
+                }
+              })
+            );
           }
         }
       }

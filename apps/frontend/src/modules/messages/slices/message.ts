@@ -6,7 +6,8 @@ import {
   updateTextMessage,
   writeFileMessage,
   writeImageMessage,
-  writeTextMessage
+  writeTextMessage,
+  writeVideoMessage
 } from './actions.js';
 import { actions } from './message.slice.js';
 
@@ -19,7 +20,8 @@ const allActions = {
   updateTextMessage,
   writeFileMessage,
   writeImageMessage,
-  writeTextMessage
+  writeTextMessage,
+  writeVideoMessage
 };
 
 export { allActions as actions };
