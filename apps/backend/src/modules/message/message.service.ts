@@ -1,7 +1,11 @@
 import { Types } from 'mongoose';
 
 import { ExceptionMessage } from '~/libs/enums/enums.js';
-import { getBlob, saveFile } from '~/libs/modules/helpers/helpers.js';
+import {
+  getBlob,
+  saveFile,
+  savePicture
+} from '~/libs/modules/helpers/helpers.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 
 import { type Chat as ChatRepository } from '../chat/chat.repository.js';
@@ -91,6 +95,52 @@ class Message implements MessageService {
       senderId: userId,
       status: MessageStatus.SENT,
       type: MessageType.FILE
+    });
+
+    await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    return {
+      ...message,
+      sender: senderProfile
+    };
+  }
+
+  public async createImage(
+    user: User,
+    data: FileMessageRequestDto,
+    chatId: string
+  ): Promise<MessageCreationResponseDto> {
+    const { profileId: userId } = user;
+
+    const { file } = data;
+
+    const isMember = await this.#isUserChatMember(user, chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const senderProfile = await this.#profileRepository.getById(userId);
+
+    if (!senderProfile) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const fileUrl = await savePicture(file);
+
+    const message = await this.#messageRepository.create({
+      chatId,
+      content: fileUrl,
+      isPinned: false,
+      senderId: userId,
+      status: MessageStatus.SENT,
+      type: MessageType.IMAGE
     });
 
     await this.#chatRepository.setLastMessage(chatId, message.id);

@@ -20,6 +20,14 @@ type MessageController = {
     }>
   ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;
 
+  createImageMessage: (
+    options: ControllerAPIHandlerOptions<{
+      body: FileMessageRequestDto;
+      params: { chatId: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;
+
   createTextMessage: (
     options: ControllerAPIHandlerOptions<{
       body: TextMessageRequestDto;

@@ -52,6 +52,25 @@ class Message extends Controller implements MessageController {
     };
   };
 
+  public createImageMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      body: FileMessageRequestDto;
+      params: { chatId: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>> => {
+    const {
+      body,
+      params: { chatId },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.createImage(user, body, chatId),
+      status: HTTPCode.CREATED
+    };
+  };
+
   public createTextMessage = async (
     options: ControllerAPIHandlerOptions<{
       body: TextMessageRequestDto;
@@ -191,6 +210,15 @@ class Message extends Controller implements MessageController {
       handler: this.downloadFileMessage as ControllerAPIHandler,
       method: HTTPMethod.GET,
       url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.FILE}`
+    });
+
+    this.addRoute({
+      handler: this.createImageMessage as ControllerAPIHandler,
+      method: HTTPMethod.POST,
+      schema: {
+        body: fileMessageValidationSchema
+      },
+      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.IMAGE}`
     });
 
     this.addRoute({

@@ -14,6 +14,12 @@ type MessageService = {
     chatId: string
   ): Promise<MessageCreationResponseDto>;
 
+  createImage(
+    user: User,
+    data: FileMessageRequestDto,
+    chatId: string
+  ): Promise<MessageCreationResponseDto>;
+
   createText(
     user: User,
     data: TextMessageRequestDto,
