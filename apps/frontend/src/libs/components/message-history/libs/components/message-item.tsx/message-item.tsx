@@ -17,6 +17,7 @@ import { FileMessage } from './components/file-message/file-message.js';
 import { ImageMessage } from './components/image-message/image-message.js';
 import { MessageFooter } from './components/message-footer/message-footer.js';
 import { TextMessage } from './components/text-message/text-message.js';
+import { VideoMessage } from './components/video-message/video-message.js';
 import styles from './styles.module.scss';
 
 type Properties = {
@@ -41,7 +42,7 @@ const MessageItem = ({
     (event: React.MouseEvent<HTMLButtonElement>) => {
       const target = event.target as HTMLElement;
 
-      if (target.tagName === 'IMG') {
+      if (target.tagName === 'IMG' || target.tagName === 'VIDEO') {
         return;
       }
 
@@ -111,6 +112,10 @@ const MessageItem = ({
     [
       MessageType.TEXT,
       (): JSX.Element => <TextMessage text={message.content} />
+    ],
+    [
+      MessageType.VIDEO,
+      (): JSX.Element => <VideoMessage videoMessage={message} />
     ]
   ]);
 

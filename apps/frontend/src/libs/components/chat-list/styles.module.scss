@@ -55,6 +55,11 @@
         display: flex;
         gap: 0.5rem;
 
+        .video-preview {
+          max-width: 2rem;
+          height: auto;
+        }
+
         .message-image {
           width: auto;
           max-height: 1rem;
