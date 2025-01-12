@@ -8,6 +8,7 @@ type IconName =
   | 'file'
   | 'group'
   | 'image'
+  | 'microphone'
   | 'paperClip'
   | 'pencil'
   | 'person'

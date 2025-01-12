@@ -13,6 +13,7 @@ import { chatActions } from '~/modules/chat/chat.js';
 import { messageActions } from '~/modules/messages/message.js';
 
 import { FilesInput } from './components/files-input/files-input.js';
+import { VoiceInput } from './components/voice-input/voice-input.js';
 import styles from './styles.module.scss';
 
 type Properties = {
@@ -210,6 +211,7 @@ const MessageInput = ({
           </div>
         </div>
       </div>
+      <VoiceInput />
     </div>
   );
 };

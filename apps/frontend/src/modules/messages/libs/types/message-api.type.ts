@@ -18,6 +18,11 @@ type MessageApi = {
     content: TextMessageRequestDto
   ): Promise<MessageCreationResponseDto>;
 
+  writeAudioMessage(
+    chatId: string,
+    payload: FileMessageRequestDto
+  ): Promise<MessageCreationResponseDto>;
+
   writeFileMessage(
     chatId: string,
     payload: FileMessageRequestDto

@@ -11,6 +11,7 @@ import {
   getMessages,
   updatePinMessage,
   updateTextMessage,
+  writeAudioMessage,
   writeFileMessage,
   writeImageMessage,
   writeTextMessage,
@@ -85,6 +86,16 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(writeFileMessage.rejected), state => {
+        state.writeDataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(writeAudioMessage.fulfilled), (state, action) => {
+        state.messages.unshift(action.payload);
+        state.writeDataStatus = DataStatus.FULFILLED;
+      })
+      .addMatcher(isAnyOf(writeAudioMessage.pending), state => {
+        state.writeDataStatus = DataStatus.PENDING;
+      })
+      .addMatcher(isAnyOf(writeAudioMessage.rejected), state => {
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(deleteMessage.fulfilled), (state, action) => {

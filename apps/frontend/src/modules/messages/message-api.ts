@@ -85,6 +85,22 @@ class Message implements MessageApi {
     );
   }
 
+  public writeAudioMessage(
+    chatId: string,
+    payload: FileMessageRequestDto
+  ): Promise<MessageCreationResponseDto> {
+    const formData = convertToFormData(payload);
+
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(MessageApiParameters.CHAT_ID, chatId)}${MessageApiPath.AUDIO}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.POST,
+        payload: formData
+      }
+    );
+  }
+
   public writeFileMessage(
     chatId: string,
     payload: FileMessageRequestDto
