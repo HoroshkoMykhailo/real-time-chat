@@ -12,12 +12,15 @@ import { chatActions } from '~/modules/chat/chat.js';
 import { type GetMessagesResponseDto } from '~/modules/messages/libs/types/types.js';
 import { MessageType, messageActions } from '~/modules/messages/message.js';
 
-import { MessagePopover } from '../message-popover/message-popover.js';
-import { FileMessage } from './components/file-message/file-message.js';
-import { ImageMessage } from './components/image-message/image-message.js';
-import { MessageFooter } from './components/message-footer/message-footer.js';
-import { TextMessage } from './components/text-message/text-message.js';
-import { VideoMessage } from './components/video-message/video-message.js';
+import {
+  AudioMessage,
+  FileMessage,
+  ImageMessage,
+  MessageFooter,
+  MessagePopover,
+  TextMessage,
+  VideoMessage
+} from './components/components.js';
 import styles from './styles.module.scss';
 
 type Properties = {
@@ -101,6 +104,10 @@ const MessageItem = ({
     ValueOf<typeof MessageType>,
     () => JSX.Element
   >([
+    [
+      MessageType.AUDIO,
+      (): JSX.Element => <AudioMessage audioMessage={message} />
+    ],
     [
       MessageType.FILE,
       (): JSX.Element => <FileMessage fileMessage={message} />
