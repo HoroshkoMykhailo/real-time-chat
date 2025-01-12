@@ -7,6 +7,7 @@ import {
   savePicture,
   saveVideo
 } from '~/libs/modules/helpers/helpers.js';
+import { saveAudio } from '~/libs/modules/helpers/save-audio/save-audio.helper.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 
 import { type Chat as ChatRepository } from '../chat/chat.repository.js';
@@ -57,6 +58,53 @@ class Message implements MessageService {
     this.#chatRepository = chatRepository;
     this.#messageRepository = messageRepository;
     this.#profileRepository = profileRepository;
+  }
+
+  public async createAudio(
+    user: User,
+    data: FileMessageRequestDto,
+    chatId: string
+  ): Promise<MessageCreationResponseDto> {
+    const { profileId: userId } = user;
+
+    const { file } = data;
+
+    const isMember = await this.#isUserChatMember(user, chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const senderProfile = await this.#profileRepository.getById(userId);
+
+    if (!senderProfile) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const fileUrl = await saveAudio(file);
+
+    const message = await this.#messageRepository.create({
+      chatId,
+      content: file.filename,
+      fileUrl,
+      isPinned: false,
+      senderId: userId,
+      status: MessageStatus.SENT,
+      type: MessageType.AUDIO
+    });
+
+    await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    return {
+      ...message,
+      sender: senderProfile
+    };
   }
 
   public async createFile(

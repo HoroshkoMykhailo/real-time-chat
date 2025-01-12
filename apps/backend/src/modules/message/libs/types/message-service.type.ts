@@ -8,6 +8,12 @@ import {
 } from './types.js';
 
 type MessageService = {
+  createAudio(
+    user: User,
+    data: FileMessageRequestDto,
+    chatId: string
+  ): Promise<MessageCreationResponseDto>;
+
   createFile(
     user: User,
     data: FileMessageRequestDto,

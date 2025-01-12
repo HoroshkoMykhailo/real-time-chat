@@ -12,6 +12,14 @@ import {
 } from './types.js';
 
 type MessageController = {
+  createAudioMessage: (
+    options: ControllerAPIHandlerOptions<{
+      body: FileMessageRequestDto;
+      params: { chatId: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;
+
   createFileMessage: (
     options: ControllerAPIHandlerOptions<{
       body: FileMessageRequestDto;

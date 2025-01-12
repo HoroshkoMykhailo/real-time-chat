@@ -33,6 +33,25 @@ type Constructor = {
 class Message extends Controller implements MessageController {
   #messageService: MessageService;
 
+  public createAudioMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      body: FileMessageRequestDto;
+      params: { chatId: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>> => {
+    const {
+      body,
+      params: { chatId },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.createAudio(user, body, chatId),
+      status: HTTPCode.CREATED
+    };
+  };
+
   public createFileMessage = async (
     options: ControllerAPIHandlerOptions<{
       body: FileMessageRequestDto;
@@ -257,6 +276,16 @@ class Message extends Controller implements MessageController {
       },
       url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.FILE}`
     });
+
+    this.addRoute({
+      handler: this.createAudioMessage as ControllerAPIHandler,
+      method: HTTPMethod.POST,
+      schema: {
+        body: fileMessageValidationSchema
+      },
+      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.AUDIO}`
+    });
+
     this.addRoute({
       handler: this.updateTextMessage as ControllerAPIHandler,
       method: HTTPMethod.PUT,
