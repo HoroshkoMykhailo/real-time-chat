@@ -74,6 +74,17 @@ const updatePinMessage = createAsyncThunk<
   }
 );
 
+const writeImageMessage = createAsyncThunk<
+  MessageCreationResponseDto,
+  { chatId: string; payload: FileMessageRequestDto },
+  AsyncThunkConfig
+>(
+  ActionType.WRITE_IMAGE_MESSAGE,
+  async ({ chatId, payload }, { extra: { messageApi } }) => {
+    return await messageApi.writeImageMessage(chatId, payload);
+  }
+);
+
 const writeFileMessage = createAsyncThunk<
   MessageCreationResponseDto,
   { chatId: string; payload: FileMessageRequestDto },
@@ -103,5 +114,6 @@ export {
   updatePinMessage,
   updateTextMessage,
   writeFileMessage,
+  writeImageMessage,
   writeTextMessage
 };

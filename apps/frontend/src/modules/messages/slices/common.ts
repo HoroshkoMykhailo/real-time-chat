@@ -5,6 +5,7 @@ const ActionType = {
   UPDATE_PIN_MESSAGE: 'messages/pin-message',
   UPDATE_TEXT_MESSAGE: 'messages/update-text-message',
   WRITE_FILE_MESSAGE: 'messages/write-file-message',
+  WRITE_IMAGE_MESSAGE: 'messages/write-image-message',
   WRITE_TEXT_MESSAGE: 'messages/write-text-message'
 } as const;
 

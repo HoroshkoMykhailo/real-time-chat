@@ -100,6 +100,22 @@ class Message implements MessageApi {
       }
     );
   }
+
+  public writeImageMessage(
+    chatId: string,
+    payload: FileMessageRequestDto
+  ): Promise<MessageCreationResponseDto> {
+    const formData = convertToFormData(payload);
+
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(MessageApiParameters.CHAT_ID, chatId)}${MessageApiPath.IMAGE}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.POST,
+        payload: formData
+      }
+    );
+  }
   public writeTextMessage(
     chatId: string,
     content: TextMessageRequestDto

@@ -5,6 +5,7 @@ import {
   updatePinMessage,
   updateTextMessage,
   writeFileMessage,
+  writeImageMessage,
   writeTextMessage
 } from './actions.js';
 import { actions } from './message.slice.js';
@@ -17,6 +18,7 @@ const allActions = {
   updatePinMessage,
   updateTextMessage,
   writeFileMessage,
+  writeImageMessage,
   writeTextMessage
 };
 

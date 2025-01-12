@@ -23,6 +23,34 @@ const FilePopover = ({
   const dispatch = useAppDispatch();
   const { selectedChat: chat } = useAppSelector(state => state.chat);
 
+  const handlePhotoOrVideoChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>): void => {
+      if (
+        chat &&
+        event.target.files &&
+        checkGreaterThanZero(event.target.files.length)
+      ) {
+        const [file] = event.target.files;
+
+        if (file) {
+          const isImage = file.type.includes('image');
+
+          if (isImage) {
+            void dispatch(
+              messageActions.writeImageMessage({
+                chatId: chat.id,
+                payload: {
+                  file
+                }
+              })
+            );
+          }
+        }
+      }
+    },
+    [chat, dispatch]
+  );
+
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
       if (
@@ -58,6 +86,7 @@ const FilePopover = ({
               Photo or video
               <input
                 accept="image/*,video/*"
+                onChange={handlePhotoOrVideoChange}
                 style={{ display: 'none' }}
                 type="file"
               />

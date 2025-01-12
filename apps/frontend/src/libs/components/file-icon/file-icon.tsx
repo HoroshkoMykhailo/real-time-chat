@@ -3,7 +3,7 @@ import { TWO_VALUE } from '~/libs/common/constants.js';
 import { Icon } from '../icon/icon.js';
 import styles from './styles.module.scss';
 
-const DEFAULT_SIZE = 48;
+const DEFAULT_SIZE = 36;
 
 type Properties = {
   height?: number;

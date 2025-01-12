@@ -23,6 +23,11 @@ type MessageApi = {
     payload: FileMessageRequestDto
   ): Promise<MessageCreationResponseDto>;
 
+  writeImageMessage(
+    chatId: string,
+    payload: FileMessageRequestDto
+  ): Promise<MessageCreationResponseDto>;
+
   writeTextMessage(
     chatId: string,
     content: TextMessageRequestDto
