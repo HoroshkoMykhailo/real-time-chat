@@ -23,4 +23,5 @@ export { ProtectedRoute } from './protected-route/protected-route.js';
 export { RouterProvider } from './router-provider/router-provider.js';
 export { SearchBar } from './search-bar/search-bar.js';
 export { Select } from './select/select.js';
+export { ToastContainer } from './toast-container/toast-container.js';
 export { NavLink, Navigate, Outlet as RouterOutlet } from 'react-router-dom';

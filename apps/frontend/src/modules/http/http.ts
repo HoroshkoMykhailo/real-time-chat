@@ -7,4 +7,5 @@ const httpApi = new HttpApi({
 });
 
 export { httpApi };
+export { ExceptionName } from './libs/enums/enums.js';
 export { type HttpApi } from './libs/types/types.js';

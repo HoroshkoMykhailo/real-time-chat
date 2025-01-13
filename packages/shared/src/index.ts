@@ -8,6 +8,7 @@ export { HTTPError, ValidationError } from './libs/exceptions/exceptions.js';
 export { type Configurable } from './libs/modules/config/config.js';
 export { HTTPCode, HTTPMethod, HttpHeader } from './libs/modules/http/http.js';
 export {
+  type ServerErrorDetail,
   type ServerErrorResponse,
   type ServerValidationErrorResponse,
   type ValidationSchema,

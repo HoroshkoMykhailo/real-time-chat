@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import { AppEnvironment } from '~/libs/enums/enums.js';
 import { type ConfigModule } from '~/libs/modules/config/config.js';
+import { toastNotifier } from '~/libs/modules/toast-notifier/toast-notifier.js';
 import { authApi, authReducer } from '~/modules/auth/auth.js';
 import { chatApi, chatReducer } from '~/modules/chat/chat.js';
 import { messageApi, messageReducer } from '~/modules/messages/message.js';
@@ -9,6 +10,10 @@ import { profileApi, profileReducer } from '~/modules/profile/profile.js';
 import { storageApi } from '~/modules/storage/storage.js';
 import { userApi, userReducer } from '~/modules/user/user.js';
 
+import {
+  handleErrorMiddleware,
+  handleUnauthorizedErrorMiddleware
+} from './libs/middlewares/middlewares.js';
 import {
   type ExtraArguments,
   type StoreInstance,
@@ -26,7 +31,10 @@ class Store implements StoreModule {
           thunk: {
             extraArgument: this.extraArguments
           }
-        });
+        }).prepend(
+          handleUnauthorizedErrorMiddleware(),
+          handleErrorMiddleware(this.extraArguments)
+        );
       },
       reducer: {
         auth: authReducer,
@@ -45,6 +53,7 @@ class Store implements StoreModule {
       messageApi,
       profileApi,
       storageApi,
+      toastNotifier,
       userApi
     };
   }
