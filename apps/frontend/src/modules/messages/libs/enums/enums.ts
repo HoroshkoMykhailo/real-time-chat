@@ -1,6 +1,7 @@
 export {
   MessageApiParams,
   MessageApiPath,
+  MessageLanguage,
   MessagePayloadKey,
   MessageStatus,
   MessageType,

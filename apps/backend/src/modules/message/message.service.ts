@@ -1,18 +1,34 @@
 import { Types } from 'mongoose';
 
 import { ExceptionMessage } from '~/libs/enums/enums.js';
+import {
+  getBlob,
+  saveFile,
+  savePicture,
+  saveVideo
+} from '~/libs/modules/helpers/helpers.js';
+import { saveAudio } from '~/libs/modules/helpers/save-audio/save-audio.helper.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
+import { type ValueOf } from '~/libs/types/types.js';
 
 import { type Chat as ChatRepository } from '../chat/chat.repository.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
+import { type TranscriptionService } from '../transcription/transcription.js';
+import { type TranslationService } from '../translation/translation.js';
 import { type User, UserRole } from '../user/user.js';
 import { DEFAULT_LIMIT } from './libs/constants/default-limit.constant.js';
-import { MessageStatus, MessageType } from './libs/enums/enums.js';
 import {
+  type MessageLanguage,
+  MessageStatus,
+  MessageType
+} from './libs/enums/enums.js';
+import {
+  type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
   type MessageService,
-  type TextMessageRequestDto
+  type TextMessageRequestDto,
+  type TranslateMessageResponseDto
 } from './libs/types/types.js';
 import { type Message as MessageRepository } from './message.repository.js';
 
@@ -20,11 +36,12 @@ type Constructor = {
   chatRepository: ChatRepository;
   messageRepository: MessageRepository;
   profileRepository: ProfileRepository;
+  transcriptionService: TranscriptionService;
+  translationService: TranslationService;
 };
 
 class Message implements MessageService {
   #chatRepository: ChatRepository;
-
   #isUserChatMember = async (user: User, chatId: string): Promise<boolean> => {
     const chat = await this.#chatRepository.getById(chatId);
 
@@ -42,14 +59,163 @@ class Message implements MessageService {
 
   #profileRepository: ProfileRepository;
 
+  #transcriptionService: TranscriptionService;
+
+  #translationService: TranslationService;
+
   public constructor({
     chatRepository,
     messageRepository,
-    profileRepository
+    profileRepository,
+    transcriptionService,
+    translationService
   }: Constructor) {
     this.#chatRepository = chatRepository;
+    this.#transcriptionService = transcriptionService;
     this.#messageRepository = messageRepository;
     this.#profileRepository = profileRepository;
+    this.#translationService = translationService;
+  }
+
+  public async createAudio(
+    user: User,
+    data: FileMessageRequestDto,
+    chatId: string
+  ): Promise<MessageCreationResponseDto> {
+    const { profileId: userId } = user;
+
+    const { file } = data;
+
+    const isMember = await this.#isUserChatMember(user, chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const senderProfile = await this.#profileRepository.getById(userId);
+
+    if (!senderProfile) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const fileUrl = await saveAudio(file);
+
+    const message = await this.#messageRepository.create({
+      chatId,
+      content: '',
+      fileUrl,
+      isPinned: false,
+      senderId: userId,
+      status: MessageStatus.SENT,
+      type: MessageType.AUDIO
+    });
+
+    await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    return {
+      ...message,
+      sender: senderProfile
+    };
+  }
+
+  public async createFile(
+    user: User,
+    data: FileMessageRequestDto,
+    chatId: string
+  ): Promise<MessageCreationResponseDto> {
+    const { profileId: userId } = user;
+
+    const { file } = data;
+
+    const isMember = await this.#isUserChatMember(user, chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const senderProfile = await this.#profileRepository.getById(userId);
+
+    if (!senderProfile) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const fileUrl = await saveFile(file, file.mimetype, 'file-');
+
+    const message = await this.#messageRepository.create({
+      chatId,
+      content: file.filename,
+      fileUrl,
+      isPinned: false,
+      senderId: userId,
+      status: MessageStatus.SENT,
+      type: MessageType.FILE
+    });
+
+    await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    return {
+      ...message,
+      sender: senderProfile
+    };
+  }
+
+  public async createImage(
+    user: User,
+    data: FileMessageRequestDto,
+    chatId: string
+  ): Promise<MessageCreationResponseDto> {
+    const { profileId: userId } = user;
+
+    const { file } = data;
+
+    const isMember = await this.#isUserChatMember(user, chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const senderProfile = await this.#profileRepository.getById(userId);
+
+    if (!senderProfile) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const fileUrl = await savePicture(file);
+
+    const message = await this.#messageRepository.create({
+      chatId,
+      content: file.filename,
+      fileUrl,
+      isPinned: false,
+      senderId: userId,
+      status: MessageStatus.SENT,
+      type: MessageType.IMAGE
+    });
+
+    await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    return {
+      ...message,
+      sender: senderProfile
+    };
   }
 
   public async createText(
@@ -60,6 +226,24 @@ class Message implements MessageService {
     const { profileId: userId } = user;
 
     const text = data.content;
+
+    const isMember = await this.#isUserChatMember(user, chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const senderProfile = await this.#profileRepository.getById(userId);
+
+    if (!senderProfile) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
 
     const message = await this.#messageRepository.create({
       chatId,
@@ -72,6 +256,30 @@ class Message implements MessageService {
 
     await this.#chatRepository.setLastMessage(chatId, message.id);
 
+    return {
+      ...message,
+      sender: senderProfile
+    };
+  }
+
+  public async createVideo(
+    user: User,
+    data: FileMessageRequestDto,
+    chatId: string
+  ): Promise<MessageCreationResponseDto> {
+    const { profileId: userId } = user;
+
+    const { file } = data;
+
+    const isMember = await this.#isUserChatMember(user, chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
     const senderProfile = await this.#profileRepository.getById(userId);
 
     if (!senderProfile) {
@@ -80,6 +288,20 @@ class Message implements MessageService {
         status: HTTPCode.NOT_FOUND
       });
     }
+
+    const fileUrl = await saveVideo(file);
+
+    const message = await this.#messageRepository.create({
+      chatId,
+      content: file.filename,
+      fileUrl,
+      isPinned: false,
+      senderId: userId,
+      status: MessageStatus.SENT,
+      type: MessageType.VIDEO
+    });
+
+    await this.#chatRepository.setLastMessage(chatId, message.id);
 
     return {
       ...message,
@@ -131,6 +353,35 @@ class Message implements MessageService {
     return isDeleted;
   }
 
+  public async downloadFile(user: User, messageId: string): Promise<Blob> {
+    const message = await this.#messageRepository.getById(messageId);
+
+    if (!message) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const isMember = await this.#isUserChatMember(user, message.chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    if (!message.fileUrl) {
+      throw new HTTPError({
+        message: ExceptionMessage.FILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    return await getBlob(message.fileUrl);
+  }
+
   public async getMessagesByChatId(
     user: User,
     chatId: string,
@@ -146,15 +397,6 @@ class Message implements MessageService {
       throw new HTTPError({
         message: ExceptionMessage.INVALID_CHAT_ID,
         status: HTTPCode.UNPROCESSED_ENTITY
-      });
-    }
-
-    const chat = await this.#chatRepository.getById(chatId);
-
-    if (!chat) {
-      throw new HTTPError({
-        message: ExceptionMessage.CHAT_NOT_FOUND,
-        status: HTTPCode.NOT_FOUND
       });
     }
 
@@ -193,6 +435,115 @@ class Message implements MessageService {
         };
       })
     );
+  }
+
+  public async transcribeMessage(
+    user: User,
+    messageId: string
+  ): Promise<MessageCreationResponseDto> {
+    const message = await this.#messageRepository.getById(messageId);
+
+    if (!message) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    if (message.type !== MessageType.AUDIO) {
+      throw new HTTPError({
+        message: ExceptionMessage.INVALID_MESSAGE_TYPE,
+        status: HTTPCode.UNPROCESSED_ENTITY
+      });
+    }
+
+    if (message.content) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_ALREADY_TRANSCRIBED,
+        status: HTTPCode.UNPROCESSED_ENTITY
+      });
+    }
+
+    const isMember = await this.#isUserChatMember(user, message.chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    if (!message.fileUrl) {
+      throw new HTTPError({
+        message: ExceptionMessage.FILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const transcribedMessage = await this.#transcriptionService.transcribe(
+      message.fileUrl
+    );
+
+    const senderProfile = await this.#profileRepository.getById(
+      message.senderId
+    );
+
+    if (!senderProfile) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const updatedMessage = await this.#messageRepository.updateById(messageId, {
+      content: transcribedMessage
+    });
+
+    if (!updatedMessage) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    return {
+      ...updatedMessage,
+      sender: senderProfile
+    };
+  }
+
+  public async translateMessage(
+    user: User,
+    messageId: string,
+    language: ValueOf<typeof MessageLanguage>
+  ): Promise<TranslateMessageResponseDto> {
+    const message = await this.#messageRepository.getById(messageId);
+
+    if (!message) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const isMember = await this.#isUserChatMember(user, message.chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const translatedMessage = await this.#translationService.translate(
+      message.content,
+      language
+    );
+
+    return {
+      messageId: message.id,
+      translatedMessage
+    };
   }
 
   public async updatePin(user: User, messageId: string): Promise<boolean> {

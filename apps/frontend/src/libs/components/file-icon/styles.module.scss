@@ -1,0 +1,23 @@
+.file-icon-container {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+}
+
+.download-icon {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  top: 0;
+  left: 0;
+  color: var(--gray);
+  cursor: pointer;
+}
+
+.download-icon:hover {
+  color: var(--gray-dark);
+}

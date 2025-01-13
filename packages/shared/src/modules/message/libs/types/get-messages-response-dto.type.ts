@@ -7,6 +7,7 @@ type GetMessagesResponseDto = {
   chatId: string;
   content: string;
   createdAt: string;
+  fileUrl?: string;
   id: string;
   isPinned: boolean;
   sender: Profile;

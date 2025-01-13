@@ -1,19 +1,33 @@
 import {
   deleteMessage,
+  downloadFile,
   getMessages,
+  transcribeMessage,
+  translateMessage,
   updatePinMessage,
   updateTextMessage,
-  writeTextMessage
+  writeAudioMessage,
+  writeFileMessage,
+  writeImageMessage,
+  writeTextMessage,
+  writeVideoMessage
 } from './actions.js';
 import { actions } from './message.slice.js';
 
 const allActions = {
   ...actions,
   deleteMessage,
+  downloadFile,
   getMessages,
+  transcribeMessage,
+  translateMessage,
   updatePinMessage,
   updateTextMessage,
-  writeTextMessage
+  writeAudioMessage,
+  writeFileMessage,
+  writeImageMessage,
+  writeTextMessage,
+  writeVideoMessage
 };
 
 export { allActions as actions };

@@ -1,12 +1,15 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { type AsyncThunkConfig } from '~/libs/types/types.js';
+import { type AsyncThunkConfig, type ValueOf } from '~/libs/types/types.js';
 
 import {
+  type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
-  type TextMessageRequestDto
+  type TextMessageRequestDto,
+  type TranslateMessageResponseDto
 } from '../libs/types/types.js';
+import { type MessageLanguage } from '../message.js';
 import { ActionType } from './common.js';
 
 const getMessages = createAsyncThunk<
@@ -73,10 +76,94 @@ const updatePinMessage = createAsyncThunk<
   }
 );
 
+const writeImageMessage = createAsyncThunk<
+  MessageCreationResponseDto,
+  { chatId: string; payload: FileMessageRequestDto },
+  AsyncThunkConfig
+>(
+  ActionType.WRITE_IMAGE_MESSAGE,
+  async ({ chatId, payload }, { extra: { messageApi } }) => {
+    return await messageApi.writeImageMessage(chatId, payload);
+  }
+);
+
+const writeFileMessage = createAsyncThunk<
+  MessageCreationResponseDto,
+  { chatId: string; payload: FileMessageRequestDto },
+  AsyncThunkConfig
+>(
+  ActionType.WRITE_FILE_MESSAGE,
+  async ({ chatId, payload }, { extra: { messageApi } }) => {
+    return await messageApi.writeFileMessage(chatId, payload);
+  }
+);
+
+const writeVideoMessage = createAsyncThunk<
+  MessageCreationResponseDto,
+  { chatId: string; payload: FileMessageRequestDto },
+  AsyncThunkConfig
+>(
+  ActionType.WRITE_VIDEO_MESSAGE,
+  async ({ chatId, payload }, { extra: { messageApi } }) => {
+    return await messageApi.writeVideoMessage(chatId, payload);
+  }
+);
+
+const writeAudioMessage = createAsyncThunk<
+  MessageCreationResponseDto,
+  { chatId: string; payload: FileMessageRequestDto },
+  AsyncThunkConfig
+>(
+  ActionType.WRITE_AUDIO_MESSAGE,
+  async ({ chatId, payload }, { extra: { messageApi } }) => {
+    return await messageApi.writeAudioMessage(chatId, payload);
+  }
+);
+
+const translateMessage = createAsyncThunk<
+  TranslateMessageResponseDto,
+  { language: ValueOf<typeof MessageLanguage>; messageId: string },
+  AsyncThunkConfig
+>(
+  ActionType.TRANSLATE_MESSAGE,
+  async ({ language, messageId }, { extra: { messageApi } }) => {
+    return await messageApi.translateMessage(messageId, language);
+  }
+);
+
+const transcribeMessage = createAsyncThunk<
+  MessageCreationResponseDto,
+  { messageId: string },
+  AsyncThunkConfig
+>(
+  ActionType.TRANSCRIBE_MESSAGE,
+  async ({ messageId }, { extra: { messageApi } }) => {
+    return await messageApi.transcribeMessage(messageId);
+  }
+);
+
+const downloadFile = createAsyncThunk<
+  Blob,
+  { messageId: string },
+  AsyncThunkConfig
+>(
+  ActionType.DOWNLOAD_FILE,
+  async ({ messageId }, { extra: { messageApi } }) => {
+    return await messageApi.downloadFile(messageId);
+  }
+);
+
 export {
   deleteMessage,
+  downloadFile,
   getMessages,
+  transcribeMessage,
+  translateMessage,
   updatePinMessage,
   updateTextMessage,
-  writeTextMessage
+  writeAudioMessage,
+  writeFileMessage,
+  writeImageMessage,
+  writeTextMessage,
+  writeVideoMessage
 };

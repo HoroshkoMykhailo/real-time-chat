@@ -34,17 +34,21 @@ export {
   chatUpdateFront
 } from './modules/chat/chat.js';
 export {
+  type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type Message,
   MessageApiParams,
   MessageApiPath,
   type MessageCreationResponseDto,
+  MessageLanguage,
   MessagePayloadKey,
   MessageStatus,
   MessageType,
   MessageValidationMessage,
   MessageValidationRule,
   type TextMessageRequestDto,
+  type TranslateMessageResponseDto,
+  fileMessage,
   textMessage
 } from './modules/message/message.js';
 export {

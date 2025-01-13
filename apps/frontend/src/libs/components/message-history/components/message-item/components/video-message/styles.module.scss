@@ -1,0 +1,17 @@
+.message-video {
+  max-width: 18rem;
+  height: auto;
+  border-radius: 0.5rem;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.message-video::-webkit-media-controls {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.message-video:hover {
+  &::-webkit-media-controls {
+    opacity: 1;
+  }
+}

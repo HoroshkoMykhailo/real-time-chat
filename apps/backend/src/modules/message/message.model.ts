@@ -12,6 +12,7 @@ import { MessageStatus, MessageType } from './libs/enums/enums.js';
 interface MessageDocument extends AbstractDocument {
   chatId: Types.ObjectId;
   content: string;
+  fileUrl?: string;
   isPinned: boolean;
   senderId: Types.ObjectId;
   status: ValueOf<typeof MessageStatus>;
@@ -20,7 +21,8 @@ interface MessageDocument extends AbstractDocument {
 
 const MessageSchema = new Schema<MessageDocument>({
   chatId: { ref: 'Chat', required: true, type: Schema.Types.ObjectId },
-  content: { required: true, type: String },
+  content: { type: String },
+  fileUrl: { type: String },
   isPinned: { required: true, type: Boolean },
   senderId: { ref: 'User', required: true, type: Schema.Types.ObjectId },
   status: { enum: Object.values(MessageStatus), required: true, type: String },

@@ -1,6 +1,7 @@
 export {
   MessageApiParams,
   MessageApiPath,
+  MessageLanguage,
   MessagePayloadKey,
   MessageStatus,
   MessageType,
@@ -8,9 +9,14 @@ export {
   MessageValidationRule
 } from './libs/enums/enums.js';
 export {
+  type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type Message,
   type MessageCreationResponseDto,
-  type TextMessageRequestDto
+  type TextMessageRequestDto,
+  type TranslateMessageResponseDto
 } from './libs/types/types.js';
-export { textMessage } from './libs/validation-schemas/validation-schemas.js';
+export {
+  fileMessage,
+  textMessage
+} from './libs/validation-schemas/validation-schemas.js';

@@ -2,6 +2,7 @@ const DEBOUNCE_DELAY = 500;
 const MINUS_ONE_VALUE = -1;
 const ZERO_VALUE = 0;
 const ONE_VALUE = 1;
+const TWO_VALUE = 2;
 
 const POPOVER_OFFSET = 50;
 
@@ -13,5 +14,6 @@ export {
   ONE_VALUE,
   POPOVER_CLASS,
   POPOVER_OFFSET,
+  TWO_VALUE,
   ZERO_VALUE
 };

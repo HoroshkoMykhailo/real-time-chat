@@ -1,4 +1,5 @@
 import { type ValueOf } from '~/libs/types/types.js';
+import { type MessageType } from '~/modules/message/message.js';
 
 import { type ChatType } from '../enums/chat-type.enum.js';
 
@@ -8,7 +9,9 @@ type ChatsResponseDto = {
   lastMessage?: {
     content: string;
     createdAt: string;
+    fileUrl?: string;
     senderName: string;
+    type: ValueOf<typeof MessageType>;
   };
   memberCount?: number;
   name: string;

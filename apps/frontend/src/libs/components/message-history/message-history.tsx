@@ -10,7 +10,7 @@ import {
 import { chatActions } from '~/modules/chat/chat.js';
 import { messageActions } from '~/modules/messages/message.js';
 
-import { MessageItem } from './libs/components/message-item.tsx/message-item.js';
+import { MessageItem } from './components/message-item/message-item.js';
 import styles from './styles.module.scss';
 
 type Properties = {
@@ -39,7 +39,9 @@ const MessageHistory = ({ setEditingMessageId }: Properties): JSX.Element => {
             message: {
               content: message.content,
               createdAt: message.createdAt,
-              senderName: message.sender.username
+              senderName: message.sender.username,
+              type: message.type,
+              ...(message.fileUrl && { fileUrl: message.fileUrl })
             }
           })
         );

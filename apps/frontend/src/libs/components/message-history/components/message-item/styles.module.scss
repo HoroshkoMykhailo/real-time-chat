@@ -13,6 +13,7 @@
 .message-avatar {
   all: unset;
   cursor: pointer;
+  display: flex;
 }
 
 .message-content {
@@ -34,15 +35,5 @@
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.2;
-  margin: 0;
-}
-
-.message-text {
-  user-select: text;
-  cursor: text;
-  color: var(--text-dark);
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
   margin: 0;
 }

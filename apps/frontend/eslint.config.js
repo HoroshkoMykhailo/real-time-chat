@@ -64,7 +64,10 @@ const jsxA11yConfig = {
   plugins: {
     'jsx-a11y': jsxA11y
   },
-  rules: jsxA11y.configs.recommended.rules
+  rules: {
+    ...jsxA11y.configs.recommended.rules,
+    'jsx-a11y/media-has-caption': 'off'
+  }
 };
 
 /** @type {FlatConfig} */

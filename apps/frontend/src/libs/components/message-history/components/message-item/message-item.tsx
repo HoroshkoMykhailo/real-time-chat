@@ -7,12 +7,20 @@ import {
   useEffect,
   useNavigate
 } from '~/libs/hooks/hooks.js';
+import { type ValueOf } from '~/libs/types/types.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import { type GetMessagesResponseDto } from '~/modules/messages/libs/types/types.js';
-import { messageActions } from '~/modules/messages/message.js';
+import { MessageType, messageActions } from '~/modules/messages/message.js';
 
-import { MessagePopover } from '../message-popover/message-popover.js';
-import { MessageFooter } from './components/message-footer/message-footer.js';
+import {
+  AudioMessage,
+  FileMessage,
+  ImageMessage,
+  MessageFooter,
+  MessagePopover,
+  TextMessage,
+  VideoMessage
+} from './components/components.js';
 import styles from './styles.module.scss';
 
 type Properties = {
@@ -35,6 +43,12 @@ const MessageItem = ({
 
   const handleChatPopoverClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
+      const target = event.target as HTMLElement;
+
+      if (target.tagName === 'IMG' || target.tagName === 'VIDEO') {
+        return;
+      }
+
       const { id: messageId } = message;
 
       if (messageId) {
@@ -59,15 +73,21 @@ const MessageItem = ({
     }
   }, [message, profile, dispatch]);
 
+  const handleChatPopoverClose = useCallback((): void => {
+    setPopoverMessageId(null);
+  }, [setPopoverMessageId]);
+
   const handleMessageClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       const target = event.target as HTMLElement;
+
+      handleChatPopoverClose();
 
       if (target.classList.contains(styles['user-name'] ?? '')) {
         handleUserClick();
       }
     },
-    [handleUserClick]
+    [handleChatPopoverClose, handleUserClick]
   );
 
   useEffect(() => {
@@ -80,9 +100,41 @@ const MessageItem = ({
     }
   }, [navigate, dispatch, createdChat]);
 
-  const handleChatPopoverClose = useCallback((): void => {
-    setPopoverMessageId(null);
-  }, [setPopoverMessageId]);
+  const messageRenderers = new Map<
+    ValueOf<typeof MessageType>,
+    () => JSX.Element
+  >([
+    [
+      MessageType.AUDIO,
+      (): JSX.Element => <AudioMessage audioMessage={message} />
+    ],
+    [
+      MessageType.FILE,
+      (): JSX.Element => <FileMessage fileMessage={message} />
+    ],
+    [
+      MessageType.IMAGE,
+      (): JSX.Element => <ImageMessage imageMessage={message} />
+    ],
+    [
+      MessageType.TEXT,
+      (): JSX.Element => <TextMessage textMessage={message} />
+    ],
+    [
+      MessageType.VIDEO,
+      (): JSX.Element => <VideoMessage videoMessage={message} />
+    ]
+  ]);
+
+  const renderMessageContent = (): JSX.Element => {
+    const renderFunction = messageRenderers.get(message.type);
+
+    if (renderFunction) {
+      return renderFunction();
+    }
+
+    return <p>Unsupported message type</p>;
+  };
 
   return (
     <MessagePopover
@@ -109,7 +161,7 @@ const MessageItem = ({
           <div className={styles['message-header']}>
             <p className={styles['user-name']}>{message.sender.username}</p>
           </div>
-          <p className={styles['message-text']}>{message.content}</p>
+          {renderMessageContent()}
           <MessageFooter message={message} />
         </button>
       </div>

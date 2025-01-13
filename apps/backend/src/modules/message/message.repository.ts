@@ -95,7 +95,7 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
   protected mapAdditionalBusinessLogic(
     document: MessageDocument
   ): Partial<TMessage> {
-    return {
+    const result: Partial<TMessage> = {
       chatId: document.chatId.toString(),
       content: document.content,
       isPinned: document.isPinned,
@@ -103,6 +103,12 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
       status: document.status,
       type: document.type
     };
+
+    if (document.fileUrl) {
+      result.fileUrl = document.fileUrl;
+    }
+
+    return result;
   }
 
   protected mapToDatabase(data: Partial<TMessage>): Partial<MessageDocument> {

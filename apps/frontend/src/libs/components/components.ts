@@ -11,6 +11,7 @@ export {
   UserSearch
 } from './create-group/create-group.js';
 export { DatePicker } from './date-picker/date-picker.js';
+export { FileIcon } from './file-icon/file-icon.js';
 export { Header } from './header/header.js';
 export { Icon } from './icon/icon.js';
 export { Image } from './image/image.js';
