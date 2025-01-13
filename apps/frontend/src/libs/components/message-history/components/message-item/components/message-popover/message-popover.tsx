@@ -1,4 +1,5 @@
 import { Icon, Popover } from '~/libs/components/components.js';
+import { NotificationMessage } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppSelector,
@@ -7,6 +8,7 @@ import {
   useRef,
   useState
 } from '~/libs/hooks/hooks.js';
+import { toastNotifier } from '~/libs/modules/toast-notifier/toast-notifier.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import {
   type MessageLanguage,
@@ -75,10 +77,11 @@ const MessagePopover = ({
   );
 
   const handleCopyClick = useCallback((): void => {
-    if (message?.type === MessageType.TEXT) {
+    if (message) {
       message.translatedMessage
         ? void navigator.clipboard.writeText(message.translatedMessage)
         : void navigator.clipboard.writeText(message.content);
+      toastNotifier.showSuccess(NotificationMessage.MESSAGE_COPIED);
       setIsLanguageSelectorOpened(false);
       onClose();
     }
@@ -165,7 +168,7 @@ const MessagePopover = ({
                 </>
               )}
             </button>
-            {message.type === MessageType.AUDIO && (
+            {message.type === MessageType.AUDIO && !message.content && (
               <button
                 className={styles['transcribe-button']}
                 onClick={handleTranscribeClick}
@@ -199,7 +202,8 @@ const MessagePopover = ({
                 )}
               </>
             )}
-            {message.type === MessageType.TEXT && (
+            {(message.type === MessageType.TEXT ||
+              (message.type === MessageType.AUDIO && message.content)) && (
               <>
                 <button
                   className={styles['copy-button']}

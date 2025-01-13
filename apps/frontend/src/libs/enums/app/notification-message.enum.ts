@@ -5,7 +5,10 @@ const NotificationMessage = {
   GROUP_DELETED: 'Group deleted',
   GROUP_UPDATED: 'Group updated',
   MEMBER_REMOVED: 'Member removed',
-  MEMBERS_ADDED: 'Members added'
+  MEMBERS_ADDED: 'Members added',
+  MESSAGE_COPIED: 'Text copied',
+  MESSAGE_TRANSCRIBED: 'Message transcribed',
+  MESSAGE_TRANSLATED: 'Message translated'
 } as const;
 
 export { NotificationMessage };
