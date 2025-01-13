@@ -1,1 +1,6 @@
-export { MessageApiPath, MessageStatus, MessageType } from '@team-link/shared';
+export {
+  MessageApiPath,
+  MessageLanguage,
+  MessageStatus,
+  MessageType
+} from '@team-link/shared';

@@ -19,6 +19,7 @@
   "dependencies": {
     "@fastify/multipart": "8.2.0",
     "@fastify/static": "7.0.4",
+    "@google-cloud/translate": "8.5.0",
     "@team-link/shared": "*",
     "bcrypt": "^5.1.1",
     "convict": "6.2.4",

@@ -9,18 +9,25 @@ import {
 } from '~/libs/modules/helpers/helpers.js';
 import { saveAudio } from '~/libs/modules/helpers/save-audio/save-audio.helper.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
+import { type ValueOf } from '~/libs/types/types.js';
 
 import { type Chat as ChatRepository } from '../chat/chat.repository.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
+import { type TranslationService } from '../translation/translation.js';
 import { type User, UserRole } from '../user/user.js';
 import { DEFAULT_LIMIT } from './libs/constants/default-limit.constant.js';
-import { MessageStatus, MessageType } from './libs/enums/enums.js';
+import {
+  type MessageLanguage,
+  MessageStatus,
+  MessageType
+} from './libs/enums/enums.js';
 import {
   type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
   type MessageService,
-  type TextMessageRequestDto
+  type TextMessageRequestDto,
+  type TranslateMessageResponseDto
 } from './libs/types/types.js';
 import { type Message as MessageRepository } from './message.repository.js';
 
@@ -28,6 +35,7 @@ type Constructor = {
   chatRepository: ChatRepository;
   messageRepository: MessageRepository;
   profileRepository: ProfileRepository;
+  translationService: TranslationService;
 };
 
 class Message implements MessageService {
@@ -50,14 +58,18 @@ class Message implements MessageService {
 
   #profileRepository: ProfileRepository;
 
+  #translationService: TranslationService;
+
   public constructor({
     chatRepository,
     messageRepository,
-    profileRepository
+    profileRepository,
+    translationService
   }: Constructor) {
     this.#chatRepository = chatRepository;
     this.#messageRepository = messageRepository;
     this.#profileRepository = profileRepository;
+    this.#translationService = translationService;
   }
 
   public async createAudio(
@@ -418,6 +430,40 @@ class Message implements MessageService {
         };
       })
     );
+  }
+
+  public async translateMessage(
+    user: User,
+    messageId: string,
+    language: ValueOf<typeof MessageLanguage>
+  ): Promise<TranslateMessageResponseDto> {
+    const message = await this.#messageRepository.getById(messageId);
+
+    if (!message) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const isMember = await this.#isUserChatMember(user, message.chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const translatedMessage = await this.#translationService.translate(
+      message.content,
+      language
+    );
+
+    return {
+      messageId: message.id,
+      translatedMessage
+    };
   }
 
   public async updatePin(user: User, messageId: string): Promise<boolean> {

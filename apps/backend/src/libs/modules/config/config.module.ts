@@ -86,6 +86,14 @@ class Config implements ConfigModule {
           format: String
         }
       },
+      GOOGLE_CLOUD: {
+        PROJECT_ID: {
+          default: null,
+          doc: 'Google Cloud project ID',
+          env: 'GOOGLE_CLOUD_PROJECT_ID',
+          format: String
+        }
+      },
       JWT: {
         ALGORITHM: {
           default: null,

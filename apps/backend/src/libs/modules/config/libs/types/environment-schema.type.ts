@@ -17,6 +17,9 @@ type EnvironmentSchema = {
     SALT_ROUNDS: number;
     SECRET: string;
   };
+  GOOGLE_CLOUD: {
+    PROJECT_ID: string;
+  };
   JWT: {
     ALGORITHM: string;
     EXPIRATION_TIME: string;

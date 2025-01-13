@@ -10,14 +10,15 @@ import { type LoggerModule } from '~/libs/modules/logger/logger.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { type User as TUser } from '~/modules/user/user.js';
 
-import { MessageApiPath } from './libs/enums/enums.js';
+import { MessageApiPath, type MessageLanguage } from './libs/enums/enums.js';
 import { type MessageController } from './libs/types/message-controller.type.js';
 import { type MessageService } from './libs/types/message-service.type.js';
 import {
   type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
-  type TextMessageRequestDto
+  type TextMessageRequestDto,
+  type TranslateMessageResponseDto
 } from './libs/types/types.js';
 import {
   fileMessageValidationSchema,
@@ -189,6 +190,27 @@ class Message extends Controller implements MessageController {
     };
   };
 
+  public translateMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      query: {
+        language: ValueOf<typeof MessageLanguage>;
+      };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<TranslateMessageResponseDto>> => {
+    const {
+      params: { id },
+      query: { language },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.translateMessage(user, id, language),
+      status: HTTPCode.OK
+    };
+  };
+
   public updatePinMessage = async (
     options: ControllerAPIHandlerOptions<{
       params: { id: string };
@@ -266,6 +288,12 @@ class Message extends Controller implements MessageController {
         body: fileMessageValidationSchema
       },
       url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.VIDEO}`
+    });
+
+    this.addRoute({
+      handler: this.translateMessage as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.TRANSLATE}`
     });
 
     this.addRoute({

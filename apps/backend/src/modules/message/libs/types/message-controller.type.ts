@@ -2,13 +2,16 @@ import {
   type ControllerAPIHandlerOptions,
   type ControllerAPIHandlerResponse
 } from '~/libs/modules/controller/controller.js';
+import { type ValueOf } from '~/libs/types/types.js';
 import { type User } from '~/modules/user/user.js';
 
+import { type MessageLanguage } from '../enums/enums.js';
 import {
   type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
-  type TextMessageRequestDto
+  type TextMessageRequestDto,
+  type TranslateMessageResponseDto
 } from './types.js';
 
 type MessageController = {
@@ -77,6 +80,16 @@ type MessageController = {
       user: User;
     }>
   ) => Promise<ControllerAPIHandlerResponse<GetMessagesResponseDto>>;
+
+  translateMessage: (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      query: {
+        language: ValueOf<typeof MessageLanguage>;
+      };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<TranslateMessageResponseDto>>;
 
   updatePinMessage: (
     options: ControllerAPIHandlerOptions<{

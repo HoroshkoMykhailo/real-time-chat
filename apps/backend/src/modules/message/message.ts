@@ -6,13 +6,15 @@ import {
   messageRepository,
   profileRepository
 } from '../initializations/repositories.js';
+import { translationService } from '../translation/translation.js';
 import { Message as MessageController } from './message.controller.js';
 import { Message as MessageService } from './message.service.js';
 
 const messageService = new MessageService({
   chatRepository,
   messageRepository,
-  profileRepository
+  profileRepository,
+  translationService
 });
 
 const messageController = new MessageController({
@@ -23,5 +25,6 @@ const messageController = new MessageController({
 
 export { messageController };
 export { messageRepository } from '../initializations/repositories.js';
+export { MessageLanguage } from './libs/enums/enums.js';
 export { type Message } from './libs/types/types.js';
 export { type Message as MessageService } from './message.service.js';

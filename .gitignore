@@ -84,3 +84,5 @@ dist
 apps/backend/public/*
 !apps/backend/public/index.html
 apps/frontend/.vite
+
+keys

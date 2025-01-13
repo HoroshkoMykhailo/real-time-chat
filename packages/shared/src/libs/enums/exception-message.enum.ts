@@ -17,11 +17,13 @@ const ExceptionMessage = {
   MEMBER_NOT_FOUND: 'Member not found.',
   MESSAGE_NOT_FOUND: 'Message not found.',
   NO_TOKEN_PROVIDED: 'No token provided.',
+  NO_TRANSLATION_AVAILABLE: 'No translation available.',
   NOT_VALID_MEMBERS_COUNT: 'Not valid members count.',
   NOTIFICATION_NOT_FOUND: 'Notification not found.',
   PRIVATE_CHAT_EXISTS: 'Private chat already exists.',
   PROFILE_NOT_FOUND: 'Profile not found.',
   TOKEN_EXPIRED: 'Token is expired.',
+  TRANSLATION_ERROR: 'Translation error.',
   USER_ALREADY_IN_CHAT: 'User is already in chat.',
   USER_NOT_FOUND: 'User not found.',
   USER_NOT_IN_CHAT: 'User is not in chat.'

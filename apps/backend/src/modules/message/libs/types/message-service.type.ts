@@ -1,10 +1,13 @@
+import { type ValueOf } from '~/libs/types/types.js';
 import { type User } from '~/modules/user/user.js';
 
+import { type MessageLanguage } from '../enums/enums.js';
 import {
   type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
-  type TextMessageRequestDto
+  type TextMessageRequestDto,
+  type TranslateMessageResponseDto
 } from './types.js';
 
 type MessageService = {
@@ -51,6 +54,12 @@ type MessageService = {
       limit?: number;
     }
   ): Promise<GetMessagesResponseDto>;
+
+  translateMessage(
+    user: User,
+    messageId: string,
+    language: ValueOf<typeof MessageLanguage>
+  ): Promise<TranslateMessageResponseDto>;
 
   updatePin(user: User, messageId: string): Promise<boolean>;
 
