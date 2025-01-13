@@ -21,7 +21,7 @@ interface MessageDocument extends AbstractDocument {
 
 const MessageSchema = new Schema<MessageDocument>({
   chatId: { ref: 'Chat', required: true, type: Schema.Types.ObjectId },
-  content: { required: true, type: String },
+  content: { type: String },
   fileUrl: { type: String },
   isPinned: { required: true, type: Boolean },
   senderId: { ref: 'User', required: true, type: Schema.Types.ObjectId },

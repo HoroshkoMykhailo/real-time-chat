@@ -6,6 +6,7 @@ import {
   messageRepository,
   profileRepository
 } from '../initializations/repositories.js';
+import { transcriptionService } from '../transcription/transcription.js';
 import { translationService } from '../translation/translation.js';
 import { Message as MessageController } from './message.controller.js';
 import { Message as MessageService } from './message.service.js';
@@ -14,6 +15,7 @@ const messageService = new MessageService({
   chatRepository,
   messageRepository,
   profileRepository,
+  transcriptionService,
   translationService
 });
 

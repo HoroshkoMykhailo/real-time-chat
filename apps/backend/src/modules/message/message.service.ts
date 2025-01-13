@@ -13,6 +13,7 @@ import { type ValueOf } from '~/libs/types/types.js';
 
 import { type Chat as ChatRepository } from '../chat/chat.repository.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
+import { type TranscriptionService } from '../transcription/transcription.js';
 import { type TranslationService } from '../translation/translation.js';
 import { type User, UserRole } from '../user/user.js';
 import { DEFAULT_LIMIT } from './libs/constants/default-limit.constant.js';
@@ -35,12 +36,12 @@ type Constructor = {
   chatRepository: ChatRepository;
   messageRepository: MessageRepository;
   profileRepository: ProfileRepository;
+  transcriptionService: TranscriptionService;
   translationService: TranslationService;
 };
 
 class Message implements MessageService {
   #chatRepository: ChatRepository;
-
   #isUserChatMember = async (user: User, chatId: string): Promise<boolean> => {
     const chat = await this.#chatRepository.getById(chatId);
 
@@ -58,15 +59,19 @@ class Message implements MessageService {
 
   #profileRepository: ProfileRepository;
 
+  #transcriptionService: TranscriptionService;
+
   #translationService: TranslationService;
 
   public constructor({
     chatRepository,
     messageRepository,
     profileRepository,
+    transcriptionService,
     translationService
   }: Constructor) {
     this.#chatRepository = chatRepository;
+    this.#transcriptionService = transcriptionService;
     this.#messageRepository = messageRepository;
     this.#profileRepository = profileRepository;
     this.#translationService = translationService;
@@ -430,6 +435,81 @@ class Message implements MessageService {
         };
       })
     );
+  }
+
+  public async transcribeMessage(
+    user: User,
+    messageId: string
+  ): Promise<MessageCreationResponseDto> {
+    const message = await this.#messageRepository.getById(messageId);
+
+    if (!message) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    if (message.type !== MessageType.AUDIO) {
+      throw new HTTPError({
+        message: ExceptionMessage.INVALID_MESSAGE_TYPE,
+        status: HTTPCode.UNPROCESSED_ENTITY
+      });
+    }
+
+    if (message.content) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_ALREADY_TRANSCRIBED,
+        status: HTTPCode.UNPROCESSED_ENTITY
+      });
+    }
+
+    const isMember = await this.#isUserChatMember(user, message.chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    if (!message.fileUrl) {
+      throw new HTTPError({
+        message: ExceptionMessage.FILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const transcribedMessage = await this.#transcriptionService.transcribe(
+      message.fileUrl
+    );
+
+    const senderProfile = await this.#profileRepository.getById(
+      message.senderId
+    );
+
+    if (!senderProfile) {
+      throw new HTTPError({
+        message: ExceptionMessage.PROFILE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const updatedMessage = await this.#messageRepository.updateById(messageId, {
+      content: transcribedMessage
+    });
+
+    if (!updatedMessage) {
+      throw new HTTPError({
+        message: ExceptionMessage.MESSAGE_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    return {
+      ...updatedMessage,
+      sender: senderProfile
+    };
   }
 
   public async translateMessage(

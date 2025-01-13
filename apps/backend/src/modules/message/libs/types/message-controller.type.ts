@@ -81,6 +81,13 @@ type MessageController = {
     }>
   ) => Promise<ControllerAPIHandlerResponse<GetMessagesResponseDto>>;
 
+  transcribeMessage: (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>>;
+
   translateMessage: (
     options: ControllerAPIHandlerOptions<{
       params: { id: string };

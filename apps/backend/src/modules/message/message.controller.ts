@@ -190,6 +190,23 @@ class Message extends Controller implements MessageController {
     };
   };
 
+  public transcribeMessage = async (
+    options: ControllerAPIHandlerOptions<{
+      params: { id: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<MessageCreationResponseDto>> => {
+    const {
+      params: { id },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.transcribeMessage(user, id),
+      status: HTTPCode.OK
+    };
+  };
+
   public translateMessage = async (
     options: ControllerAPIHandlerOptions<{
       params: { id: string };
@@ -258,6 +275,12 @@ class Message extends Controller implements MessageController {
         body: textMessageValidationSchema
       },
       url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.TEXT}`
+    });
+
+    this.addRoute({
+      handler: this.transcribeMessage as ControllerAPIHandler,
+      method: HTTPMethod.POST,
+      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.TRANSCRIBE}`
     });
 
     this.addRoute({

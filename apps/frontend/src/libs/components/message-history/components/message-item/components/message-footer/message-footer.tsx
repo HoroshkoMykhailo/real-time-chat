@@ -1,5 +1,6 @@
 import { Icon } from '~/libs/components/components.js';
 import { type MessageHistoryItem } from '~/modules/messages/libs/types/types.js';
+import { MessageType } from '~/modules/messages/message.js';
 
 import styles from './styles.module.scss';
 
@@ -20,7 +21,9 @@ const MessageFooter = ({ message }: Properties): JSX.Element => {
       {message.translatedMessage && (
         <Icon height={14} name="translate" width={14} />
       )}
-      {isEdited && <span className={styles['edited-marker']}> (edited)</span>}
+      {isEdited && message.type === MessageType.TEXT && (
+        <span className={styles['edited-marker']}> (edited)</span>
+      )}
       <span className={styles['message-time']}>{timeString}</span>
     </div>
   );

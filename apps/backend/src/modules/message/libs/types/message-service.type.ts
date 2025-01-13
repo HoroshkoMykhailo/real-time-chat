@@ -55,6 +55,11 @@ type MessageService = {
     }
   ): Promise<GetMessagesResponseDto>;
 
+  transcribeMessage(
+    user: User,
+    messageId: string
+  ): Promise<MessageCreationResponseDto>;
+
   translateMessage(
     user: User,
     messageId: string,
