@@ -1,18 +1,21 @@
 import { APIPath, ContentType } from '~/libs/enums/enums.js';
 import { convertToFormData } from '~/libs/helpers/helpers.js';
+import { type ValueOf } from '~/libs/types/types.js';
 
 import { type HttpApi } from '../http/http.js';
 import { HTTPMethod } from '../http/libs/enums/enums.js';
 import {
   MessageApiParams as MessageApiParameters,
-  MessageApiPath
+  MessageApiPath,
+  type MessageLanguage
 } from './libs/enums/enums.js';
 import {
   type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageApi,
   type MessageCreationResponseDto,
-  type TextMessageRequestDto
+  type TextMessageRequestDto,
+  type TranslateMessageResponseDto
 } from './libs/types/types.js';
 
 type Constructor = {
@@ -56,6 +59,22 @@ class Message implements MessageApi {
       {
         hasAuth: true,
         method: HTTPMethod.GET
+      }
+    );
+  }
+
+  public translateMessage(
+    messageId: string,
+    language: ValueOf<typeof MessageLanguage>
+  ): Promise<TranslateMessageResponseDto> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$MESSAGE_ID.replace(MessageApiParameters.MESSAGE_ID, messageId)}${MessageApiPath.TRANSLATE}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.GET,
+        query: {
+          language
+        }
       }
     );
   }

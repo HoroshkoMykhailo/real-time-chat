@@ -1,13 +1,15 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { type AsyncThunkConfig } from '~/libs/types/types.js';
+import { type AsyncThunkConfig, type ValueOf } from '~/libs/types/types.js';
 
 import {
   type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
-  type TextMessageRequestDto
+  type TextMessageRequestDto,
+  type TranslateMessageResponseDto
 } from '../libs/types/types.js';
+import { type MessageLanguage } from '../message.js';
 import { ActionType } from './common.js';
 
 const getMessages = createAsyncThunk<
@@ -118,6 +120,17 @@ const writeAudioMessage = createAsyncThunk<
   }
 );
 
+const translateMessage = createAsyncThunk<
+  TranslateMessageResponseDto,
+  { language: ValueOf<typeof MessageLanguage>; messageId: string },
+  AsyncThunkConfig
+>(
+  ActionType.TRANSLATE_MESSAGE,
+  async ({ language, messageId }, { extra: { messageApi } }) => {
+    return await messageApi.translateMessage(messageId, language);
+  }
+);
+
 const downloadFile = createAsyncThunk<
   Blob,
   { messageId: string },
@@ -133,6 +146,7 @@ export {
   deleteMessage,
   downloadFile,
   getMessages,
+  translateMessage,
   updatePinMessage,
   updateTextMessage,
   writeAudioMessage,

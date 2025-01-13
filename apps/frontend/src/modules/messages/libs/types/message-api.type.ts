@@ -1,8 +1,12 @@
+import { type ValueOf } from '~/libs/types/types.js';
+
+import { type MessageLanguage } from '../enums/enums.js';
 import {
   type FileMessageRequestDto,
   type GetMessagesResponseDto,
   type MessageCreationResponseDto,
-  type TextMessageRequestDto
+  type TextMessageRequestDto,
+  type TranslateMessageResponseDto
 } from './types.js';
 
 type MessageApi = {
@@ -10,6 +14,11 @@ type MessageApi = {
   downloadFile(messageId: string): Promise<Blob>;
 
   getMessages(chatId: string): Promise<GetMessagesResponseDto>;
+
+  translateMessage(
+    messageId: string,
+    language: ValueOf<typeof MessageLanguage>
+  ): Promise<TranslateMessageResponseDto>;
 
   updatePinMessage(messageId: string): Promise<boolean>;
 
@@ -37,7 +46,6 @@ type MessageApi = {
     chatId: string,
     content: TextMessageRequestDto
   ): Promise<MessageCreationResponseDto>;
-
   writeVideoMessage(
     chatId: string,
     payload: FileMessageRequestDto

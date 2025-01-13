@@ -2,6 +2,7 @@ const ActionType = {
   DELETE_MESSAGE: 'messages/delete-message',
   DOWNLOAD_FILE: 'messages/download-file',
   GET_MESSAGES: 'messages/get-messages',
+  TRANSLATE_MESSAGE: 'messages/translate-message',
   UPDATE_PIN_MESSAGE: 'messages/pin-message',
   UPDATE_TEXT_MESSAGE: 'messages/update-text-message',
   WRITE_AUDIO_MESSAGE: 'messages/write-audio-message',

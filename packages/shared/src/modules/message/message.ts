@@ -1,6 +1,7 @@
 export {
   MessageApiParams,
   MessageApiPath,
+  MessageLanguage,
   MessagePayloadKey,
   MessageStatus,
   MessageType,
@@ -12,7 +13,8 @@ export {
   type GetMessagesResponseDto,
   type Message,
   type MessageCreationResponseDto,
-  type TextMessageRequestDto
+  type TextMessageRequestDto,
+  type TranslateMessageResponseDto
 } from './libs/types/types.js';
 export {
   fileMessage,

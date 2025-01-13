@@ -4,5 +4,6 @@ export {
   type GetMessagesResponseDto,
   type Message,
   type MessageCreationResponseDto,
-  type TextMessageRequestDto
+  type TextMessageRequestDto,
+  type TranslateMessageResponseDto
 } from '@team-link/shared';

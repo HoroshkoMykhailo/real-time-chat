@@ -17,6 +17,7 @@ import Person from '~/assets/images/icons/person.svg?react';
 import Pin from '~/assets/images/icons/pin.svg?react';
 import Remove from '~/assets/images/icons/remove.svg?react';
 import Search from '~/assets/images/icons/search.svg?react';
+import Translate from '~/assets/images/icons/translate.svg?react';
 import TrashBin from '~/assets/images/icons/trash-bin.svg?react';
 import UnPin from '~/assets/images/icons/unpin.svg?react';
 import { type IconName } from '~/libs/types/types.js';
@@ -39,6 +40,7 @@ const iconNameToSvg: Record<IconName, FC<React.SVGProps<SVGSVGElement>>> = {
   pin: Pin,
   remove: Remove,
   search: Search,
+  translate: Translate,
   trashBin: TrashBin,
   unPin: UnPin
 };

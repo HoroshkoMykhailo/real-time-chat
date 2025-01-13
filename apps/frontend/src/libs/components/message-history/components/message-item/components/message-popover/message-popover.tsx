@@ -7,12 +7,18 @@ import {
   useRef,
   useState
 } from '~/libs/hooks/hooks.js';
-import { MessageType, messageActions } from '~/modules/messages/message.js';
+import { type ValueOf } from '~/libs/types/types.js';
+import {
+  type MessageLanguage,
+  MessageType,
+  messageActions
+} from '~/modules/messages/message.js';
 
+import { LanguageSelector } from './components/language-selector/language-selector.js';
 import styles from './styles.module.scss';
 
 const POPOVER_CLASS = 'message-popover';
-const POPOVER_OFFSET = 200;
+const POPOVER_OFFSET = 80;
 
 type Properties = {
   children: React.ReactNode;
@@ -35,6 +41,8 @@ const MessagePopover = ({
   const { profile } = useAppSelector(state => state.profile);
   const { messages } = useAppSelector(state => state.message);
   const [popoverClass, setPopoverClass] = useState<string>(POPOVER_CLASS);
+  const [isLanguageSelectorOpened, setIsLanguageSelectorOpened] =
+    useState<boolean>(false);
 
   const message = messages.find(message => message.id === messageId);
 
@@ -44,9 +52,31 @@ const MessagePopover = ({
     }
   }, [dispatch, message]);
 
+  const handleTranslateClick = useCallback((): void => {
+    if (message) {
+      setIsLanguageSelectorOpened(true);
+    }
+  }, [message]);
+
+  const handleLanguageSelect = useCallback(
+    (languageCode: ValueOf<typeof MessageLanguage>): void => {
+      if (message) {
+        void dispatch(
+          messageActions.translateMessage({
+            language: languageCode,
+            messageId: message.id
+          })
+        );
+        setIsLanguageSelectorOpened(false);
+      }
+    },
+    [dispatch, message]
+  );
+
   const handleCopyClick = useCallback((): void => {
     if (message?.type === MessageType.TEXT) {
       void navigator.clipboard.writeText(message.content);
+      setIsLanguageSelectorOpened(false);
       onClose();
     }
   }, [message, onClose]);
@@ -58,6 +88,7 @@ const MessagePopover = ({
           messageId: message.id
         })
       );
+      setIsLanguageSelectorOpened(false);
       onClose();
     }
   }, [dispatch, message, onClose]);
@@ -65,6 +96,7 @@ const MessagePopover = ({
   const handleEditClick = useCallback((): void => {
     if (message && message.type === MessageType.TEXT) {
       setEditingMessageId(message.id);
+      setIsLanguageSelectorOpened(false);
       onClose();
     }
   }, [message, onClose, setEditingMessageId]);
@@ -80,6 +112,7 @@ const MessagePopover = ({
 
   const handleClose = useCallback((): void => {
     onClose();
+    setIsLanguageSelectorOpened(false);
     setPopoverClass(POPOVER_CLASS);
   }, [onClose]);
 
@@ -107,13 +140,25 @@ const MessagePopover = ({
               )}
             </button>
             {message.type === MessageType.TEXT && (
-              <button
-                className={styles['copy-button']}
-                onClick={handleCopyClick}
-              >
-                <Icon height={24} name="copy" width={24} />
-                <span>Copy text</span>
-              </button>
+              <>
+                <button
+                  className={styles['copy-button']}
+                  onClick={handleCopyClick}
+                >
+                  <Icon height={24} name="copy" width={24} />
+                  <span>Copy text</span>
+                </button>
+                <button
+                  className={styles['translate-button']}
+                  onClick={handleTranslateClick}
+                >
+                  <Icon height={24} name="translate" width={24} />
+                  <span>Translate</span>
+                </button>
+                {isLanguageSelectorOpened && (
+                  <LanguageSelector onLanguageChange={handleLanguageSelect} />
+                )}
+              </>
             )}
             {profile?.id === message.sender.id &&
               message.type === MessageType.TEXT && (

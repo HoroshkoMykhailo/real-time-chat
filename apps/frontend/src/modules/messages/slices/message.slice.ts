@@ -9,6 +9,7 @@ import {
   deleteMessage,
   downloadFile,
   getMessages,
+  translateMessage,
   updatePinMessage,
   updateTextMessage,
   writeAudioMessage,
@@ -22,7 +23,9 @@ type State = {
   dataStatus: ValueOf<typeof DataStatus>;
   editDataStatus: ValueOf<typeof DataStatus>;
   fileBlob: Blob | null;
-  messages: GetMessagesResponseDto;
+  messages: Array<
+    { translatedMessage?: string } & GetMessagesResponseDto[number]
+  >;
   writeDataStatus: ValueOf<typeof DataStatus>;
 };
 
@@ -144,6 +147,24 @@ const { actions, reducer } = createSlice({
         state.editDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(downloadFile.rejected), state => {
+        state.editDataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(translateMessage.fulfilled), (state, action) => {
+        const index = state.messages.findIndex(
+          message => message.id === action.payload.messageId
+        );
+
+        const message = state.messages[index];
+
+        if (index !== MINUS_ONE_VALUE && message) {
+          state.messages[index] = {
+            ...message,
+            translatedMessage: action.payload.translatedMessage
+          };
+          state.editDataStatus = DataStatus.FULFILLED;
+        }
+      })
+      .addMatcher(isAnyOf(translateMessage.rejected), state => {
         state.editDataStatus = DataStatus.REJECTED;
       });
   },
