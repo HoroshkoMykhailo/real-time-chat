@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
+import { NotificationMessage } from '~/libs/enums/enums.js';
 import { type AsyncThunkConfig } from '~/libs/types/types.js';
 
 import { ChatType } from '../libs/enums/enums.js';
@@ -31,8 +32,9 @@ const getChat = createAsyncThunk<
 
 const leaveChat = createAsyncThunk<string, { id: string }, AsyncThunkConfig>(
   ActionType.LEAVE_CHAT,
-  async ({ id }, { extra: { chatApi } }) => {
+  async ({ id }, { extra: { chatApi, toastNotifier } }) => {
     await chatApi.leaveChat(id);
+    toastNotifier.showSuccess(NotificationMessage.CHAT_LEFT);
 
     return id;
   }
@@ -42,15 +44,20 @@ const deleteGroup = createAsyncThunk<
   null | string,
   { id: string },
   AsyncThunkConfig
->(ActionType.DELETE_GROUP, async ({ id }, { extra: { chatApi } }) => {
-  const isDeleted = await chatApi.deleteChat(id);
+>(
+  ActionType.DELETE_GROUP,
+  async ({ id }, { extra: { chatApi, toastNotifier } }) => {
+    const isDeleted = await chatApi.deleteChat(id);
 
-  if (!isDeleted) {
-    return null;
+    if (!isDeleted) {
+      return null;
+    }
+
+    toastNotifier.showSuccess(NotificationMessage.GROUP_DELETED);
+
+    return id;
   }
-
-  return id;
-});
+);
 
 const removeMember = createAsyncThunk<
   ChatGetResponseDto,
@@ -58,8 +65,12 @@ const removeMember = createAsyncThunk<
   AsyncThunkConfig
 >(
   ActionType.REMOVE_MEMBER,
-  async ({ id, memberId }, { extra: { chatApi } }) => {
-    return await chatApi.removeMember(id, memberId);
+  async ({ id, memberId }, { extra: { chatApi, toastNotifier } }) => {
+    const chat = await chatApi.removeMember(id, memberId);
+
+    toastNotifier.showSuccess(NotificationMessage.MEMBER_REMOVED);
+
+    return chat;
   }
 );
 
@@ -67,9 +78,16 @@ const addMembers = createAsyncThunk<
   ChatGetResponseDto,
   { id: string; members: string[] },
   AsyncThunkConfig
->(ActionType.ADD_MEMBERS, async ({ id, members }, { extra: { chatApi } }) => {
-  return await chatApi.addMembers(id, members);
-});
+>(
+  ActionType.ADD_MEMBERS,
+  async ({ id, members }, { extra: { chatApi, toastNotifier } }) => {
+    const chat = await chatApi.addMembers(id, members);
+
+    toastNotifier.showSuccess(NotificationMessage.MEMBERS_ADDED);
+
+    return chat;
+  }
+);
 
 const createPrivateChat = createAsyncThunk<
   ChatCreationResponseDto,
@@ -94,17 +112,31 @@ const createGroup = createAsyncThunk<
   ChatCreationResponseDto,
   ChatCreationRequestDto,
   AsyncThunkConfig
->(ActionType.CREATE_GROUP, async (group, { extra: { chatApi } }) => {
-  return await chatApi.createChat(group);
-});
+>(
+  ActionType.CREATE_GROUP,
+  async (group, { extra: { chatApi, toastNotifier } }) => {
+    const createdGroup = await chatApi.createChat(group);
+
+    toastNotifier.showSuccess(NotificationMessage.GROUP_CREATED);
+
+    return createdGroup;
+  }
+);
 
 const updateGroup = createAsyncThunk<
   ChatUpdateResponseDto,
   { id: string; payload: ChatUpdateRequestDto },
   AsyncThunkConfig
->(ActionType.UPDATE_GROUP, async ({ id, payload }, { extra: { chatApi } }) => {
-  return await chatApi.updateGroup(id, payload);
-});
+>(
+  ActionType.UPDATE_GROUP,
+  async ({ id, payload }, { extra: { chatApi, toastNotifier } }) => {
+    const group = await chatApi.updateGroup(id, payload);
+
+    toastNotifier.showSuccess(NotificationMessage.GROUP_UPDATED);
+
+    return group;
+  }
+);
 
 export {
   addMembers,

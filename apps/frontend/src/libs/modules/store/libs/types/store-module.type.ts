@@ -5,6 +5,7 @@ import {
   type configureStore
 } from '@reduxjs/toolkit';
 
+import { type ToastNotifier } from '~/libs/modules/toast-notifier/toast-notifier.js';
 import { type authApi, type authReducer } from '~/modules/auth/auth.js';
 import { type chatApi, type chatReducer } from '~/modules/chat/chat.js';
 import {
@@ -32,6 +33,7 @@ type ExtraArguments = {
   messageApi: typeof messageApi;
   profileApi: typeof profileApi;
   storageApi: typeof storageApi;
+  toastNotifier: ToastNotifier;
   userApi: typeof userApi;
 };
 

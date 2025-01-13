@@ -2,9 +2,8 @@ import { ServerErrorType, StorageKey } from '~/libs/enums/enums.js';
 import { type ServerErrorResponse, type ValueOf } from '~/libs/types/types.js';
 
 import { type StorageApi } from '../storage/storage.js';
-import { type HTTPCode } from './libs/enums/enums.js';
-import { HTTPMethod, HttpHeader } from './libs/enums/enums.js';
-import { HTTPError } from './libs/exceptions/exceptions.js';
+import { HTTPCode, HTTPMethod, HttpHeader } from './libs/enums/enums.js';
+import { HTTPError, UnauthorizedError } from './libs/exceptions/exceptions.js';
 import { getStringifiedQuery } from './libs/helpers/helpers.js';
 import { type HttpApi, type HttpOptions } from './libs/types/types.js';
 
@@ -37,6 +36,13 @@ class Http implements HttpApi {
     }
 
     const isCustomException = Boolean(parsedException.errorType);
+
+    if (response.status === HTTPCode.UNAUTHORIZED) {
+      throw new UnauthorizedError({
+        details: 'details' in parsedException ? parsedException.details : [],
+        message: parsedException.message
+      });
+    }
 
     throw new HTTPError({
       details: 'details' in parsedException ? parsedException.details : [],

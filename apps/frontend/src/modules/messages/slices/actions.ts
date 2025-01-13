@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
+import { NotificationMessage } from '~/libs/enums/enums.js';
 import { type AsyncThunkConfig, type ValueOf } from '~/libs/types/types.js';
 
 import {
@@ -126,8 +127,12 @@ const translateMessage = createAsyncThunk<
   AsyncThunkConfig
 >(
   ActionType.TRANSLATE_MESSAGE,
-  async ({ language, messageId }, { extra: { messageApi } }) => {
-    return await messageApi.translateMessage(messageId, language);
+  async ({ language, messageId }, { extra: { messageApi, toastNotifier } }) => {
+    const message = await messageApi.translateMessage(messageId, language);
+
+    toastNotifier.showSuccess(NotificationMessage.MESSAGE_TRANSLATED);
+
+    return message;
   }
 );
 
@@ -137,8 +142,12 @@ const transcribeMessage = createAsyncThunk<
   AsyncThunkConfig
 >(
   ActionType.TRANSCRIBE_MESSAGE,
-  async ({ messageId }, { extra: { messageApi } }) => {
-    return await messageApi.transcribeMessage(messageId);
+  async ({ messageId }, { extra: { messageApi, toastNotifier } }) => {
+    const message = await messageApi.transcribeMessage(messageId);
+
+    toastNotifier.showSuccess(NotificationMessage.MESSAGE_TRANSCRIBED);
+
+    return message;
   }
 );
 

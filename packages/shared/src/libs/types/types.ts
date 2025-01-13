@@ -1,4 +1,5 @@
 export {
+  type ServerErrorDetail,
   type ServerErrorResponse,
   type ServerValidationErrorResponse
 } from './error/error.js';
