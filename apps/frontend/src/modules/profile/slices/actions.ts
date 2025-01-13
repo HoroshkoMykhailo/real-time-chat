@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
+import { NotificationMessage } from '~/libs/enums/enums.js';
 import { type AsyncThunkConfig } from '~/libs/types/types.js';
 
 import {
@@ -20,9 +21,16 @@ const updateProfile = createAsyncThunk<
   UserProfileCreationResponseDto,
   UserProfileCreationRequestDto,
   AsyncThunkConfig
->(ActionType.UPDATE_PROFILE, async (payload, { extra: { profileApi } }) => {
-  return await profileApi.updateMyProfile(payload);
-});
+>(
+  ActionType.UPDATE_PROFILE,
+  async (payload, { extra: { profileApi, toastNotifier } }) => {
+    const profile = await profileApi.updateMyProfile(payload);
+
+    toastNotifier.showSuccess(NotificationMessage.PROFILE_UPDATED);
+
+    return profile;
+  }
+);
 
 const updateOtherProfile = createAsyncThunk<
   UserProfileCreationResponseDto,

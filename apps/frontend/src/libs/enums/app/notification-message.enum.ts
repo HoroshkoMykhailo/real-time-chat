@@ -8,7 +8,8 @@ const NotificationMessage = {
   MEMBERS_ADDED: 'Members added',
   MESSAGE_COPIED: 'Text copied',
   MESSAGE_TRANSCRIBED: 'Message transcribed',
-  MESSAGE_TRANSLATED: 'Message translated'
+  MESSAGE_TRANSLATED: 'Message translated',
+  PROFILE_UPDATED: 'Profile updated'
 } as const;
 
 export { NotificationMessage };
