@@ -174,15 +174,9 @@ const MessagePopover = ({
                 <span>Transcribe</span>
               </button>
             )}
-            {message.type === MessageType.TEXT && (
+            {((message.type === MessageType.AUDIO && message.content) ||
+              message.type === MessageType.TEXT) && (
               <>
-                <button
-                  className={styles['copy-button']}
-                  onClick={handleCopyClick}
-                >
-                  <Icon height={24} name="copy" width={24} />
-                  <span>Copy text</span>
-                </button>
                 {message.translatedMessage && (
                   <button
                     className={styles['copy-button']}
@@ -203,6 +197,17 @@ const MessagePopover = ({
                     <span>Translate</span>
                   </button>
                 )}
+              </>
+            )}
+            {message.type === MessageType.TEXT && (
+              <>
+                <button
+                  className={styles['copy-button']}
+                  onClick={handleCopyClick}
+                >
+                  <Icon height={24} name="copy" width={24} />
+                  <span>Copy text</span>
+                </button>
               </>
             )}
             {profile?.id === message.sender.id &&
