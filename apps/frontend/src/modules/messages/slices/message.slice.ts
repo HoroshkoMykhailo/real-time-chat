@@ -1,10 +1,10 @@
-import { createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { type PayloadAction, createSlice, isAnyOf } from '@reduxjs/toolkit';
 
-import { MINUS_ONE_VALUE } from '~/libs/common/constants.js';
+import { MINUS_ONE_VALUE, ZERO_VALUE } from '~/libs/common/constants.js';
 import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
-import { type GetMessagesResponseDto } from '../libs/types/types.js';
+import { type MessageHistoryItem } from '../libs/types/types.js';
 import {
   deleteMessage,
   downloadFile,
@@ -23,9 +23,7 @@ type State = {
   dataStatus: ValueOf<typeof DataStatus>;
   editDataStatus: ValueOf<typeof DataStatus>;
   fileBlob: Blob | null;
-  messages: Array<
-    { translatedMessage?: string } & GetMessagesResponseDto[number]
-  >;
+  messages: MessageHistoryItem[];
   writeDataStatus: ValueOf<typeof DataStatus>;
 };
 
@@ -176,6 +174,26 @@ const { actions, reducer } = createSlice({
     },
     resetWriteDataStatus: state => {
       state.writeDataStatus = DataStatus.IDLE;
+    },
+    toOriginalMessage: (
+      state,
+      action: PayloadAction<{ messageId: string }>
+    ) => {
+      const { messageId } = action.payload;
+
+      const messageIndex = state.messages.findIndex(
+        message => message.id === messageId
+      );
+
+      if (messageIndex >= ZERO_VALUE) {
+        const message = state.messages[messageIndex];
+
+        if (message?.translatedMessage) {
+          const { translatedMessage, ...updateMessage } = message;
+
+          state.messages[messageIndex] = updateMessage;
+        }
+      }
     }
   }
 });

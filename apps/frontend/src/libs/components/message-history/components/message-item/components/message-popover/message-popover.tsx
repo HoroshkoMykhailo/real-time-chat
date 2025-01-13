@@ -68,9 +68,10 @@ const MessagePopover = ({
           })
         );
         setIsLanguageSelectorOpened(false);
+        onClose();
       }
     },
-    [dispatch, message]
+    [dispatch, message, onClose]
   );
 
   const handleCopyClick = useCallback((): void => {
@@ -85,6 +86,18 @@ const MessagePopover = ({
     if (message) {
       void dispatch(
         messageActions.updatePinMessage({
+          messageId: message.id
+        })
+      );
+      setIsLanguageSelectorOpened(false);
+      onClose();
+    }
+  }, [dispatch, message, onClose]);
+
+  const handleOriginalClick = useCallback((): void => {
+    if (message) {
+      void dispatch(
+        messageActions.toOriginalMessage({
           messageId: message.id
         })
       );
@@ -148,15 +161,25 @@ const MessagePopover = ({
                   <Icon height={24} name="copy" width={24} />
                   <span>Copy text</span>
                 </button>
-                <button
-                  className={styles['translate-button']}
-                  onClick={handleTranslateClick}
-                >
-                  <Icon height={24} name="translate" width={24} />
-                  <span>Translate</span>
-                </button>
-                {isLanguageSelectorOpened && (
+                {message.translatedMessage && (
+                  <button
+                    className={styles['copy-button']}
+                    onClick={handleOriginalClick}
+                  >
+                    <Icon height={24} name="translate" width={24} />
+                    <span>Show original</span>
+                  </button>
+                )}
+                {isLanguageSelectorOpened ? (
                   <LanguageSelector onLanguageChange={handleLanguageSelect} />
+                ) : (
+                  <button
+                    className={styles['translate-button']}
+                    onClick={handleTranslateClick}
+                  >
+                    <Icon height={24} name="translate" width={24} />
+                    <span>Translate</span>
+                  </button>
                 )}
               </>
             )}

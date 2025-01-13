@@ -118,7 +118,7 @@ const MessageItem = ({
     ],
     [
       MessageType.TEXT,
-      (): JSX.Element => <TextMessage text={message.content} />
+      (): JSX.Element => <TextMessage textMessage={message} />
     ],
     [
       MessageType.VIDEO,
