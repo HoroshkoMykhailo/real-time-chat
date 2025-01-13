@@ -63,6 +63,18 @@ class Message implements MessageApi {
     );
   }
 
+  public transcribeMessage(
+    messageId: string
+  ): Promise<MessageCreationResponseDto> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$MESSAGE_ID.replace(MessageApiParameters.MESSAGE_ID, messageId)}${MessageApiPath.TRANSCRIBE}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.POST
+      }
+    );
+  }
+
   public translateMessage(
     messageId: string,
     language: ValueOf<typeof MessageLanguage>

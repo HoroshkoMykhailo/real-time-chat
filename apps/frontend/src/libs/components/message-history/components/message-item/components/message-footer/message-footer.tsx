@@ -18,7 +18,7 @@ const MessageFooter = ({ message }: Properties): JSX.Element => {
   return (
     <div className={styles['message-footer']}>
       {message.translatedMessage && (
-        <Icon height={16} name="translate" width={16} />
+        <Icon height={14} name="translate" width={14} />
       )}
       {isEdited && <span className={styles['edited-marker']}> (edited)</span>}
       <span className={styles['message-time']}>{timeString}</span>

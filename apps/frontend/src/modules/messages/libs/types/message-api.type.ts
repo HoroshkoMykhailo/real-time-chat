@@ -15,6 +15,8 @@ type MessageApi = {
 
   getMessages(chatId: string): Promise<GetMessagesResponseDto>;
 
+  transcribeMessage(messageId: string): Promise<MessageCreationResponseDto>;
+
   translateMessage(
     messageId: string,
     language: ValueOf<typeof MessageLanguage>

@@ -9,6 +9,7 @@ import {
   deleteMessage,
   downloadFile,
   getMessages,
+  transcribeMessage,
   translateMessage,
   updatePinMessage,
   updateTextMessage,
@@ -163,6 +164,19 @@ const { actions, reducer } = createSlice({
         }
       })
       .addMatcher(isAnyOf(translateMessage.rejected), state => {
+        state.editDataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(transcribeMessage.fulfilled), (state, action) => {
+        const index = state.messages.findIndex(
+          message => message.id === action.payload.id
+        );
+
+        if (index !== MINUS_ONE_VALUE) {
+          state.messages[index] = action.payload;
+          state.editDataStatus = DataStatus.FULFILLED;
+        }
+      })
+      .addMatcher(isAnyOf(transcribeMessage.rejected), state => {
         state.editDataStatus = DataStatus.REJECTED;
       });
   },

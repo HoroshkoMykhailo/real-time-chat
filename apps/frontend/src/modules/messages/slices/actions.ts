@@ -131,6 +131,17 @@ const translateMessage = createAsyncThunk<
   }
 );
 
+const transcribeMessage = createAsyncThunk<
+  MessageCreationResponseDto,
+  { messageId: string },
+  AsyncThunkConfig
+>(
+  ActionType.TRANSCRIBE_MESSAGE,
+  async ({ messageId }, { extra: { messageApi } }) => {
+    return await messageApi.transcribeMessage(messageId);
+  }
+);
+
 const downloadFile = createAsyncThunk<
   Blob,
   { messageId: string },
@@ -146,6 +157,7 @@ export {
   deleteMessage,
   downloadFile,
   getMessages,
+  transcribeMessage,
   translateMessage,
   updatePinMessage,
   updateTextMessage,

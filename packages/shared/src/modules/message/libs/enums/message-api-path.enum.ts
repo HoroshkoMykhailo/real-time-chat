@@ -6,6 +6,7 @@ const MessageApiPath = {
   IMAGE: '/image',
   PIN: '/pin',
   TEXT: '/text',
+  TRANSCRIBE: '/transcribe',
   TRANSLATE: '/translate',
   VIDEO: '/video'
 } as const;

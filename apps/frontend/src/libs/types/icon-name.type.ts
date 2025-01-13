@@ -16,6 +16,7 @@ type IconName =
   | 'pin'
   | 'remove'
   | 'search'
+  | 'transcribe'
   | 'translate'
   | 'trashBin'
   | 'unPin';

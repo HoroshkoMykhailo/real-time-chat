@@ -76,7 +76,9 @@ const MessagePopover = ({
 
   const handleCopyClick = useCallback((): void => {
     if (message?.type === MessageType.TEXT) {
-      void navigator.clipboard.writeText(message.content);
+      message.translatedMessage
+        ? void navigator.clipboard.writeText(message.translatedMessage)
+        : void navigator.clipboard.writeText(message.content);
       setIsLanguageSelectorOpened(false);
       onClose();
     }
@@ -102,6 +104,17 @@ const MessagePopover = ({
         })
       );
       setIsLanguageSelectorOpened(false);
+      onClose();
+    }
+  }, [dispatch, message, onClose]);
+
+  const handleTranscribeClick = useCallback((): void => {
+    if (message) {
+      void dispatch(
+        messageActions.transcribeMessage({
+          messageId: message.id
+        })
+      );
       onClose();
     }
   }, [dispatch, message, onClose]);
@@ -152,6 +165,15 @@ const MessagePopover = ({
                 </>
               )}
             </button>
+            {message.type === MessageType.AUDIO && (
+              <button
+                className={styles['transcribe-button']}
+                onClick={handleTranscribeClick}
+              >
+                <Icon height={24} name="transcribe" width={24} />
+                <span>Transcribe</span>
+              </button>
+            )}
             {message.type === MessageType.TEXT && (
               <>
                 <button
