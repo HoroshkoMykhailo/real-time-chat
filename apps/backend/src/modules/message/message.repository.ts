@@ -31,6 +31,17 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     return lastMessage ? this.mapToBusinessLogic(lastMessage) : null;
   }
 
+  public async getLastPinnedMessageByChatId(
+    chatId: string
+  ): Promise<TMessage | null> {
+    const lastMessage = await this.model
+      .findOne({ chatId, isPinned: true })
+      .sort({ createdAt: -1 })
+      .limit(POSITIVE_VALUE);
+
+    return lastMessage ? this.mapToBusinessLogic(lastMessage) : null;
+  }
+
   public async getMessagesByChatId({
     after,
     before,

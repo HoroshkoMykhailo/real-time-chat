@@ -165,13 +165,18 @@ class Chat implements ChatService {
   }
 
   async #getLastMessage(
-    chat: TChat
+    chat: TChat,
+    pinned?: boolean
   ): Promise<ChatsResponseDto[number]['lastMessage'] | undefined> {
     if (!chat.lastMessageId) {
       return undefined;
     }
 
-    const message = await this.#messageRepository.getById(chat.lastMessageId);
+    let message;
+
+    message = await (pinned
+      ? this.#messageRepository.getLastPinnedMessageByChatId(chat.id)
+      : this.#messageRepository.getById(chat.lastMessageId));
 
     if (!message) {
       return undefined;
@@ -411,9 +416,12 @@ class Chat implements ChatService {
       chat.members
     );
 
+    const lastPinnedMessage = await this.#getLastMessage(chat, true);
+
     return {
       members: profiles,
-      ...(chat.adminId && { adminId: chat.adminId })
+      ...(chat.adminId && { adminId: chat.adminId }),
+      ...(lastPinnedMessage && { lastPinnedMessage })
     };
   }
 
