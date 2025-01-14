@@ -10,6 +10,8 @@ const translations: Translations = {
     editProfile: 'Edit Profile',
     editProfileLabel: 'Edit your profile details below:',
     language: 'Language',
+    logout: 'Logout',
+    profile: 'Profile',
     profileDetails: 'Profile Details',
     saveChanges: 'Save Changes',
     username: 'Username'
@@ -24,6 +26,8 @@ const translations: Translations = {
     editProfile: 'Редагувати профіль',
     editProfileLabel: 'Редагуйте свої деталі профілю нижче:',
     language: 'Мова',
+    logout: 'Вийти',
+    profile: 'Профіль',
     profileDetails: 'Деталі профілю',
     saveChanges: 'Зберегти зміни',
     username: "Ім'я користувача"
