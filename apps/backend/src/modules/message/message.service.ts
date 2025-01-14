@@ -569,7 +569,7 @@ class Message implements MessageService {
       isPinned: !message.isPinned
     });
 
-    return !!updatedMessage;
+    return updatedMessage?.isPinned !== message.isPinned;
   }
 
   public async updateText(

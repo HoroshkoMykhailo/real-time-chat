@@ -3,7 +3,7 @@ import { type Chats } from '~/modules/chat/libs/types/types.js';
 
 const MESSAGE_CONTENT = 'message-content';
 
-import styles from '../../../../../styles.module.scss';
+import styles from '../styles.module.scss';
 
 type Properties = {
   imageUrl: string;

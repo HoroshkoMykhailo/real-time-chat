@@ -1,11 +1,10 @@
 import React from 'react';
 
-import { ChatPicture } from '~/libs/components/components.js';
+import { ChatPicture, MessagePreview } from '~/libs/components/components.js';
 import { type Chats } from '~/modules/chat/libs/types/types.js';
 
 import styles from '../../../styles.module.scss';
 import { formatLastMessageTime } from '../../helpers/format-last-message-time.js';
-import { MessagePreview } from './components/message-preview.js';
 
 type Properties = {
   chat: Chats[number];

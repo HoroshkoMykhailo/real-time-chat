@@ -129,7 +129,7 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
       result.content = data.content;
     }
 
-    if (data.isPinned) {
+    if (data.isPinned !== undefined) {
       result.isPinned = data.isPinned;
     }
 
