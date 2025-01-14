@@ -26,7 +26,7 @@ import styles from './styles.module.scss';
 type Properties = {
   message: GetMessagesResponseDto[number];
   popoverMessageId: null | string;
-  setEditingMessageId: (messageId: null | string) => void;
+  setEditingMessageId?: (messageId: null | string) => void;
   setPopoverMessageId: (messageId: null | string) => void;
 };
 
@@ -146,7 +146,7 @@ const MessageItem = ({
       key={message.id}
       messageId={message.id}
       onClose={handleChatPopoverClose}
-      setEditingMessageId={setEditingMessageId}
+      {...(setEditingMessageId && { setEditingMessageId })}
     >
       <div
         className={`${styles['message-wrapper']} ${message.id === popoverMessageId ? styles['active'] : ''}`}

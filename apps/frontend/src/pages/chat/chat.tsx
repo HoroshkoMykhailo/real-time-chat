@@ -20,6 +20,7 @@ import chatHeaderstyles from './libs/components/chat-header/styles.module.scss';
 import { ChatInfo } from './libs/components/chat-info/chat-info.js';
 import { GroupEdit } from './libs/components/group-edit/group-edit.js';
 import { MessageInput } from './libs/components/message-input/message-input.js';
+import { PinnedHeader } from './libs/components/pinned-header/pinned-header.js';
 import { ActiveChatView } from './libs/enums/active-chat-view.js';
 import styles from './styles.module.scss';
 
@@ -32,6 +33,7 @@ const Chat: React.FC = () => {
   const [activeChatView, setActiveChatView] = useState<
     ValueOf<typeof ActiveChatView>
   >(ActiveChatView.ChatInfo);
+  const [isPinnedMessage, setIsPinnedMessage] = useState<boolean>(false);
   const [isChatInfo, setChatInfo] = useState<boolean>(false);
   const [editingMessageId, setEditingMessageId] = useState<null | string>(null);
 
@@ -83,17 +85,22 @@ const Chat: React.FC = () => {
             chatId
           })
         );
+        setIsPinnedMessage(!isPinnedMessage);
       } else {
         setChatInfo(!isChatInfo);
         setActiveChatView(ActiveChatView.ChatInfo);
       }
     },
-    [chatId, dispatch, isChatInfo]
+    [chatId, dispatch, isChatInfo, isPinnedMessage]
   );
 
   const handleToChatInfo = useCallback(() => {
     setActiveChatView(ActiveChatView.ChatInfo);
   }, []);
+
+  const handlePinHeaderClick = useCallback(() => {
+    setIsPinnedMessage(!isPinnedMessage);
+  }, [isPinnedMessage]);
 
   const handleToGroupEdit = useCallback(() => {
     setActiveChatView(ActiveChatView.GroupEdit);
@@ -111,12 +118,21 @@ const Chat: React.FC = () => {
   return (
     <div className={styles['chat-layout']}>
       <div className={styles['chat-content']}>
-        <ChatHeader onHeaderClick={handleHeaderClick} />
-        <MessageHistory setEditingMessageId={setEditingMessageId} />
-        <MessageInput
-          editingMessageId={editingMessageId}
-          setEditingMessageId={setEditingMessageId}
-        />
+        {isPinnedMessage ? (
+          <>
+            <PinnedHeader onBackClick={handlePinHeaderClick} />
+            <MessageHistory isPinned={isPinnedMessage} />
+          </>
+        ) : (
+          <>
+            <ChatHeader onHeaderClick={handleHeaderClick} />
+            <MessageHistory setEditingMessageId={setEditingMessageId} />
+            <MessageInput
+              editingMessageId={editingMessageId}
+              setEditingMessageId={setEditingMessageId}
+            />
+          </>
+        )}
       </div>
       {renderContent()}
     </div>
