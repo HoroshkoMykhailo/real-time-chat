@@ -55,6 +55,11 @@ type MessageService = {
     }
   ): Promise<GetMessagesResponseDto>;
 
+  getPinMessagesByChatId(
+    user: User,
+    chatId: string
+  ): Promise<GetMessagesResponseDto>;
+
   transcribeMessage(
     user: User,
     messageId: string

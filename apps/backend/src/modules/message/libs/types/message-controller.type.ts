@@ -81,6 +81,13 @@ type MessageController = {
     }>
   ) => Promise<ControllerAPIHandlerResponse<GetMessagesResponseDto>>;
 
+  getPinMessagesByChatId: (
+    options: ControllerAPIHandlerOptions<{
+      params: { chatId: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<GetMessagesResponseDto>>;
+
   transcribeMessage: (
     options: ControllerAPIHandlerOptions<{
       params: { id: string };

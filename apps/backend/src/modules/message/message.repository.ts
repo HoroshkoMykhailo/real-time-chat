@@ -103,6 +103,14 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     return messages.map(message => this.mapToBusinessLogic(message));
   }
 
+  public async getPinnedMessagesByChatId(chatId: string): Promise<TMessage[]> {
+    const messages = await this.model
+      .find({ chatId, isPinned: true })
+      .sort({ createdAt: -1 });
+
+    return messages.map(message => this.mapToBusinessLogic(message));
+  }
+
   protected mapAdditionalBusinessLogic(
     document: MessageDocument
   ): Partial<TMessage> {

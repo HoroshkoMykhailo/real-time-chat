@@ -190,6 +190,23 @@ class Message extends Controller implements MessageController {
     };
   };
 
+  public getPinMessagesByChatId = async (
+    options: ControllerAPIHandlerOptions<{
+      params: { chatId: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<GetMessagesResponseDto>> => {
+    const {
+      params: { chatId },
+      user
+    } = options;
+
+    return {
+      payload: await this.#messageService.getPinMessagesByChatId(user, chatId),
+      status: HTTPCode.OK
+    };
+  };
+
   public transcribeMessage = async (
     options: ControllerAPIHandlerOptions<{
       params: { id: string };
@@ -281,6 +298,12 @@ class Message extends Controller implements MessageController {
       handler: this.transcribeMessage as ControllerAPIHandler,
       method: HTTPMethod.POST,
       url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.TRANSCRIBE}`
+    });
+
+    this.addRoute({
+      handler: this.getPinMessagesByChatId as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.PIN}`
     });
 
     this.addRoute({
