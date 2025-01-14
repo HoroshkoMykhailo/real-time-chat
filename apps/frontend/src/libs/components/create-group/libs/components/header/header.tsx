@@ -1,5 +1,7 @@
 import { Button } from '~/libs/components/components.js';
 import { ButtonColor } from '~/libs/enums/enums.js';
+import { useAppSelector } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 
 import styles from './styles.module.scss';
 
@@ -19,15 +21,21 @@ const CreateGroupHeader = ({
   let title: string;
   let buttonText: string;
 
+  const { profile } = useAppSelector(state => state.profile);
+
+  if (!profile) {
+    return <></>;
+  }
+
   if (isEditGroup) {
-    title = 'Edit Group';
-    buttonText = 'Edit';
+    title = translate.translate('editGroup', profile.language);
+    buttonText = translate.translate('edit', profile.language);
   } else if (isGroupInformation) {
-    title = 'Group Information';
-    buttonText = 'Create';
+    title = translate.translate('groupInformation', profile.language);
+    buttonText = translate.translate('create', profile.language);
   } else {
-    title = 'Add Members';
-    buttonText = 'Continue';
+    title = translate.translate('addMembers', profile.language);
+    buttonText = translate.translate('continue', profile.language);
   }
 
   return (

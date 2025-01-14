@@ -6,11 +6,13 @@ import {
 
 import { Icon, Image, Input } from '~/libs/components/components.js';
 import { checkGreaterThanZero } from '~/libs/helpers/helpers.js';
-import { useCallback, useState } from '~/libs/hooks/hooks.js';
+import { useAppSelector, useCallback, useState } from '~/libs/hooks/hooks.js';
 import { ChatPayloadKey } from '~/modules/chat/chat.js';
 
 import { type GroupFormValues } from '../../types/group-form-values.type.js';
 import styles from './styles.module.scss';
+// eslint-disable-next-line perfectionist/sort-imports
+import { translate } from '~/libs/modules/localization/translate.js';
 
 type Properties = {
   control: Control<GroupFormValues, null>;
@@ -20,6 +22,8 @@ type Properties = {
 
 const GroupForm = ({ control, errors, setValue }: Properties): JSX.Element => {
   const [imageUrl, setImageUrl] = useState<null | string>(null);
+
+  const { profile } = useAppSelector(state => state.profile);
 
   const handleImageChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -37,6 +41,10 @@ const GroupForm = ({ control, errors, setValue }: Properties): JSX.Element => {
     },
     [setValue]
   );
+
+  if (!profile) {
+    return <></>;
+  }
 
   return (
     <form name="groupForm">
@@ -77,13 +85,16 @@ const GroupForm = ({ control, errors, setValue }: Properties): JSX.Element => {
         </div>
         <div className={styles['GroupName']}>
           <label className={styles['label']} htmlFor={ChatPayloadKey.NAME}>
-            Group Name
+            {translate.translate('groupName', profile.language)}
           </label>
           <Input
             control={control}
             errors={errors}
             name={ChatPayloadKey.NAME}
-            placeholder="Enter group name"
+            placeholder={translate.translate(
+              'enterGroupName',
+              profile.language
+            )}
             type="text"
           />
         </div>

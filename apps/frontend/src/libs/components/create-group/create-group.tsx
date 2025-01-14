@@ -115,6 +115,10 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
     }
   }, [navigate, dispatch, createdChat, setActiveView]);
 
+  if (!profile) {
+    return <></>;
+  }
+
   return (
     <>
       <CreateGroupHeader
@@ -124,7 +128,10 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
       {isGroupInformation ? (
         <>
           <GroupForm control={control} errors={errors} setValue={setValue} />
-          <MemberList selectedUsers={selectedUsers} />
+          <MemberList
+            language={profile.language}
+            selectedUsers={selectedUsers}
+          />
         </>
       ) : (
         <UserSearch

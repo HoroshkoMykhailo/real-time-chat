@@ -7,6 +7,7 @@ import {
   useParams,
   useState
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import { type Chats } from '~/modules/chat/libs/types/types.js';
 import { messageActions } from '~/modules/messages/message.js';
@@ -22,6 +23,7 @@ const ChatList = (): JSX.Element => {
   const { chats, dataStatus, selectedChat } = useAppSelector(
     state => state.chat
   );
+  const { profile } = useAppSelector(state => state.profile);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [popoverChatId, setPopoverChatId] = useState<null | string>(null);
   const navigate = useNavigate();
@@ -80,11 +82,15 @@ const ChatList = (): JSX.Element => {
     return <Loader />;
   }
 
+  if (!profile) {
+    return <></>;
+  }
+
   return (
     <>
       <SearchBar
         onChange={handleSearchChange}
-        placeholder="Search chats"
+        placeholder={translate.translate('searchChats', profile.language)}
         value={searchQuery}
       />
       <div className={styles['chat-list']}>

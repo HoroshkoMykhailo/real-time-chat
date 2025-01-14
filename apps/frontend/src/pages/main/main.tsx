@@ -9,11 +9,13 @@ import {
 import { ButtonColor } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
+  useAppSelector,
   useCallback,
   useEffect,
   usePopover,
   useState
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import { profileActions } from '~/modules/profile/profile.js';
@@ -33,6 +35,8 @@ const Main: React.FC = () => {
   const [activeView, setActiveView] = useState<ValueOf<typeof ActiveSideView>>(
     ActiveSideView.ChatList
   );
+
+  const { profile } = useAppSelector(state => state.profile);
 
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
@@ -95,6 +99,10 @@ const Main: React.FC = () => {
     return <></>;
   };
 
+  if (!profile) {
+    return <></>;
+  }
+
   return (
     <div className={styles['page']}>
       <div className={styles['page-header']}>
@@ -124,8 +132,8 @@ const Main: React.FC = () => {
                 onClick={handleCancelClick}
               >
                 {!isCreateChatOpened && activeView === ActiveSideView.ChatList
-                  ? 'Create Chat'
-                  : 'Cancel'}
+                  ? translate.translate('createChat', profile.language)
+                  : translate.translate('cancel', profile.language)}
               </Button>
             </CreateChatPopover>
           </div>
