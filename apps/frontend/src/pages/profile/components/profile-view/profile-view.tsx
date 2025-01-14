@@ -20,7 +20,7 @@ const ProfileView: React.FC<Properties> = ({ onBack, onEdit, profile }) => {
     <>
       <Header />
       <div className={styles['profileView']}>
-        <h2>{translate('profileDetails', profile.language)}</h2>
+        <h2>{translate.translate('profileDetails', profile.language)}</h2>
         <div className={styles['profileContent']}>
           <div className={styles['detailsContainer']}>
             <div className={styles['detailsGroup']}>

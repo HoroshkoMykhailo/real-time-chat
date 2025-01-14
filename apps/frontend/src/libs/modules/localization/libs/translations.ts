@@ -1,13 +1,4 @@
-import { type ValueOf } from '~/libs/types/types.js';
-import { type ProfileLanguage } from '~/modules/profile/libs/types/types.js';
-
-type Language = ValueOf<typeof ProfileLanguage>;
-
-type Translations = {
-  [key in Language]: {
-    [key: string]: string;
-  };
-};
+import { type Translations } from './types/types.js';
 
 const translations: Translations = {
   en: {
