@@ -28,7 +28,7 @@ type Properties = {
   isOpened: boolean;
   messageId: string;
   onClose: () => void;
-  setEditingMessageId: (messageId: null | string) => void;
+  setEditingMessageId?: (messageId: null | string) => void;
 };
 
 const MessagePopover = ({
@@ -124,7 +124,7 @@ const MessagePopover = ({
   }, [dispatch, message, onClose]);
 
   const handleEditClick = useCallback((): void => {
-    if (message && message.type === MessageType.TEXT) {
+    if (message && message.type === MessageType.TEXT && setEditingMessageId) {
       setEditingMessageId(message.id);
       setIsLanguageSelectorOpened(false);
       onClose();
@@ -225,7 +225,8 @@ const MessagePopover = ({
               </>
             )}
             {profile.id === message.sender.id &&
-              message.type === MessageType.TEXT && (
+              message.type === MessageType.TEXT &&
+              setEditingMessageId && (
                 <button
                   className={styles['edit-button']}
                   onClick={handleEditClick}

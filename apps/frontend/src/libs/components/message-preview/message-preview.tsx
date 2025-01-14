@@ -3,8 +3,8 @@ import { ChatType } from '~/modules/chat/chat.js';
 import { type Chats } from '~/modules/chat/libs/types/types.js';
 import { MessageType } from '~/modules/messages/message.js';
 
-import styles from '../../../../styles.module.scss';
 import { MessagePreviewContent } from './components/message-preview-content.js';
+import styles from './styles.module.scss';
 
 type Properties = {
   message: Chats[number]['lastMessage'];

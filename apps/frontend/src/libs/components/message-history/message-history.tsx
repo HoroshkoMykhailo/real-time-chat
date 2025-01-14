@@ -14,17 +14,20 @@ import { MessageItem } from './components/message-item/message-item.js';
 import styles from './styles.module.scss';
 
 type Properties = {
-  setEditingMessageId: (messageId: null | string) => void;
+  isPinned?: boolean;
+  setEditingMessageId?: (messageId: null | string) => void;
 };
 
-const MessageHistory = ({ setEditingMessageId }: Properties): JSX.Element => {
+const MessageHistory = ({
+  isPinned = false,
+  setEditingMessageId
+}: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
   const { selectedChat: chat } = useAppSelector(state => state.chat);
   const [popoverMessageId, setPopoverMessageId] = useState<null | string>(null);
 
-  const { dataStatus, editDataStatus, messages } = useAppSelector(
-    state => state.message
-  );
+  const { dataStatus, editDataStatus, messages, pinnedMessages } =
+    useAppSelector(state => state.message);
 
   useEffect(() => {
     if (editDataStatus === DataStatus.FULFILLED) {
@@ -59,19 +62,21 @@ const MessageHistory = ({ setEditingMessageId }: Properties): JSX.Element => {
     return <></>;
   }
 
+  const historyMessages = isPinned ? pinnedMessages : messages;
+
   if (dataStatus === DataStatus.PENDING) {
     return <Loader />;
   }
 
   return (
     <div className={`${styles['messages-list']}`}>
-      {messages.map(message => (
+      {historyMessages.map(message => (
         <MessageItem
           key={message.id}
           message={message}
           popoverMessageId={popoverMessageId}
-          setEditingMessageId={setEditingMessageId}
           setPopoverMessageId={setPopoverMessageId}
+          {...(setEditingMessageId && { setEditingMessageId })}
         />
       ))}
     </div>

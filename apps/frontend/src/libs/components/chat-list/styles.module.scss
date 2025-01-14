@@ -55,36 +55,6 @@
         font-size: 0.875rem;
         display: flex;
         gap: 0.5rem;
-
-        .audio-preview {
-          margin-top: -0.3rem;
-        }
-
-        .video-preview {
-          max-width: 2rem;
-          height: auto;
-        }
-
-        .message-image {
-          width: auto;
-          max-height: 1rem;
-        }
-
-
-        .message-draft {
-          color: var(--text-red);
-        }
-
-        .sender-name {
-          color: var(--blue);
-        }
-
-        .message-content {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          color: var(--gray);
-        }
       }
 
     }

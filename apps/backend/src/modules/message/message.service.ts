@@ -437,6 +437,49 @@ class Message implements MessageService {
     );
   }
 
+  public async getPinMessagesByChatId(
+    user: User,
+    chatId: string
+  ): Promise<GetMessagesResponseDto> {
+    if (!Types.ObjectId.isValid(chatId)) {
+      throw new HTTPError({
+        message: ExceptionMessage.INVALID_CHAT_ID,
+        status: HTTPCode.UNPROCESSED_ENTITY
+      });
+    }
+
+    const isMember = await this.#isUserChatMember(user, chatId);
+
+    if (!isMember) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    const messages =
+      await this.#messageRepository.getPinnedMessagesByChatId(chatId);
+
+    return await Promise.all(
+      messages.map(async message => {
+        const senderProfile = await this.#profileRepository.getById(
+          message.senderId
+        );
+
+        if (!senderProfile) {
+          throw new HTTPError({
+            message: ExceptionMessage.PROFILE_NOT_FOUND,
+            status: HTTPCode.NOT_FOUND
+          });
+        }
+
+        return {
+          ...message,
+          sender: senderProfile
+        };
+      })
+    );
+  }
   public async transcribeMessage(
     user: User,
     messageId: string
@@ -569,7 +612,7 @@ class Message implements MessageService {
       isPinned: !message.isPinned
     });
 
-    return !!updatedMessage;
+    return updatedMessage?.isPinned !== message.isPinned;
   }
 
   public async updateText(

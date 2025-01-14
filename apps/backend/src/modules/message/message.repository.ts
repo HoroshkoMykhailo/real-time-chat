@@ -31,6 +31,17 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     return lastMessage ? this.mapToBusinessLogic(lastMessage) : null;
   }
 
+  public async getLastPinnedMessageByChatId(
+    chatId: string
+  ): Promise<TMessage | null> {
+    const lastMessage = await this.model
+      .findOne({ chatId, isPinned: true })
+      .sort({ createdAt: -1 })
+      .limit(POSITIVE_VALUE);
+
+    return lastMessage ? this.mapToBusinessLogic(lastMessage) : null;
+  }
+
   public async getMessagesByChatId({
     after,
     before,
@@ -92,6 +103,14 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     return messages.map(message => this.mapToBusinessLogic(message));
   }
 
+  public async getPinnedMessagesByChatId(chatId: string): Promise<TMessage[]> {
+    const messages = await this.model
+      .find({ chatId, isPinned: true })
+      .sort({ createdAt: -1 });
+
+    return messages.map(message => this.mapToBusinessLogic(message));
+  }
+
   protected mapAdditionalBusinessLogic(
     document: MessageDocument
   ): Partial<TMessage> {
@@ -118,7 +137,7 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
       result.content = data.content;
     }
 
-    if (data.isPinned) {
+    if (data.isPinned !== undefined) {
       result.isPinned = data.isPinned;
     }
 

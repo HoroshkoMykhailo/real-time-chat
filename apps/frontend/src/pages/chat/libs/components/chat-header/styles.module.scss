@@ -32,3 +32,37 @@
 .chat-users {
   font-size: 0.85rem;
 }
+
+.last-pinned-message-wrapper {
+  flex-grow:1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.last-pinned-message-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  margin-left: 10rem;
+  padding: 0.4rem;
+  width: 15rem;
+  border: 1px solid var(--blue);
+  box-shadow: 0px 4px 6px rgba(0, 0, 255, 0.1);
+}
+
+.last-pinned-message-container:hover {
+  background-color: var(--input-bg);
+}
+
+.last-pinned-message-header {
+  color: var(--button-hover);
+  font-size: 0.8rem;
+}
+
+.last-pinned-message {
+  font-size: 0.875rem;
+  display: flex;
+  gap: 0.5rem;
+}

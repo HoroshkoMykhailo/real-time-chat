@@ -1,6 +1,7 @@
 import { type FC } from 'react';
 
 import Arrow from '~/assets/images/icons/arrow.svg?react';
+import ArrowLeft from '~/assets/images/icons/arrow-left.svg?react';
 import Camera from '~/assets/images/icons/camera.svg?react';
 import Cancel from '~/assets/images/icons/cancel.svg?react';
 import Copy from '~/assets/images/icons/copy.svg?react';
@@ -25,6 +26,7 @@ import { type IconName } from '~/libs/types/types.js';
 
 const iconNameToSvg: Record<IconName, FC<React.SVGProps<SVGSVGElement>>> = {
   arrow: Arrow,
+  arrowLeft: ArrowLeft,
   camera: Camera,
   cancel: Cancel,
   copy: Copy,

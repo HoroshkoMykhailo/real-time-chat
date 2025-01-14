@@ -1,5 +1,6 @@
 type IconName =
   | 'arrow'
+  | 'arrowLeft'
   | 'camera'
   | 'cancel'
   | 'copy'

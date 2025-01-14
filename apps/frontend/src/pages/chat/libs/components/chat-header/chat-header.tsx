@@ -1,5 +1,5 @@
 import { ONE_VALUE } from '~/libs/common/constants.js';
-import { ChatPicture } from '~/libs/components/components.js';
+import { ChatPicture, MessagePreview } from '~/libs/components/components.js';
 import { useAppSelector } from '~/libs/hooks/hooks.js';
 import { translate } from '~/libs/modules/localization/translate.js';
 import { ChatType } from '~/modules/chat/chat.js';
@@ -7,7 +7,7 @@ import { ChatType } from '~/modules/chat/chat.js';
 import styles from './styles.module.scss';
 
 type Properties = {
-  onHeaderClick: () => void;
+  onHeaderClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 const ChatHeader = ({ onHeaderClick }: Properties): JSX.Element => {
@@ -42,6 +42,21 @@ const ChatHeader = ({ onHeaderClick }: Properties): JSX.Element => {
             : ''}
         </p>
       </div>
+      {chat.lastPinnedMessage && (
+        <div className={styles['last-pinned-message-wrapper']}>
+          <div className={styles['last-pinned-message-container']}>
+            <div className={styles['last-pinned-message-header']}>
+              Pinned messages:
+            </div>
+            <div className={styles['last-pinned-message']}>
+              <MessagePreview
+                message={chat.lastPinnedMessage}
+                type={chat.type}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </button>
   );
 };
