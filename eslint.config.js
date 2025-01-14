@@ -74,7 +74,7 @@ const jsConfig = {
     ],
     'object-shorthand': ['error'],
     'prefer-destructuring': ['error'],
-    quotes: ['error', 'single']
+    quotes: ['error', 'single', { avoidEscape: true }]
   }
 };
 

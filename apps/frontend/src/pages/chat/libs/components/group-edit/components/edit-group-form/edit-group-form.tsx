@@ -13,6 +13,7 @@ import {
   useEffect,
   useState
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { ChatPayloadKey } from '~/modules/chat/chat.js';
 import { type GroupFormValues } from '~/pages/chat/libs/types/group-form-values.type.js';
 
@@ -31,6 +32,7 @@ const EditGroupForm = ({
 }: Properties): JSX.Element => {
   const [imageUrl, setImageUrl] = useState<null | string>(null);
   const { selectedChat: chat } = useAppSelector(state => state.chat);
+  const { profile } = useAppSelector(state => state.profile);
 
   useEffect(() => {
     if (chat && chat.chatPicture) {
@@ -54,6 +56,10 @@ const EditGroupForm = ({
     },
     [setValue]
   );
+
+  if (!profile) {
+    return <></>;
+  }
 
   return (
     <form name="groupForm">
@@ -94,13 +100,16 @@ const EditGroupForm = ({
         </div>
         <div className={styles['GroupName']}>
           <label className={styles['label']} htmlFor={ChatPayloadKey.NAME}>
-            Group Name
+            {translate.translate('groupName', profile.language)}
           </label>
           <Input
             control={control}
             errors={errors}
             name={ChatPayloadKey.NAME}
-            placeholder="Enter group name"
+            placeholder={translate.translate(
+              'enterGroupName',
+              profile.language
+            )}
             type="text"
           />
         </div>

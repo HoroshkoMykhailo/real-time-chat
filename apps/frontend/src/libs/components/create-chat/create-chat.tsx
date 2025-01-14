@@ -9,6 +9,7 @@ import {
   useNavigate,
   useState
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { ChatType, chatActions } from '~/modules/chat/chat.js';
 import { messageActions } from '~/modules/messages/message.js';
 import { userActions } from '~/modules/user/user.js';
@@ -71,13 +72,17 @@ const CreateChat = (): JSX.Element => {
     }
   }, [navigate, dispatch, createdChat]);
 
-  const filteredUsers = users.filter(user => user.id !== profile?.id);
+  if (!profile) {
+    return <></>;
+  }
+
+  const filteredUsers = users.filter(user => user.id !== profile.id);
 
   return (
     <>
       <SearchBar
         onChange={handleSearchChange}
-        placeholder="Search users"
+        placeholder={translate.translate('searchUsers', profile.language)}
         value={searchQuery}
       />
       <div className={styles['user-list']}>

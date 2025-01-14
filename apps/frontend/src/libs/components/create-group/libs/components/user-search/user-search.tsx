@@ -7,6 +7,7 @@ import {
   useAppSelector,
   useDebounce
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { type Profile } from '~/modules/profile/profile.js';
 import { userActions } from '~/modules/user/user.js';
 
@@ -56,11 +57,15 @@ const UserSearch = ({
     [users, onUserSelect]
   );
 
+  if (!profile) {
+    return <></>;
+  }
+
   const selectedUserIds = new Set(selectedUsers.map(user => user.id));
   const excludedUserIds = new Set(excludedUsers.map(user => user.id));
 
   const filteredUsers = users.filter(
-    user => user.id !== profile?.id && !excludedUserIds.has(user.id)
+    user => user.id !== profile.id && !excludedUserIds.has(user.id)
   );
   const nonSelectedUsers = filteredUsers.filter(
     user => !selectedUserIds.has(user.id)
@@ -71,7 +76,7 @@ const UserSearch = ({
     <>
       <SearchBar
         onChange={handleSearchChange}
-        placeholder="Search users"
+        placeholder={translate.translate('searchUsers', profile.language)}
         value={searchQuery}
       />
       <div className={styles['user-list']}>

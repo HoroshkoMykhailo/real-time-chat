@@ -27,7 +27,7 @@ const Header = ({ onLogoClick }: Properties): JSX.Element => {
 
   const { email } = authenticatedUser;
 
-  const { profilePicture, username } = profile;
+  const { language, profilePicture, username } = profile;
 
   return (
     <header className={styles['header']}>
@@ -48,6 +48,7 @@ const Header = ({ onLogoClick }: Properties): JSX.Element => {
         <UserPopover
           email={email}
           isOpened={isUserOpened}
+          language={language}
           name={username}
           onClose={onUserClose}
         >

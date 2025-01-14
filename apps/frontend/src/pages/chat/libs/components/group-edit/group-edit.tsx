@@ -6,6 +6,7 @@ import {
   useAppSelector,
   useCallback
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import {
   chatActions,
   chatUpdateValidationSchema
@@ -23,6 +24,7 @@ type Properties = {
 const GroupEdit = ({ onCancel }: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
   const { selectedChat: chat } = useAppSelector(state => state.chat);
+  const { profile } = useAppSelector(state => state.profile);
 
   const { control, errors, handleSubmit, setValue } =
     useAppForm<GroupFormValues>({
@@ -52,7 +54,7 @@ const GroupEdit = ({ onCancel }: Properties): JSX.Element => {
     void handleSubmit(handleFormSubmit)();
   }, [handleFormSubmit, handleSubmit]);
 
-  if (!chat) {
+  if (!chat || !profile) {
     return <></>;
   }
 
@@ -67,7 +69,7 @@ const GroupEdit = ({ onCancel }: Properties): JSX.Element => {
           isPrimary
           onClick={onCancel}
         >
-          Cancel
+          {translate.translate('cancel', profile.language)}
         </Button>
       </div>
     </div>

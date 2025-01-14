@@ -3,7 +3,10 @@ import { NavLink } from 'react-router-dom';
 import { Popover } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 import { useAppDispatch, useCallback } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
+import { type ValueOf } from '~/libs/types/types.js';
 import { authActions } from '~/modules/auth/auth.js';
+import { type ProfileLanguage } from '~/modules/profile/libs/types/types.js';
 
 import styles from './styles.module.scss';
 
@@ -11,6 +14,7 @@ type Properties = {
   children: React.ReactNode;
   email: string;
   isOpened: boolean;
+  language: ValueOf<typeof ProfileLanguage>;
   name: string;
   onClose: () => void;
 };
@@ -19,6 +23,7 @@ const UserPopover = ({
   children,
   email,
   isOpened,
+  language,
   name,
   onClose
 }: Properties): JSX.Element => {
@@ -41,10 +46,10 @@ const UserPopover = ({
               className={styles['button'] as string}
               to={AppRoute.PROFILE}
             >
-              Profile
+              {translate.translate('profile', language)}
             </NavLink>
             <button className={styles['button']} onClick={handleLogout}>
-              Log out
+              {translate.translate('logout', language)}
             </button>
           </div>
         </div>

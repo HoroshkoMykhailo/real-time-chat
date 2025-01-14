@@ -8,6 +8,7 @@ import {
   useRef,
   useState
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { toastNotifier } from '~/libs/modules/toast-notifier/toast-notifier.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import {
@@ -145,7 +146,7 @@ const MessagePopover = ({
     setPopoverClass(POPOVER_CLASS);
   }, [onClose]);
 
-  if (!message) {
+  if (!message || !chat || !profile) {
     return <></>;
   }
 
@@ -159,12 +160,12 @@ const MessagePopover = ({
               {message.isPinned ? (
                 <>
                   <Icon height={24} name="unPin" width={24} />
-                  <span>Unpin</span>
+                  <span>{translate.translate('unPin', profile.language)}</span>
                 </>
               ) : (
                 <>
                   <Icon height={24} name="pin" width={24} />
-                  <span>Pin</span>
+                  <span>{translate.translate('pin', profile.language)}</span>
                 </>
               )}
             </button>
@@ -174,7 +175,9 @@ const MessagePopover = ({
                 onClick={handleTranscribeClick}
               >
                 <Icon height={24} name="transcribe" width={24} />
-                <span>Transcribe</span>
+                <span>
+                  {translate.translate('transcribe', profile.language)}
+                </span>
               </button>
             )}
             {((message.type === MessageType.AUDIO && message.content) ||
@@ -186,18 +189,25 @@ const MessagePopover = ({
                     onClick={handleOriginalClick}
                   >
                     <Icon height={24} name="translate" width={24} />
-                    <span>Show original</span>
+                    <span>
+                      {translate.translate('showOriginal', profile.language)}
+                    </span>
                   </button>
                 )}
                 {isLanguageSelectorOpened ? (
-                  <LanguageSelector onLanguageChange={handleLanguageSelect} />
+                  <LanguageSelector
+                    language={profile.language}
+                    onLanguageChange={handleLanguageSelect}
+                  />
                 ) : (
                   <button
                     className={styles['translate-button']}
                     onClick={handleTranslateClick}
                   >
                     <Icon height={24} name="translate" width={24} />
-                    <span>Translate</span>
+                    <span>
+                      {translate.translate('translate', profile.language)}
+                    </span>
                   </button>
                 )}
               </>
@@ -210,28 +220,28 @@ const MessagePopover = ({
                   onClick={handleCopyClick}
                 >
                   <Icon height={24} name="copy" width={24} />
-                  <span>Copy text</span>
+                  <span>{translate.translate('copy', profile.language)}</span>
                 </button>
               </>
             )}
-            {profile?.id === message.sender.id &&
+            {profile.id === message.sender.id &&
               message.type === MessageType.TEXT && (
                 <button
                   className={styles['edit-button']}
                   onClick={handleEditClick}
                 >
                   <Icon height={24} name="pencil" width={24} />
-                  <span>Edit</span>
+                  <span>{translate.translate('edit', profile.language)}</span>
                 </button>
               )}
-            {(profile?.id === message.sender.id ||
-              profile?.id === chat?.adminId) && (
+            {(profile.id === message.sender.id ||
+              profile.id === chat.adminId) && (
               <button
                 className={styles['delete-button']}
                 onClick={handleDeleteClick}
               >
                 <Icon height={24} name="trashBin" width={24} />
-                <span>Delete</span>
+                <span>{translate.translate('delete', profile.language)}</span>
               </button>
             )}
           </div>

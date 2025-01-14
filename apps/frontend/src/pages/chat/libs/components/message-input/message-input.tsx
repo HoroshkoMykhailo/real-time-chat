@@ -9,6 +9,7 @@ import {
   useRef,
   useState
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import { messageActions } from '~/modules/messages/message.js';
 
@@ -193,7 +194,7 @@ const MessageInput = ({
             className={styles['input']}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            placeholder="Type a message"
+            placeholder={translate.translate('typeMessage', profile.language)}
             ref={inputReference}
             type="text"
             value={message}
@@ -206,7 +207,9 @@ const MessageInput = ({
               isPrimary
               onClick={handleSend}
             >
-              {editingMessageId ? 'Edit' : 'Send'}
+              {editingMessageId
+                ? translate.translate('edit', profile.language)
+                : translate.translate('send', profile.language)}
             </Button>
           </div>
         </div>

@@ -8,6 +8,7 @@ import {
   useNavigate,
   useState
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import { messageActions } from '~/modules/messages/message.js';
 
@@ -80,7 +81,7 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
     setPopoverMemberId(null);
   }, []);
 
-  if (!chat || !chat.members) {
+  if (!chat || !chat.members || !profile) {
     return <></>;
   }
 
@@ -91,14 +92,16 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
   return (
     <>
       <div className={styles['members-list-header']}>
-        <h3 className={styles['members-title']}>Members</h3>
+        <h3 className={styles['members-title']}>
+          {translate.translate('members', profile.language)}
+        </h3>
         <Button
           className={styles['add-members-button'] ?? ''}
           color={ButtonColor.TEAL}
           isPrimary
           onClick={onOpenAddMembers}
         >
-          Add members
+          {translate.translate('addMembers', profile.language)}
         </Button>
       </div>
       <div
@@ -119,6 +122,7 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
             >
               <MemberItem
                 isAdmin={chat.adminId === member.id}
+                language={profile.language}
                 member={member}
               />
             </button>
