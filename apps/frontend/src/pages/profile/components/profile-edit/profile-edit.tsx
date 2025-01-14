@@ -15,6 +15,7 @@ import {
   useEffect,
   useState
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import {
   type Profile,
@@ -121,85 +122,76 @@ const ProfileEdit: React.FC<Properties> = ({
       <Header />
       <div className={styles['profileForm']}>
         {ifNewProfile ? (
-          <h2>Welcome! Please complete your profile to get started.</h2>
+          <h2>{translate.translate('createProfile', profile.language)}</h2>
         ) : (
-          <h2>Edit your profile details below:</h2>
+          <h2>{translate.translate('editProfileLabel', profile.language)}</h2>
         )}
         <form name="profileForm" onSubmit={handleSubmit(handleFormSubmit)}>
           <div className={styles['formWrapper']}>
             <fieldset className={styles['fieldset']}>
               <div className={styles['notImageGroup']}>
-                <div className={`${styles['formGroup']}`}>
+                <div className={styles['labelsColumn']}>
                   <label
                     className={styles['label']}
                     htmlFor={UserPayloadKey.USERNAME}
                   >
-                    Username
+                    {translate.translate('username', profile.language)}
                   </label>
-                  <div className={styles['inputWrapper']}>
-                    <Input
-                      control={control}
-                      errors={errors}
-                      name={UserPayloadKey.USERNAME}
-                      placeholder={profile.username}
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className={styles['formGroup']}>
                   <label
                     className={styles['label']}
                     htmlFor={UserPayloadKey.DESCRIPTION}
                   >
-                    Description
+                    {translate.translate('description', profile.language)}
                   </label>
-                  <div className={styles['inputWrapper']}>
-                    <Input
-                      control={control}
-                      errors={errors}
-                      isTextArea
-                      name={UserPayloadKey.DESCRIPTION}
-                      placeholder={
-                        profile.description ?? 'Please Enter Description'
-                      }
-                      type="text"
-                    />
-                  </div>
-                </div>
-                <div className={styles['formGroup']}>
                   <label
                     className={styles['label']}
                     htmlFor={UserPayloadKey.DATE_OF_BIRTH}
                   >
-                    Date of Birth
+                    {translate.translate('dateOfBirth', profile.language)}
                   </label>
-                  <div className={styles['inputWrapper']}>
-                    <DatePicker
-                      control={control}
-                      errors={errors}
-                      name={UserPayloadKey.DATE_OF_BIRTH}
-                      placeholder="Select your date of birth"
-                    />
-                  </div>
-                </div>
-                <div className={styles['formGroup']}>
                   <label
                     className={styles['label']}
                     htmlFor={UserPayloadKey.LANGUAGE}
                   >
-                    Language
+                    {translate.translate('language', profile.language)}
                   </label>
-                  <div className={styles['inputWrapper']}>
-                    <Select
-                      control={control}
-                      name={UserPayloadKey.LANGUAGE}
-                      options={[
-                        { label: 'English', value: ProfileLanguage.ENGLISH },
-                        { label: 'Ukrainian', value: ProfileLanguage.UKRAINIAN }
-                      ]}
-                      placeholder="Select language"
-                    />
-                  </div>
+                </div>
+                <div className={styles['inputsColumn']}>
+                  <Input
+                    control={control}
+                    errors={errors}
+                    name={UserPayloadKey.USERNAME}
+                    placeholder={profile.username}
+                    type="text"
+                  />
+                  <Input
+                    control={control}
+                    errors={errors}
+                    isTextArea
+                    name={UserPayloadKey.DESCRIPTION}
+                    placeholder={
+                      profile.description ?? 'Please Enter Description'
+                    }
+                    type="text"
+                  />
+                  <DatePicker
+                    control={control}
+                    errors={errors}
+                    name={UserPayloadKey.DATE_OF_BIRTH}
+                    placeholder="Select your date of birth"
+                  />
+                  <Select
+                    control={control}
+                    name={UserPayloadKey.LANGUAGE}
+                    options={[
+                      { label: 'English', value: ProfileLanguage.ENGLISH },
+                      {
+                        label: 'Ukrainian',
+                        value: ProfileLanguage.UKRAINIAN
+                      }
+                    ]}
+                    placeholder="Select language"
+                  />
                 </div>
               </div>
               <div className={styles['imageGroup']}>
@@ -241,7 +233,7 @@ const ProfileEdit: React.FC<Properties> = ({
             </fieldset>
             <div className={styles['buttonsContainer']}>
               <Button color={ButtonColor.TEAL} isFluid isPrimary type="submit">
-                Save Changes
+                {translate.translate('saveChanges', profile.language)}
               </Button>
               {!ifNewProfile && (
                 <Button
@@ -250,7 +242,7 @@ const ProfileEdit: React.FC<Properties> = ({
                   onClick={onCancel}
                   type="button"
                 >
-                  Cancel
+                  {translate.translate('cancel', profile.language)}
                 </Button>
               )}
             </div>
