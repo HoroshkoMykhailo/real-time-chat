@@ -9,6 +9,7 @@ import {
   deleteMessage,
   downloadFile,
   getMessages,
+  getPinnedMessages,
   transcribeMessage,
   translateMessage,
   updatePinMessage,
@@ -25,6 +26,7 @@ type State = {
   editDataStatus: ValueOf<typeof DataStatus>;
   fileBlob: Blob | null;
   messages: MessageHistoryItem[];
+  pinnedMessages: MessageHistoryItem[];
   writeDataStatus: ValueOf<typeof DataStatus>;
 };
 
@@ -33,6 +35,7 @@ const initialState: State = {
   editDataStatus: DataStatus.IDLE,
   fileBlob: null,
   messages: [],
+  pinnedMessages: [],
   writeDataStatus: DataStatus.IDLE
 };
 
@@ -49,6 +52,17 @@ const { actions, reducer } = createSlice({
       .addMatcher(isAnyOf(getMessages.rejected), state => {
         state.messages = [];
         state.dataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(getPinnedMessages.fulfilled), (state, action) => {
+        state.pinnedMessages = action.payload;
+        state.dataStatus = DataStatus.FULFILLED;
+      })
+      .addMatcher(isAnyOf(getPinnedMessages.rejected), state => {
+        state.pinnedMessages = [];
+        state.dataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(getPinnedMessages.pending), state => {
+        state.dataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(writeTextMessage.fulfilled), (state, action) => {
         state.messages.unshift(action.payload);

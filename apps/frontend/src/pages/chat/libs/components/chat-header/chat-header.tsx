@@ -7,7 +7,7 @@ import { ChatType } from '~/modules/chat/chat.js';
 import styles from './styles.module.scss';
 
 type Properties = {
-  onHeaderClick: () => void;
+  onHeaderClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 const ChatHeader = ({ onHeaderClick }: Properties): JSX.Element => {

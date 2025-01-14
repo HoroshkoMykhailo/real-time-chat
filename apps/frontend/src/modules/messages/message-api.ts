@@ -63,6 +63,16 @@ class Message implements MessageApi {
     );
   }
 
+  public getPinnedMessages(chatId: string): Promise<GetMessagesResponseDto> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(MessageApiParameters.CHAT_ID, chatId)}${MessageApiPath.PIN}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.GET
+      }
+    );
+  }
+
   public transcribeMessage(
     messageId: string
   ): Promise<MessageCreationResponseDto> {

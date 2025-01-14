@@ -12,9 +12,11 @@ import {
 } from '~/libs/hooks/hooks.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { chatActions } from '~/modules/chat/chat.js';
+import { messageActions } from '~/modules/messages/message.js';
 
 import { AddMembers } from './libs/components/add-members/add-members.js';
 import { ChatHeader } from './libs/components/chat-header/chat-header.js';
+import chatHeaderstyles from './libs/components/chat-header/styles.module.scss';
 import { ChatInfo } from './libs/components/chat-info/chat-info.js';
 import { GroupEdit } from './libs/components/group-edit/group-edit.js';
 import { MessageInput } from './libs/components/message-input/message-input.js';
@@ -69,10 +71,25 @@ const Chat: React.FC = () => {
     setActiveChatView(ActiveChatView.AddMembers);
   }, []);
 
-  const handleHeaderClick = useCallback(() => {
-    setChatInfo(!isChatInfo);
-    setActiveChatView(ActiveChatView.ChatInfo);
-  }, [isChatInfo]);
+  const handleHeaderClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      const isPinMessageContainerClick = (event.target as HTMLElement).closest(
+        `.${chatHeaderstyles['last-pinned-message-container']}`
+      );
+
+      if (isPinMessageContainerClick && chatId) {
+        void dispatch(
+          messageActions.getPinnedMessages({
+            chatId
+          })
+        );
+      } else {
+        setChatInfo(!isChatInfo);
+        setActiveChatView(ActiveChatView.ChatInfo);
+      }
+    },
+    [chatId, dispatch, isChatInfo]
+  );
 
   const handleToChatInfo = useCallback(() => {
     setActiveChatView(ActiveChatView.ChatInfo);

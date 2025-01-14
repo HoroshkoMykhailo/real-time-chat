@@ -21,6 +21,17 @@ const getMessages = createAsyncThunk<
   return await messageApi.getMessages(chatId);
 });
 
+const getPinnedMessages = createAsyncThunk<
+  GetMessagesResponseDto,
+  { chatId: string },
+  AsyncThunkConfig
+>(
+  ActionType.GET_PINNED_MESSAGES,
+  async ({ chatId }, { extra: { messageApi } }) => {
+    return await messageApi.getPinnedMessages(chatId);
+  }
+);
+
 const writeTextMessage = createAsyncThunk<
   MessageCreationResponseDto,
   { chatId: string; content: TextMessageRequestDto },
@@ -166,6 +177,7 @@ export {
   deleteMessage,
   downloadFile,
   getMessages,
+  getPinnedMessages,
   transcribeMessage,
   translateMessage,
   updatePinMessage,

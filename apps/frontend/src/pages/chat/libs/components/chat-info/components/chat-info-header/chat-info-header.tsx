@@ -5,7 +5,7 @@ import styles from './styles.module.scss';
 interface Properties {
   chatTypeLabel: string;
   isAdmin: boolean;
-  onClose: () => void;
+  onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onDeleteChat: () => void;
   onOpenGroupEdit: () => void;
 }

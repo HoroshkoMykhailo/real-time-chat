@@ -16,7 +16,7 @@ import styles from './styles.module.scss';
 
 type Properties = {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onOpenAddMembers: () => void;
   onOpenGroupEdit: () => void;
 };
