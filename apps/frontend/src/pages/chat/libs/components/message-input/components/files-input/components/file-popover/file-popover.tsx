@@ -5,6 +5,7 @@ import {
   useAppSelector,
   useCallback
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { messageActions } from '~/modules/messages/message.js';
 
 import styles from './styles.module.scss';
@@ -22,6 +23,7 @@ const FilePopover = ({
 }: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
   const { selectedChat: chat } = useAppSelector(state => state.chat);
+  const { profile } = useAppSelector(state => state.profile);
 
   const handlePhotoOrVideoChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -84,6 +86,10 @@ const FilePopover = ({
     [chat, dispatch]
   );
 
+  if (!profile) {
+    return <></>;
+  }
+
   return (
     <Popover
       className="file-popover"
@@ -92,7 +98,7 @@ const FilePopover = ({
           <div className={styles['buttons']}>
             <label className={styles['button']}>
               <Icon height={24} name="image" width={24} />
-              Photo or video
+              {translate.translate('photoOrVideo', profile.language)}
               <input
                 accept="image/*,video/*"
                 onChange={handlePhotoOrVideoChange}
@@ -102,7 +108,7 @@ const FilePopover = ({
             </label>
             <label className={styles['button']}>
               <Icon height={24} name="file" width={24} />
-              File
+              {translate.translate('file', profile.language)}
               <input
                 onChange={handleFileChange}
                 style={{ display: 'none' }}

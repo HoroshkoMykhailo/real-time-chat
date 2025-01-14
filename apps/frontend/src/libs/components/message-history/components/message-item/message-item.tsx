@@ -136,6 +136,10 @@ const MessageItem = ({
     return <p>Unsupported message type</p>;
   };
 
+  if (!profile) {
+    return <></>;
+  }
+
   return (
     <MessagePopover
       isOpened={message.id === popoverMessageId}
@@ -162,7 +166,7 @@ const MessageItem = ({
             <p className={styles['user-name']}>{message.sender.username}</p>
           </div>
           {renderMessageContent()}
-          <MessageFooter message={message} />
+          <MessageFooter language={profile.language} message={message} />
         </button>
       </div>
     </MessagePopover>
