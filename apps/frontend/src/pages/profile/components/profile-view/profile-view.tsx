@@ -1,5 +1,6 @@
 import { Button, Header, Icon, Image } from '~/libs/components/components.js';
 import { ButtonColor, ENV } from '~/libs/enums/enums.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { type Profile } from '~/modules/profile/libs/types/types.js';
 
 import styles from './styles.module.scss';
@@ -19,7 +20,7 @@ const ProfileView: React.FC<Properties> = ({ onBack, onEdit, profile }) => {
     <>
       <Header />
       <div className={styles['profileView']}>
-        <h2>Profile Details</h2>
+        <h2>{translate('profileDetails', profile.language)}</h2>
         <div className={styles['profileContent']}>
           <div className={styles['detailsContainer']}>
             <div className={styles['detailsGroup']}>
