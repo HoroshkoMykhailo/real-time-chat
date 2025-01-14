@@ -1,6 +1,7 @@
 import { ONE_VALUE } from '~/libs/common/constants.js';
 import { ChatPicture } from '~/libs/components/components.js';
 import { useAppSelector } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { ChatType } from '~/modules/chat/chat.js';
 
 import styles from './styles.module.scss';
@@ -11,15 +12,18 @@ type Properties = {
 
 const ChatHeader = ({ onHeaderClick }: Properties): JSX.Element => {
   const { selectedChat: chat } = useAppSelector(state => state.chat);
+  const { profile } = useAppSelector(state => state.profile);
 
-  if (!chat) {
+  if (!chat || !profile) {
     return <></>;
   }
 
   const { chatPicture, memberCount, name } = chat;
 
   const memberLabel =
-    (chat.members?.length || memberCount) === ONE_VALUE ? 'member' : 'members';
+    (chat.members?.length || memberCount) === ONE_VALUE
+      ? translate.translate('member', profile.language)
+      : translate.translate('members', profile.language);
 
   return (
     <button className={styles['chat-header']} onClick={onHeaderClick}>

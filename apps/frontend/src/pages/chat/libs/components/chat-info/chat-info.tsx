@@ -1,3 +1,4 @@
+import { ONE_VALUE } from '~/libs/common/constants.js';
 import { ChatPicture } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
@@ -6,6 +7,7 @@ import {
   useCallback,
   useNavigate
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { ChatType, chatActions } from '~/modules/chat/chat.js';
 
 import { ChatInfoHeader } from './components/chat-info-header/chat-info-header.js';
@@ -44,12 +46,19 @@ const ChatInfo = ({
   const isAdmin = chat.adminId === profile.id;
 
   const chatTypeLabel =
-    chat.type === ChatType.GROUP ? 'Group Info' : 'User Info';
+    chat.type === ChatType.GROUP
+      ? translate.translate('groupInfo', profile.language)
+      : translate.translate('userInfo', profile.language);
 
   const otherMember =
     chat.type === ChatType.PRIVATE
       ? chat.members.find(member => member.id !== profile.id)
       : null;
+
+  const membersLabel =
+    chat.members.length === ONE_VALUE
+      ? translate.translate('member', profile.language)
+      : translate.translate('members', profile.language);
 
   return (
     <div className={`${styles['chat-info']} ${isOpen ? styles['open'] : ''}`}>
@@ -71,38 +80,47 @@ const ChatInfo = ({
           <h2 className={styles['chat-name']}>{chat.name}</h2>
           {chat.type === ChatType.GROUP && (
             <span className={styles['member-count']}>
-              {chat.members.length} members
+              {chat.members.length} {membersLabel}
             </span>
           )}
         </div>
         {otherMember && (
           <div className={styles['detailsContainer']}>
-            {otherMember.description && (
-              <div className={styles['detailsGroup']}>
-                <span className={styles['detailsLabel']}>Description</span>
-                <div className={styles['detailsWrapper']}>
-                  <div className={styles['detailsBox']}>
-                    {otherMember.description}
-                  </div>
-                </div>
-              </div>
-            )}
-            {otherMember.dateOfBirth && (
-              <div className={styles['detailsGroup']}>
-                <span className={styles['detailsLabel']}>Date of Birth</span>
-                <div className={styles['detailsWrapper']}>
-                  <div className={styles['detailsBox']}>
-                    {otherMember.dateOfBirth}
-                  </div>
-                </div>
-              </div>
-            )}
-            <div className={styles['detailsGroup']}>
-              <span className={styles['detailsLabel']}>Language</span>
-              <div className={styles['detailsWrapper']}>
+            <div className={styles['labelsColumn']}>
+              <span className={styles['detailsLabel']}>
+                {translate.translate('username', profile.language)}
+              </span>
+              {otherMember.description && (
+                <span className={styles['detailsLabel']}>
+                  {translate.translate('description', profile.language)}
+                </span>
+              )}
+              {otherMember.dateOfBirth && (
+                <span className={styles['detailsLabel']}>
+                  {translate.translate('dateOfBirth', profile.language)}
+                </span>
+              )}
+              <span className={styles['detailsLabel']}>
+                {translate.translate('language', profile.language)}
+              </span>
+            </div>
+
+            <div className={styles['detailsColumn']}>
+              <div className={styles['detailsBox']}>{profile.username}</div>
+              {otherMember.description && (
                 <div className={styles['detailsBox']}>
-                  {otherMember.language === 'en' ? 'English' : 'Ukrainian'}
+                  {profile.description}
                 </div>
+              )}
+              {otherMember.dateOfBirth && (
+                <div className={styles['detailsBox']}>
+                  {profile.dateOfBirth}
+                </div>
+              )}
+              <div className={styles['detailsBox']}>
+                {profile.language === 'en'
+                  ? translate.translate('english', profile.language)
+                  : translate.translate('ukrainian', profile.language)}
               </div>
             </div>
           </div>

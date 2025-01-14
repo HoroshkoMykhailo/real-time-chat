@@ -9,7 +9,10 @@ import {
   useRef,
   useState
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
+import { type ValueOf } from '~/libs/types/types.js';
 import { chatActions } from '~/modules/chat/chat.js';
+import { type ProfileLanguage } from '~/modules/profile/libs/types/types.js';
 
 import styles from './styles.module.scss';
 
@@ -18,6 +21,7 @@ type Properties = {
   children: React.ReactNode;
   currentChatId?: string;
   isOpened: boolean;
+  language: ValueOf<typeof ProfileLanguage>;
   onClose: () => void;
 };
 
@@ -26,6 +30,7 @@ const ChatPopover = ({
   children,
   currentChatId,
   isOpened,
+  language,
   onClose
 }: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -63,7 +68,7 @@ const ChatPopover = ({
           <div className={styles['buttons']}>
             <button className={styles['leave-button']} onClick={handleLeave}>
               <Icon height={24} name="trashBin" width={24} />
-              <span>Leave chat </span>
+              <span>{translate.translate('leaveChat', language)}</span>
             </button>
           </div>
         </div>

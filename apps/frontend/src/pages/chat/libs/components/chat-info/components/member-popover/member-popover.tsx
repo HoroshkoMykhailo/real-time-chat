@@ -8,6 +8,7 @@ import {
   useRef,
   useState
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { chatActions } from '~/modules/chat/chat.js';
 
 import styles from './styles.module.scss';
@@ -28,6 +29,7 @@ const MemberPopover = ({
   const dispatch = useAppDispatch();
   const popoverReference = useRef<HTMLDivElement | null>(null);
   const { selectedChat: chat } = useAppSelector(state => state.chat);
+  const { profile } = useAppSelector(state => state.profile);
   const [popoverClass, setPopoverClass] = useState<string>(POPOVER_CLASS);
 
   const handleRemove = useCallback((): void => {
@@ -50,6 +52,10 @@ const MemberPopover = ({
     setPopoverClass(POPOVER_CLASS);
   }, [onClose]);
 
+  if (!profile) {
+    return <></>;
+  }
+
   return (
     <Popover
       className={popoverClass}
@@ -58,7 +64,9 @@ const MemberPopover = ({
           <div className={styles['buttons']}>
             <button className={styles['remove-button']} onClick={handleRemove}>
               <Icon height={24} name="remove" width={24} />
-              <span>Remove member</span>
+              <span>
+                {translate.translate('removeMember', profile.language)}
+              </span>
             </button>
           </div>
         </div>

@@ -99,6 +99,7 @@ const ChatList = (): JSX.Element => {
             chatId={chat.id}
             isOpened={popoverChatId === chat.id}
             key={chat.id}
+            language={profile.language}
             onClose={handleChatPopoverClose}
             {...(selectedChat && { currentChatId: selectedChat.id })}
           >

@@ -55,7 +55,9 @@ const ProfileView: React.FC<Properties> = ({ onBack, onEdit, profile }) => {
                 </div>
               )}
               <div className={styles['detailsBox']}>
-                {profile.language === 'en' ? 'English' : 'Ukrainian'}
+                {profile.language === 'en'
+                  ? translate.translate('english', profile.language)
+                  : translate.translate('ukrainian', profile.language)}
               </div>
             </div>
           </div>

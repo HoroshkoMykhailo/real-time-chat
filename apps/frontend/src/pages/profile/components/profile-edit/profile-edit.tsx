@@ -170,7 +170,8 @@ const ProfileEdit: React.FC<Properties> = ({
                     isTextArea
                     name={UserPayloadKey.DESCRIPTION}
                     placeholder={
-                      profile.description ?? 'Please Enter Description'
+                      profile.description ??
+                      translate.translate('enterDescription', profile.language)
                     }
                     type="text"
                   />
@@ -178,19 +179,31 @@ const ProfileEdit: React.FC<Properties> = ({
                     control={control}
                     errors={errors}
                     name={UserPayloadKey.DATE_OF_BIRTH}
-                    placeholder="Select your date of birth"
+                    placeholder={translate.translate(
+                      'enterDateOfBirth',
+                      profile.language
+                    )}
                   />
                   <Select
                     control={control}
                     name={UserPayloadKey.LANGUAGE}
                     options={[
-                      { label: 'English', value: ProfileLanguage.ENGLISH },
                       {
-                        label: 'Ukrainian',
+                        label: translate.translate('english', profile.language),
+                        value: ProfileLanguage.ENGLISH
+                      },
+                      {
+                        label: translate.translate(
+                          'ukrainian',
+                          profile.language
+                        ),
                         value: ProfileLanguage.UKRAINIAN
                       }
                     ]}
-                    placeholder="Select language"
+                    placeholder={translate.translate(
+                      'selectLanguage',
+                      profile.language
+                    )}
                   />
                 </div>
               </div>
