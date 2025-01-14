@@ -23,38 +23,39 @@ const ProfileView: React.FC<Properties> = ({ onBack, onEdit, profile }) => {
         <h2>{translate.translate('profileDetails', profile.language)}</h2>
         <div className={styles['profileContent']}>
           <div className={styles['detailsContainer']}>
-            <div className={styles['detailsGroup']}>
-              <span className={styles['detailsLabel']}>Username</span>
-              <div className={styles['detailsWrapper']}>
-                <div className={styles['detailsBox']}>{profile.username}</div>
-              </div>
+            <div className={styles['labelsColumn']}>
+              <span className={styles['detailsLabel']}>
+                {translate.translate('username', profile.language)}
+              </span>
+              {profile.description && (
+                <span className={styles['detailsLabel']}>
+                  {translate.translate('description', profile.language)}
+                </span>
+              )}
+              {profile.dateOfBirth && (
+                <span className={styles['detailsLabel']}>
+                  {translate.translate('dateOfBirth', profile.language)}
+                </span>
+              )}
+              <span className={styles['detailsLabel']}>
+                {translate.translate('language', profile.language)}
+              </span>
             </div>
-            {profile.description && (
-              <div className={styles['detailsGroup']}>
-                <span className={styles['detailsLabel']}>Description</span>
-                <div className={styles['detailsWrapper']}>
-                  <div className={styles['detailsBox']}>
-                    {profile.description}
-                  </div>
-                </div>
-              </div>
-            )}
-            {profile.dateOfBirth && (
-              <div className={styles['detailsGroup']}>
-                <span className={styles['detailsLabel']}>Date of Birth</span>
-                <div className={styles['detailsWrapper']}>
-                  <div className={styles['detailsBox']}>
-                    {profile.dateOfBirth}
-                  </div>
-                </div>
-              </div>
-            )}
-            <div className={styles['detailsGroup']}>
-              <span className={styles['detailsLabel']}>Language</span>
-              <div className={styles['detailsWrapper']}>
+
+            <div className={styles['detailsColumn']}>
+              <div className={styles['detailsBox']}>{profile.username}</div>
+              {profile.description && (
                 <div className={styles['detailsBox']}>
-                  {profile.language === 'en' ? 'English' : 'Ukrainian'}
+                  {profile.description}
                 </div>
+              )}
+              {profile.dateOfBirth && (
+                <div className={styles['detailsBox']}>
+                  {profile.dateOfBirth}
+                </div>
+              )}
+              <div className={styles['detailsBox']}>
+                {profile.language === 'en' ? 'English' : 'Ukrainian'}
               </div>
             </div>
           </div>
@@ -84,7 +85,7 @@ const ProfileView: React.FC<Properties> = ({ onBack, onEdit, profile }) => {
             onClick={onEdit}
             type="button"
           >
-            Edit Profile
+            {translate.translate('editProfile', profile.language)}
           </Button>
           <Button
             color={ButtonColor.GRAY}
@@ -92,7 +93,7 @@ const ProfileView: React.FC<Properties> = ({ onBack, onEdit, profile }) => {
             onClick={onBack}
             type="button"
           >
-            Back to Home
+            {translate.translate('backToHome', profile.language)}
           </Button>
         </div>
       </div>

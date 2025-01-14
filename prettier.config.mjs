@@ -4,6 +4,7 @@
 const config = {
   arrowParens: 'avoid',
   bracketSpacing: true,
+  embeddedLanguageFormatting: 'off',
   overrides: [{ files: '*.scss', options: { singleQuote: false } }],
   printWidth: 80,
   quoteProps: 'preserve',

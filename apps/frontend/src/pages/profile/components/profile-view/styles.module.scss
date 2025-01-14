@@ -16,25 +16,27 @@
 .detailsContainer {
   margin-top: 30px;
   display: flex;
+  gap: 20px;
+}
+
+.labelsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  min-width: 150px;
+}
+
+.detailsColumn {
+  display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 310px;
+  flex-grow: 1;
 }
 
 .imageContainer {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-.detailsGroup {
-  display: flex;
-  gap: 20px;
-  width: 100%;
-}
-
-.detailsWrapper {
-  width: 200px;
 }
 
 .detailsBox {
