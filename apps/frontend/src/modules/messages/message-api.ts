@@ -73,6 +73,22 @@ class Message implements MessageApi {
     );
   }
 
+  public loadBeforeMessages(
+    chatId: string,
+    beforeTime: string
+  ): Promise<GetMessagesResponseDto> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.MESSAGE}${MessageApiPath.$CHAT_ID.replace(MessageApiParameters.CHAT_ID, chatId)}`,
+      {
+        hasAuth: true,
+        method: HTTPMethod.GET,
+        query: {
+          before: beforeTime
+        }
+      }
+    );
+  }
+
   public transcribeMessage(
     messageId: string
   ): Promise<MessageCreationResponseDto> {

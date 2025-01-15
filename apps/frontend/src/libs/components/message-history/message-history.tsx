@@ -1,4 +1,4 @@
-import { ZERO_VALUE } from '~/libs/common/constants.js';
+import { ONE_HUNDRED, ZERO_VALUE } from '~/libs/common/constants.js';
 import { Loader } from '~/libs/components/components.js';
 import { DataStatus } from '~/libs/enums/enums.js';
 import {
@@ -8,7 +8,9 @@ import {
 import {
   useAppDispatch,
   useAppSelector,
+  useCallback,
   useEffect,
+  useRef,
   useState
 } from '~/libs/hooks/hooks.js';
 import { chatActions } from '~/modules/chat/chat.js';
@@ -31,8 +33,22 @@ const MessageHistory = ({
   const { profile } = useAppSelector(state => state.profile);
   const [popoverMessageId, setPopoverMessageId] = useState<null | string>(null);
 
-  const { dataStatus, editDataStatus, messages, pinnedMessages } =
-    useAppSelector(state => state.message);
+  const [beforeMessageTime, setBeforeMessageTime] = useState<null | string>(
+    null
+  );
+  const [isHidden, setIsHidden] = useState<boolean>(false);
+  const previousScrollHeightReference = useRef<number>(ZERO_VALUE);
+
+  const messagesListReference = useRef<HTMLDivElement | null>(null);
+
+  const {
+    dataStatus,
+    editDataStatus,
+    loadDataStatus,
+    messages,
+    pinnedMessages,
+    writeDataStatus
+  } = useAppSelector(state => state.message);
 
   useEffect(() => {
     if (editDataStatus === DataStatus.FULFILLED) {
@@ -63,6 +79,97 @@ const MessageHistory = ({
     }
   }, [chat, dispatch, editDataStatus, messages]);
 
+  useEffect(() => {
+    const element = messagesListReference.current;
+    setIsHidden(true);
+
+    if (element) {
+      element.scrollTop = element.scrollHeight;
+    }
+
+    setBeforeMessageTime(null);
+    setTimeout(() => {
+      setIsHidden(false);
+    }, ONE_HUNDRED);
+  }, [chat]);
+
+  useEffect(() => {
+    if (loadDataStatus === DataStatus.FULFILLED) {
+      const element = messagesListReference.current;
+
+      if (element) {
+        const newScrollHeight = element.scrollHeight;
+        const scrollDelta =
+          newScrollHeight - previousScrollHeightReference.current;
+
+        element.scrollTop += scrollDelta;
+      }
+
+      dispatch(messageActions.resetLoadDataStatus());
+    }
+  }, [dispatch, loadDataStatus]);
+
+  useEffect(() => {
+    if (!chat) {
+      return;
+    }
+
+    if (beforeMessageTime) {
+      void dispatch(
+        messageActions.loadBeforeMessages({
+          beforeTime: beforeMessageTime,
+          chatId: chat.id
+        })
+      );
+
+      setBeforeMessageTime(null);
+    }
+  }, [dispatch, beforeMessageTime, chat]);
+
+  const handleScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>): void => {
+      event.preventDefault();
+      event.stopPropagation();
+      const element = event.currentTarget;
+
+      const scrollData = {
+        clientHeight: element.clientHeight,
+        scrollHeight: element.scrollHeight,
+        scrollTop: element.scrollTop
+      };
+
+      const isAtTop = scrollData.scrollTop <= ONE_HUNDRED;
+
+      if (
+        isAtTop &&
+        !beforeMessageTime &&
+        loadDataStatus !== DataStatus.PENDING
+      ) {
+        const element = messagesListReference.current;
+        const message = messages.at(ZERO_VALUE);
+
+        if (element) {
+          previousScrollHeightReference.current = element.scrollHeight;
+        }
+
+        if (message) {
+          setBeforeMessageTime(message.createdAt);
+        }
+      }
+    },
+    [beforeMessageTime, loadDataStatus, messages]
+  );
+
+  useEffect(() => {
+    if (writeDataStatus === DataStatus.FULFILLED) {
+      const element = messagesListReference.current;
+
+      if (element) {
+        element.scrollTop = element.scrollHeight;
+      }
+    }
+  }, [editDataStatus, writeDataStatus]);
+
   if (!chat || !profile) {
     return <></>;
   }
@@ -76,25 +183,31 @@ const MessageHistory = ({
   const groupedMessages = groupMessagesByDate(historyMessages);
 
   return (
-    <div className={styles['messages-list']}>
-      {Object.entries(groupedMessages).map(([dateKey, messages]) => (
-        <div key={dateKey}>
-          <div className={styles['date-label-wrapper']}>
-            <div className={styles['date-label']}>
-              {formatDateLabel(dateKey, profile.language)}
+    <div className={styles['messages-list-wrapper']}>
+      <div
+        className={`${styles['messages-list']} ${isHidden ? styles['hidden'] : ''}`}
+        onScroll={handleScroll}
+        ref={messagesListReference}
+      >
+        {Object.entries(groupedMessages).map(([dateKey, messages]) => (
+          <div key={dateKey}>
+            <div className={styles['date-label-wrapper']}>
+              <div className={styles['date-label']}>
+                {formatDateLabel(dateKey, profile.language)}
+              </div>
             </div>
+            {messages.map(message => (
+              <MessageItem
+                key={message.id}
+                message={message}
+                popoverMessageId={popoverMessageId}
+                setPopoverMessageId={setPopoverMessageId}
+                {...(setEditingMessageId && { setEditingMessageId })}
+              />
+            ))}
           </div>
-          {messages.map(message => (
-            <MessageItem
-              key={message.id}
-              message={message}
-              popoverMessageId={popoverMessageId}
-              setPopoverMessageId={setPopoverMessageId}
-              {...(setEditingMessageId && { setEditingMessageId })}
-            />
-          ))}
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };

@@ -100,13 +100,13 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
       .sort({ createdAt: -1 })
       .limit(limit ?? DEFAULT_LIMIT);
 
-    return messages.map(message => this.mapToBusinessLogic(message));
+    return messages.map(message => this.mapToBusinessLogic(message)).reverse();
   }
 
   public async getPinnedMessagesByChatId(chatId: string): Promise<TMessage[]> {
     const messages = await this.model
       .find({ chatId, isPinned: true })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: 1 });
 
     return messages.map(message => this.mapToBusinessLogic(message));
   }

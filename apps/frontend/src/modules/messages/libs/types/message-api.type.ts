@@ -14,8 +14,12 @@ type MessageApi = {
   downloadFile(messageId: string): Promise<Blob>;
 
   getMessages(chatId: string): Promise<GetMessagesResponseDto>;
-
   getPinnedMessages(chatId: string): Promise<GetMessagesResponseDto>;
+
+  loadBeforeMessages(
+    chatId: string,
+    beforeTime: string
+  ): Promise<GetMessagesResponseDto>;
 
   transcribeMessage(messageId: string): Promise<MessageCreationResponseDto>;
 

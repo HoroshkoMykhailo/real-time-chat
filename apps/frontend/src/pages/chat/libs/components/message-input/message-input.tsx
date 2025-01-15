@@ -1,4 +1,4 @@
-import { ZERO_VALUE } from '~/libs/common/constants.js';
+import { MINUS_ONE_VALUE } from '~/libs/common/constants.js';
 import { Avatar, Button } from '~/libs/components/components.js';
 import { ButtonColor, DataStatus } from '~/libs/enums/enums.js';
 import {
@@ -86,7 +86,7 @@ const MessageInput = ({
 
   useEffect(() => {
     if (writeDataStatus === DataStatus.FULFILLED) {
-      const message = messages.at(ZERO_VALUE);
+      const message = messages.at(MINUS_ONE_VALUE);
 
       dispatch(messageActions.resetWriteDataStatus());
 

@@ -10,6 +10,7 @@ import {
   downloadFile,
   getMessages,
   getPinnedMessages,
+  loadBeforeMessages,
   transcribeMessage,
   translateMessage,
   updatePinMessage,
@@ -25,6 +26,7 @@ type State = {
   dataStatus: ValueOf<typeof DataStatus>;
   editDataStatus: ValueOf<typeof DataStatus>;
   fileBlob: Blob | null;
+  loadDataStatus: ValueOf<typeof DataStatus>;
   messages: MessageHistoryItem[];
   pinnedMessages: MessageHistoryItem[];
   writeDataStatus: ValueOf<typeof DataStatus>;
@@ -34,6 +36,7 @@ const initialState: State = {
   dataStatus: DataStatus.IDLE,
   editDataStatus: DataStatus.IDLE,
   fileBlob: null,
+  loadDataStatus: DataStatus.IDLE,
   messages: [],
   pinnedMessages: [],
   writeDataStatus: DataStatus.IDLE
@@ -53,6 +56,16 @@ const { actions, reducer } = createSlice({
         state.messages = [];
         state.dataStatus = DataStatus.REJECTED;
       })
+      .addMatcher(isAnyOf(loadBeforeMessages.fulfilled), (state, action) => {
+        state.messages.unshift(...action.payload);
+        state.loadDataStatus = DataStatus.FULFILLED;
+      })
+      .addMatcher(isAnyOf(loadBeforeMessages.pending), state => {
+        state.loadDataStatus = DataStatus.PENDING;
+      })
+      .addMatcher(isAnyOf(loadBeforeMessages.rejected), state => {
+        state.loadDataStatus = DataStatus.REJECTED;
+      })
       .addMatcher(isAnyOf(getPinnedMessages.fulfilled), (state, action) => {
         state.pinnedMessages = action.payload;
         state.dataStatus = DataStatus.FULFILLED;
@@ -65,7 +78,7 @@ const { actions, reducer } = createSlice({
         state.dataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(writeTextMessage.fulfilled), (state, action) => {
-        state.messages.unshift(action.payload);
+        state.messages.push(action.payload);
         state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeTextMessage.pending), state => {
@@ -75,7 +88,7 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(writeImageMessage.fulfilled), (state, action) => {
-        state.messages.unshift(action.payload);
+        state.messages.push(action.payload);
         state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeImageMessage.pending), state => {
@@ -85,7 +98,7 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(writeVideoMessage.fulfilled), (state, action) => {
-        state.messages.unshift(action.payload);
+        state.messages.push(action.payload);
         state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeVideoMessage.pending), state => {
@@ -95,7 +108,7 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(writeFileMessage.fulfilled), (state, action) => {
-        state.messages.unshift(action.payload);
+        state.messages.push(action.payload);
         state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeFileMessage.pending), state => {
@@ -105,7 +118,7 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(writeAudioMessage.fulfilled), (state, action) => {
-        state.messages.unshift(action.payload);
+        state.messages.push(action.payload);
         state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeAudioMessage.pending), state => {
@@ -199,6 +212,9 @@ const { actions, reducer } = createSlice({
   reducers: {
     resetEditDataStatus: state => {
       state.editDataStatus = DataStatus.IDLE;
+    },
+    resetLoadDataStatus: state => {
+      state.loadDataStatus = DataStatus.IDLE;
     },
     resetWriteDataStatus: state => {
       state.writeDataStatus = DataStatus.IDLE;

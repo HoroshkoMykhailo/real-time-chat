@@ -3,6 +3,7 @@ const ActionType = {
   DOWNLOAD_FILE: 'messages/download-file',
   GET_MESSAGES: 'messages/get-messages',
   GET_PINNED_MESSAGES: 'messages/get-pinned-messages',
+  LOAD_BEFORE_MESSAGES: 'messages/load-before-messages',
   TRANSCRIBE_MESSAGE: 'messages/transcribe-message',
   TRANSLATE_MESSAGE: 'messages/translate-message',
   UPDATE_PIN_MESSAGE: 'messages/pin-message',

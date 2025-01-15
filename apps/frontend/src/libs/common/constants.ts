@@ -4,6 +4,8 @@ const ZERO_VALUE = 0;
 const ONE_VALUE = 1;
 const TWO_VALUE = 2;
 
+const ONE_HUNDRED = 100;
+
 const POPOVER_OFFSET = 50;
 
 const POPOVER_CLASS = 'default-popover';
@@ -11,6 +13,7 @@ const POPOVER_CLASS = 'default-popover';
 export {
   DEBOUNCE_DELAY,
   MINUS_ONE_VALUE,
+  ONE_HUNDRED,
   ONE_VALUE,
   POPOVER_CLASS,
   POPOVER_OFFSET,
