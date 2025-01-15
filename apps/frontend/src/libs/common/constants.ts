@@ -3,7 +3,6 @@ const MINUS_ONE_VALUE = -1;
 const ZERO_VALUE = 0;
 const ONE_VALUE = 1;
 const TWO_VALUE = 2;
-
 const ONE_HUNDRED = 100;
 
 const POPOVER_OFFSET = 50;

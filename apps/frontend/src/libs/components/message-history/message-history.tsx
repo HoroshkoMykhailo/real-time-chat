@@ -1,4 +1,4 @@
-import { ONE_HUNDRED, ZERO_VALUE } from '~/libs/common/constants.js';
+import { ONE_HUNDRED, TWO_VALUE, ZERO_VALUE } from '~/libs/common/constants.js';
 import { Loader } from '~/libs/components/components.js';
 import { DataStatus } from '~/libs/enums/enums.js';
 import {
@@ -38,8 +38,12 @@ const MessageHistory = ({
   );
   const [isHidden, setIsHidden] = useState<boolean>(false);
   const previousScrollHeightReference = useRef<number>(ZERO_VALUE);
-
   const messagesListReference = useRef<HTMLDivElement | null>(null);
+  const scrollTimeoutReference = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+
+  const lastViewedMessageTimeReference = useRef<null | string>(null);
 
   const {
     dataStatus,
@@ -49,6 +53,104 @@ const MessageHistory = ({
     pinnedMessages,
     writeDataStatus
   } = useAppSelector(state => state.message);
+
+  const updateLastViewedMessage = useCallback(() => {
+    if (!messagesListReference.current) {
+      return;
+    }
+
+    const listElement = messagesListReference.current;
+    const messageElements = listElement.querySelectorAll('[data-message-time]');
+    let lastVisibleMessageTime: null | string = null;
+
+    for (const element of messageElements) {
+      const rect = element.getBoundingClientRect();
+      const listRect = listElement.getBoundingClientRect();
+
+      if (
+        rect.top + TWO_VALUE >= listRect.top &&
+        rect.bottom - TWO_VALUE <= listRect.bottom &&
+        rect.height <= listRect.height
+      ) {
+        const { messageTime } = (element as HTMLDivElement).dataset;
+
+        if (
+          messageTime &&
+          (!lastVisibleMessageTime ||
+            new Date(messageTime) > new Date(lastVisibleMessageTime))
+        ) {
+          lastVisibleMessageTime = messageTime;
+        }
+      }
+    }
+
+    if (
+      lastVisibleMessageTime &&
+      (!lastViewedMessageTimeReference.current ||
+        new Date(lastVisibleMessageTime) >
+          new Date(lastViewedMessageTimeReference.current))
+    ) {
+      lastViewedMessageTimeReference.current = lastVisibleMessageTime;
+    }
+  }, []);
+
+  const handleScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>): void => {
+      event.preventDefault();
+      event.stopPropagation();
+      const element = event.currentTarget;
+
+      if (scrollTimeoutReference.current) {
+        clearTimeout(scrollTimeoutReference.current);
+      }
+
+      const scrollData = {
+        clientHeight: element.clientHeight,
+        scrollHeight: element.scrollHeight,
+        scrollTop: element.scrollTop
+      };
+
+      const isAtTop = scrollData.scrollTop <= ONE_HUNDRED;
+
+      if (
+        isAtTop &&
+        !beforeMessageTime &&
+        loadDataStatus !== DataStatus.PENDING
+      ) {
+        const element = messagesListReference.current;
+        const message = messages.at(ZERO_VALUE);
+
+        if (element) {
+          previousScrollHeightReference.current = element.scrollHeight;
+        }
+
+        if (message) {
+          setBeforeMessageTime(message.createdAt);
+        }
+      }
+
+      scrollTimeoutReference.current = setTimeout(() => {
+        updateLastViewedMessage();
+      }, ONE_HUNDRED);
+    },
+    [beforeMessageTime, loadDataStatus, messages, updateLastViewedMessage]
+  );
+
+  useEffect(() => {
+    const element = messagesListReference.current;
+    setIsHidden(true);
+
+    if (element) {
+      element.scrollTop = element.scrollHeight;
+    }
+
+    lastViewedMessageTimeReference.current = null;
+    setBeforeMessageTime(null);
+    updateLastViewedMessage();
+    setTimeout(() => {
+      setIsHidden(false);
+    }, ONE_HUNDRED);
+  }, [chat, updateLastViewedMessage]);
 
   useEffect(() => {
     if (editDataStatus === DataStatus.FULFILLED) {
@@ -80,85 +182,12 @@ const MessageHistory = ({
   }, [chat, dispatch, editDataStatus, messages]);
 
   useEffect(() => {
-    const element = messagesListReference.current;
-    setIsHidden(true);
-
-    if (element) {
-      element.scrollTop = element.scrollHeight;
-    }
-
-    setBeforeMessageTime(null);
-    setTimeout(() => {
-      setIsHidden(false);
-    }, ONE_HUNDRED);
-  }, [chat]);
-
-  useEffect(() => {
-    if (loadDataStatus === DataStatus.FULFILLED) {
-      const element = messagesListReference.current;
-
-      if (element) {
-        const newScrollHeight = element.scrollHeight;
-        const scrollDelta =
-          newScrollHeight - previousScrollHeightReference.current;
-
-        element.scrollTop += scrollDelta;
+    return (): void => {
+      if (scrollTimeoutReference.current) {
+        clearTimeout(scrollTimeoutReference.current);
       }
-
-      dispatch(messageActions.resetLoadDataStatus());
-    }
-  }, [dispatch, loadDataStatus]);
-
-  useEffect(() => {
-    if (!chat) {
-      return;
-    }
-
-    if (beforeMessageTime) {
-      void dispatch(
-        messageActions.loadBeforeMessages({
-          beforeTime: beforeMessageTime,
-          chatId: chat.id
-        })
-      );
-
-      setBeforeMessageTime(null);
-    }
-  }, [dispatch, beforeMessageTime, chat]);
-
-  const handleScroll = useCallback(
-    (event: React.UIEvent<HTMLDivElement>): void => {
-      event.preventDefault();
-      event.stopPropagation();
-      const element = event.currentTarget;
-
-      const scrollData = {
-        clientHeight: element.clientHeight,
-        scrollHeight: element.scrollHeight,
-        scrollTop: element.scrollTop
-      };
-
-      const isAtTop = scrollData.scrollTop <= ONE_HUNDRED;
-
-      if (
-        isAtTop &&
-        !beforeMessageTime &&
-        loadDataStatus !== DataStatus.PENDING
-      ) {
-        const element = messagesListReference.current;
-        const message = messages.at(ZERO_VALUE);
-
-        if (element) {
-          previousScrollHeightReference.current = element.scrollHeight;
-        }
-
-        if (message) {
-          setBeforeMessageTime(message.createdAt);
-        }
-      }
-    },
-    [beforeMessageTime, loadDataStatus, messages]
-  );
+    };
+  }, []);
 
   useEffect(() => {
     if (writeDataStatus === DataStatus.FULFILLED) {
@@ -166,9 +195,10 @@ const MessageHistory = ({
 
       if (element) {
         element.scrollTop = element.scrollHeight;
+        setTimeout(updateLastViewedMessage, ONE_HUNDRED);
       }
     }
-  }, [editDataStatus, writeDataStatus]);
+  }, [writeDataStatus, updateLastViewedMessage]);
 
   if (!chat || !profile) {
     return <></>;
@@ -197,13 +227,14 @@ const MessageHistory = ({
               </div>
             </div>
             {messages.map(message => (
-              <MessageItem
-                key={message.id}
-                message={message}
-                popoverMessageId={popoverMessageId}
-                setPopoverMessageId={setPopoverMessageId}
-                {...(setEditingMessageId && { setEditingMessageId })}
-              />
+              <div data-message-time={message.createdAt} key={message.id}>
+                <MessageItem
+                  message={message}
+                  popoverMessageId={popoverMessageId}
+                  setPopoverMessageId={setPopoverMessageId}
+                  {...(setEditingMessageId && { setEditingMessageId })}
+                />
+              </div>
             ))}
           </div>
         ))}
