@@ -10,6 +10,7 @@ const messageApi = new MessageApi({
 
 export { messageApi };
 export { MessageLanguage, MessageType } from './libs/enums/enums.js';
+export { type MessageHistoryItem } from './libs/types/types.js';
 export { textMessageValidationSchema } from './libs/validation-schemas/validation-schemas.js';
 export {
   actions as messageActions,

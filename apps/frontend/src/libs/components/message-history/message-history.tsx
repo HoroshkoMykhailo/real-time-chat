@@ -2,6 +2,10 @@ import { ZERO_VALUE } from '~/libs/common/constants.js';
 import { Loader } from '~/libs/components/components.js';
 import { DataStatus } from '~/libs/enums/enums.js';
 import {
+  formatDateLabel,
+  groupMessagesByDate
+} from '~/libs/helpers/helpers.js';
+import {
   useAppDispatch,
   useAppSelector,
   useEffect,
@@ -24,6 +28,7 @@ const MessageHistory = ({
 }: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
   const { selectedChat: chat } = useAppSelector(state => state.chat);
+  const { profile } = useAppSelector(state => state.profile);
   const [popoverMessageId, setPopoverMessageId] = useState<null | string>(null);
 
   const { dataStatus, editDataStatus, messages, pinnedMessages } =
@@ -58,7 +63,7 @@ const MessageHistory = ({
     }
   }, [chat, dispatch, editDataStatus, messages]);
 
-  if (!chat) {
+  if (!chat || !profile) {
     return <></>;
   }
 
@@ -68,16 +73,27 @@ const MessageHistory = ({
     return <Loader />;
   }
 
+  const groupedMessages = groupMessagesByDate(historyMessages);
+
   return (
-    <div className={`${styles['messages-list']}`}>
-      {historyMessages.map(message => (
-        <MessageItem
-          key={message.id}
-          message={message}
-          popoverMessageId={popoverMessageId}
-          setPopoverMessageId={setPopoverMessageId}
-          {...(setEditingMessageId && { setEditingMessageId })}
-        />
+    <div className={styles['messages-list']}>
+      {Object.entries(groupedMessages).map(([dateKey, messages]) => (
+        <div key={dateKey}>
+          <div className={styles['date-label-wrapper']}>
+            <div className={styles['date-label']}>
+              {formatDateLabel(dateKey, profile.language)}
+            </div>
+          </div>
+          {messages.map(message => (
+            <MessageItem
+              key={message.id}
+              message={message}
+              popoverMessageId={popoverMessageId}
+              setPopoverMessageId={setPopoverMessageId}
+              {...(setEditingMessageId && { setEditingMessageId })}
+            />
+          ))}
+        </div>
       ))}
     </div>
   );

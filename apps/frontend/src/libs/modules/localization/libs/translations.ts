@@ -47,13 +47,15 @@ const translations: Translations = {
     selectLanguage: 'Select language',
     send: 'Send',
     showOriginal: 'Show original',
+    today: 'Today',
     transcribe: 'Transcribe',
     translate: 'Translate',
     typeMessage: 'Type a message',
     ukrainian: 'Ukrainian',
     unPin: 'Unpin',
     userInfo: 'User info',
-    username: 'Username'
+    username: 'Username',
+    yesterday: 'Yesterday'
   },
   uk: {
     addMembers: 'Додати учасників',
@@ -102,13 +104,15 @@ const translations: Translations = {
     selectLanguage: 'Виберіть мову',
     send: 'Надіслати',
     showOriginal: 'Показати оригінал',
+    today: 'Сьогодні',
     transcribe: 'Транскрибувати',
     translate: 'Перекласти',
     typeMessage: 'Напишіть повідомлення',
     ukrainian: 'Українська',
     unPin: 'Відкріпити',
     userInfo: 'Інформація про користувача',
-    username: "Ім'я користувача"
+    username: "Ім'я користувача",
+    yesterday: 'Вчора'
   }
 };
 
