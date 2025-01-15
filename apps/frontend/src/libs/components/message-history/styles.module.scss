@@ -10,9 +10,13 @@
 }
 
 .date-label-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
   justify-content: center;
 }
+
 .date-label {
   padding: 0 1rem;
   border-radius: 2rem;
