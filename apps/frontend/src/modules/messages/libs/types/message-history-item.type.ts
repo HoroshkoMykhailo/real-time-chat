@@ -1,7 +1,7 @@
-import { type GetMessagesResponseDto } from './types.js';
+import { type MessageCreationResponseDto } from './types.js';
 
 type MessageHistoryItem = {
   translatedMessage?: string;
-} & GetMessagesResponseDto[number];
+} & MessageCreationResponseDto;
 
 export { type MessageHistoryItem };

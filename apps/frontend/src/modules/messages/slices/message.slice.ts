@@ -26,6 +26,7 @@ type State = {
   dataStatus: ValueOf<typeof DataStatus>;
   editDataStatus: ValueOf<typeof DataStatus>;
   fileBlob: Blob | null;
+  lastViewedTime: null | string;
   loadDataStatus: ValueOf<typeof DataStatus>;
   messages: MessageHistoryItem[];
   pinnedMessages: MessageHistoryItem[];
@@ -36,6 +37,7 @@ const initialState: State = {
   dataStatus: DataStatus.IDLE,
   editDataStatus: DataStatus.IDLE,
   fileBlob: null,
+  lastViewedTime: null,
   loadDataStatus: DataStatus.IDLE,
   messages: [],
   pinnedMessages: [],
@@ -49,7 +51,12 @@ const { actions, reducer } = createSlice({
         state.dataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(getMessages.fulfilled), (state, action) => {
-        state.messages = action.payload;
+        state.messages = action.payload.messages;
+
+        if (action.payload.lastViewedTime) {
+          state.lastViewedTime = action.payload.lastViewedTime;
+        }
+
         state.dataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(getMessages.rejected), state => {
@@ -57,7 +64,7 @@ const { actions, reducer } = createSlice({
         state.dataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(loadBeforeMessages.fulfilled), (state, action) => {
-        state.messages.unshift(...action.payload);
+        state.messages.unshift(...action.payload.messages);
         state.loadDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(loadBeforeMessages.pending), state => {
@@ -67,7 +74,7 @@ const { actions, reducer } = createSlice({
         state.loadDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(getPinnedMessages.fulfilled), (state, action) => {
-        state.pinnedMessages = action.payload;
+        state.pinnedMessages = action.payload.messages;
         state.dataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(getPinnedMessages.rejected), state => {

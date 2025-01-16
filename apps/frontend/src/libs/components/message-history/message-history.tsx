@@ -13,6 +13,7 @@ import {
   useRef,
   useState
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import { messageActions } from '~/modules/messages/message.js';
 
@@ -32,6 +33,9 @@ const MessageHistory = ({
   const { selectedChat: chat } = useAppSelector(state => state.chat);
   const { profile } = useAppSelector(state => state.profile);
   const [popoverMessageId, setPopoverMessageId] = useState<null | string>(null);
+  const [firstUnreadMessageId, setFirstUnreadMessageId] = useState<
+    null | string
+  >(null);
 
   const [beforeMessageTime, setBeforeMessageTime] = useState<null | string>(
     null
@@ -48,11 +52,33 @@ const MessageHistory = ({
   const {
     dataStatus,
     editDataStatus,
+    lastViewedTime,
     loadDataStatus,
     messages,
     pinnedMessages,
     writeDataStatus
   } = useAppSelector(state => state.message);
+
+  const scrollToFirstUnreadMessage = useCallback(() => {
+    if (!messagesListReference.current || !lastViewedTime) {
+      return;
+    }
+
+    const firstUnreadMessage = messages.find(
+      message => new Date(message.createdAt) > new Date(lastViewedTime)
+    );
+
+    if (firstUnreadMessage) {
+      setFirstUnreadMessageId(firstUnreadMessage.id);
+      const element = messagesListReference.current.querySelector(
+        `[data-message-time="${firstUnreadMessage.createdAt}"]`
+      );
+
+      if (element) {
+        element.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    }
+  }, [messages, lastViewedTime]);
 
   const updateLastViewedMessage = useCallback(() => {
     if (!messagesListReference.current) {
@@ -141,7 +167,7 @@ const MessageHistory = ({
     setIsHidden(true);
 
     if (element) {
-      element.scrollTop = element.scrollHeight;
+      scrollToFirstUnreadMessage();
     }
 
     lastViewedMessageTimeReference.current = null;
@@ -150,7 +176,7 @@ const MessageHistory = ({
     setTimeout(() => {
       setIsHidden(false);
     }, ONE_HUNDRED);
-  }, [chat, updateLastViewedMessage]);
+  }, [chat, scrollToFirstUnreadMessage, updateLastViewedMessage]);
 
   useEffect(() => {
     if (editDataStatus === DataStatus.FULFILLED) {
@@ -228,6 +254,13 @@ const MessageHistory = ({
             </div>
             {messages.map(message => (
               <div data-message-time={message.createdAt} key={message.id}>
+                {message.id === firstUnreadMessageId && (
+                  <div className={styles['unread-messages-label-wrapper']}>
+                    <div className={styles['unread-messages-label']}>
+                      {translate.translate('unreadMessages', profile.language)}
+                    </div>
+                  </div>
+                )}
                 <MessageItem
                   message={message}
                   popoverMessageId={popoverMessageId}

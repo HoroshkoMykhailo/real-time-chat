@@ -6,13 +6,13 @@ import {
   useCallback,
   useEffect
 } from '~/libs/hooks/hooks.js';
-import { type GetMessagesResponseDto } from '~/modules/messages/libs/types/types.js';
+import { type MessageCreationResponseDto } from '~/modules/messages/libs/types/types.js';
 import { messageActions } from '~/modules/messages/message.js';
 
 import styles from './styles.module.scss';
 
 type Properties = {
-  fileMessage: GetMessagesResponseDto[number];
+  fileMessage: MessageCreationResponseDto;
 };
 
 const FileMessage = ({ fileMessage }: Properties): JSX.Element => {

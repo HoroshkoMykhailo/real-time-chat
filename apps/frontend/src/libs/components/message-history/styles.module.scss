@@ -22,6 +22,7 @@
 }
 
 .date-label-wrapper {
+  margin: 0.25rem 0;
   position: sticky;
   top: 0;
   z-index: 1;
@@ -30,6 +31,20 @@
 }
 
 .date-label {
+  padding: 0 1rem;
+  border-radius: 2rem;
+  background-color: var(--input-bg);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.unread-messages-label-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.unread-messages-label {
   padding: 0 1rem;
   border-radius: 2rem;
   background-color: var(--input-bg);

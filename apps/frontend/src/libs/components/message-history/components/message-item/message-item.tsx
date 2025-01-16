@@ -9,7 +9,7 @@ import {
 } from '~/libs/hooks/hooks.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { chatActions } from '~/modules/chat/chat.js';
-import { type GetMessagesResponseDto } from '~/modules/messages/libs/types/types.js';
+import { type MessageCreationResponseDto } from '~/modules/messages/libs/types/types.js';
 import { MessageType, messageActions } from '~/modules/messages/message.js';
 
 import {
@@ -24,7 +24,7 @@ import {
 import styles from './styles.module.scss';
 
 type Properties = {
-  message: GetMessagesResponseDto[number];
+  message: MessageCreationResponseDto;
   popoverMessageId: null | string;
   setEditingMessageId?: (messageId: null | string) => void;
   setPopoverMessageId: (messageId: null | string) => void;

@@ -1,6 +1,7 @@
 import { APIPath } from '~/libs/enums/enums.js';
 import { logger } from '~/libs/modules/logger/logger.js';
 
+import { chatToUserRepository } from '../chat-to-user/chat-to-user.js';
 import {
   chatRepository,
   messageRepository,
@@ -13,6 +14,7 @@ import { Message as MessageService } from './message.service.js';
 
 const messageService = new MessageService({
   chatRepository,
+  chatToUserRepository,
   messageRepository,
   profileRepository,
   transcriptionService,

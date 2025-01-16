@@ -53,6 +53,7 @@ const translations: Translations = {
     typeMessage: 'Type a message',
     ukrainian: 'Ukrainian',
     unPin: 'Unpin',
+    unreadMessages: 'Unread messages',
     userInfo: 'User info',
     username: 'Username',
     yesterday: 'Yesterday'
@@ -110,6 +111,7 @@ const translations: Translations = {
     typeMessage: 'Напишіть повідомлення',
     ukrainian: 'Українська',
     unPin: 'Відкріпити',
+    unreadMessages: 'Непрочитані повідомлення',
     userInfo: 'Інформація про користувача',
     username: "Ім'я користувача",
     yesterday: 'Вчора'

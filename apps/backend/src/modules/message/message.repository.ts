@@ -70,7 +70,7 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
 
       const messagesAfter = await this.model
         .find({ chatId: chatObjectId, createdAt: { $gt: centerDate } })
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: 1 })
         .limit(halfLimit);
 
       const combinedMessages = [

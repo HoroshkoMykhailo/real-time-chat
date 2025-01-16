@@ -12,11 +12,13 @@ import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
 import { type Chat as ChatRepository } from '../chat/chat.repository.js';
+import { type ChatToUser as ChatToUserRepository } from '../chat-to-user/chat-to-user.repository.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
 import { type TranscriptionService } from '../transcription/transcription.js';
 import { type TranslationService } from '../translation/translation.js';
 import { type User, UserRole } from '../user/user.js';
 import { DEFAULT_LIMIT } from './libs/constants/default-limit.constant.js';
+import { LIMIT_DIVISOR } from './libs/constants/limit-divisor.constant.js';
 import {
   type MessageLanguage,
   MessageStatus,
@@ -34,6 +36,7 @@ import { type Message as MessageRepository } from './message.repository.js';
 
 type Constructor = {
   chatRepository: ChatRepository;
+  chatToUserRepository: ChatToUserRepository;
   messageRepository: MessageRepository;
   profileRepository: ProfileRepository;
   transcriptionService: TranscriptionService;
@@ -42,17 +45,21 @@ type Constructor = {
 
 class Message implements MessageService {
   #chatRepository: ChatRepository;
+  #chatToUserRepository: ChatToUserRepository;
   #isUserChatMember = async (user: User, chatId: string): Promise<boolean> => {
-    const chat = await this.#chatRepository.getById(chatId);
+    const relation = await this.#chatToUserRepository.get(
+      chatId,
+      user.profileId
+    );
 
-    if (!chat) {
+    if (!relation) {
       throw new HTTPError({
-        message: ExceptionMessage.CHAT_NOT_FOUND,
-        status: HTTPCode.NOT_FOUND
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
       });
     }
 
-    return chat.members.includes(user.profileId);
+    return true;
   };
 
   #messageRepository: MessageRepository;
@@ -65,12 +72,14 @@ class Message implements MessageService {
 
   public constructor({
     chatRepository,
+    chatToUserRepository,
     messageRepository,
     profileRepository,
     transcriptionService,
     translationService
   }: Constructor) {
     this.#chatRepository = chatRepository;
+    this.#chatToUserRepository = chatToUserRepository;
     this.#transcriptionService = transcriptionService;
     this.#messageRepository = messageRepository;
     this.#profileRepository = profileRepository;
@@ -86,14 +95,7 @@ class Message implements MessageService {
 
     const { file } = data;
 
-    const isMember = await this.#isUserChatMember(user, chatId);
-
-    if (!isMember) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
-    }
+    await this.#isUserChatMember(user, chatId);
 
     const senderProfile = await this.#profileRepository.getById(userId);
 
@@ -133,14 +135,7 @@ class Message implements MessageService {
 
     const { file } = data;
 
-    const isMember = await this.#isUserChatMember(user, chatId);
-
-    if (!isMember) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
-    }
+    await this.#isUserChatMember(user, chatId);
 
     const senderProfile = await this.#profileRepository.getById(userId);
 
@@ -180,14 +175,7 @@ class Message implements MessageService {
 
     const { file } = data;
 
-    const isMember = await this.#isUserChatMember(user, chatId);
-
-    if (!isMember) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
-    }
+    await this.#isUserChatMember(user, chatId);
 
     const senderProfile = await this.#profileRepository.getById(userId);
 
@@ -227,14 +215,7 @@ class Message implements MessageService {
 
     const text = data.content;
 
-    const isMember = await this.#isUserChatMember(user, chatId);
-
-    if (!isMember) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
-    }
+    await this.#isUserChatMember(user, chatId);
 
     const senderProfile = await this.#profileRepository.getById(userId);
 
@@ -271,14 +252,7 @@ class Message implements MessageService {
 
     const { file } = data;
 
-    const isMember = await this.#isUserChatMember(user, chatId);
-
-    if (!isMember) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
-    }
+    await this.#isUserChatMember(user, chatId);
 
     const senderProfile = await this.#profileRepository.getById(userId);
 
@@ -363,14 +337,7 @@ class Message implements MessageService {
       });
     }
 
-    const isMember = await this.#isUserChatMember(user, message.chatId);
-
-    if (!isMember) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
-    }
+    await this.#isUserChatMember(user, message.chatId);
 
     if (!message.fileUrl) {
       throw new HTTPError({
@@ -391,7 +358,7 @@ class Message implements MessageService {
       limit?: number;
     }
   ): Promise<GetMessagesResponseDto> {
-    const { after, before, limit = DEFAULT_LIMIT } = query;
+    let { after, before, limit = DEFAULT_LIMIT } = query;
 
     if (!Types.ObjectId.isValid(chatId)) {
       throw new HTTPError({
@@ -400,41 +367,58 @@ class Message implements MessageService {
       });
     }
 
-    const isMember = await this.#isUserChatMember(user, chatId);
+    await this.#isUserChatMember(user, chatId);
+    let lastViewedTime: null | string = null;
 
-    if (!isMember) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
+    if (!after && !before) {
+      const relation = await this.#chatToUserRepository.get(
+        chatId,
+        user.profileId
+      );
+
+      if (!relation) {
+        throw new HTTPError({
+          message: ExceptionMessage.CHAT_NOT_FOUND,
+          status: HTTPCode.NOT_FOUND
+        });
+      }
+
+      lastViewedTime = relation.lastViewedAt;
+
+      after = lastViewedTime;
+      before = lastViewedTime;
+      limit = DEFAULT_LIMIT * LIMIT_DIVISOR;
     }
 
     const messages = await this.#messageRepository.getMessagesByChatId({
       chatId,
       ...(after && { after }),
       ...(before && { before }),
-      ...(limit && { limit })
+      limit
     });
 
-    return await Promise.all(
-      messages.map(async message => {
-        const senderProfile = await this.#profileRepository.getById(
-          message.senderId
-        );
+    return {
+      ...(lastViewedTime && { lastViewedTime }),
+      messages: await Promise.all(
+        messages.map(async message => {
+          const senderProfile = await this.#profileRepository.getById(
+            message.senderId
+          );
 
-        if (!senderProfile) {
-          throw new HTTPError({
-            message: ExceptionMessage.PROFILE_NOT_FOUND,
-            status: HTTPCode.NOT_FOUND
-          });
-        }
+          if (!senderProfile) {
+            throw new HTTPError({
+              message: ExceptionMessage.PROFILE_NOT_FOUND,
+              status: HTTPCode.NOT_FOUND
+            });
+          }
 
-        return {
-          ...message,
-          sender: senderProfile
-        };
-      })
-    );
+          return {
+            ...message,
+            sender: senderProfile
+          };
+        })
+      )
+    };
   }
 
   public async getPinMessagesByChatId(
@@ -448,37 +432,32 @@ class Message implements MessageService {
       });
     }
 
-    const isMember = await this.#isUserChatMember(user, chatId);
-
-    if (!isMember) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
-    }
+    await this.#isUserChatMember(user, chatId);
 
     const messages =
       await this.#messageRepository.getPinnedMessagesByChatId(chatId);
 
-    return await Promise.all(
-      messages.map(async message => {
-        const senderProfile = await this.#profileRepository.getById(
-          message.senderId
-        );
+    return {
+      messages: await Promise.all(
+        messages.map(async message => {
+          const senderProfile = await this.#profileRepository.getById(
+            message.senderId
+          );
 
-        if (!senderProfile) {
-          throw new HTTPError({
-            message: ExceptionMessage.PROFILE_NOT_FOUND,
-            status: HTTPCode.NOT_FOUND
-          });
-        }
+          if (!senderProfile) {
+            throw new HTTPError({
+              message: ExceptionMessage.PROFILE_NOT_FOUND,
+              status: HTTPCode.NOT_FOUND
+            });
+          }
 
-        return {
-          ...message,
-          sender: senderProfile
-        };
-      })
-    );
+          return {
+            ...message,
+            sender: senderProfile
+          };
+        })
+      )
+    };
   }
   public async transcribeMessage(
     user: User,
@@ -507,14 +486,7 @@ class Message implements MessageService {
       });
     }
 
-    const isMember = await this.#isUserChatMember(user, message.chatId);
-
-    if (!isMember) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
-    }
+    await this.#isUserChatMember(user, message.chatId);
 
     if (!message.fileUrl) {
       throw new HTTPError({
@@ -569,14 +541,7 @@ class Message implements MessageService {
       });
     }
 
-    const isMember = await this.#isUserChatMember(user, message.chatId);
-
-    if (!isMember) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
-    }
+    await this.#isUserChatMember(user, message.chatId);
 
     const translatedMessage = await this.#translationService.translate(
       message.content,
@@ -599,14 +564,7 @@ class Message implements MessageService {
       });
     }
 
-    const isMember = await this.#isUserChatMember(user, message.chatId);
-
-    if (!isMember) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
-    }
+    await this.#isUserChatMember(user, message.chatId);
 
     const updatedMessage = await this.#messageRepository.updateById(messageId, {
       isPinned: !message.isPinned
