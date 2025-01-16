@@ -1,6 +1,7 @@
 import {
   MINUS_ONE_VALUE,
   ONE_HUNDRED,
+  SIXTY_VALUE,
   TWO_VALUE,
   ZERO_VALUE
 } from '~/libs/common/constants.js';
@@ -241,25 +242,32 @@ const MessageHistory = ({
   );
 
   useEffect(() => {
-    const element = messagesListReference.current;
-    setIsHidden(true);
+    const timer = setTimeout(() => {
+      const element = messagesListReference.current;
 
-    if (element) {
-      hasScrolledToUnreadReference.current = false;
-      scrollToFirstUnreadMessage();
-    }
+      if (element) {
+        setIsHidden(true);
+        hasScrolledToUnreadReference.current = false;
+        scrollToFirstUnreadMessage();
 
-    if (lastViewedTime) {
-      lastViewedMessageTimeReference.current = lastViewedTime;
-    }
+        if (lastViewedTime) {
+          lastViewedMessageTimeReference.current = lastViewedTime;
+        }
 
-    dispatch(messageActions.resetBeforeAfter());
-    setBeforeMessageTime(null);
-    setAfterMessageTime(null);
-    updateLastViewedMessage();
-    setTimeout(() => {
-      setIsHidden(false);
-    }, ONE_HUNDRED);
+        dispatch(messageActions.resetBeforeAfter());
+        setBeforeMessageTime(null);
+        setAfterMessageTime(null);
+        updateLastViewedMessage();
+
+        setTimeout(() => {
+          setIsHidden(false);
+        }, ONE_HUNDRED);
+      }
+    }, SIXTY_VALUE);
+
+    return (): void => {
+      clearTimeout(timer);
+    };
   }, [
     chat?.id,
     dispatch,
