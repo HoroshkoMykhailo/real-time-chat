@@ -43,25 +43,49 @@
       gap: 0.5rem;
       overflow: hidden;
 
-      .chat-name {
-        font-size: 1rem;
-        color: var(--main-dark);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+      .chat-name-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+          .chat-name {
+            font-size: 1rem;
+            color: var(--main-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .unread-count {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--main-white);
+            padding: 0.3rem 0.5rem;
+            background-color: var(--gray-medium);
+            border-radius: 50%;
+          }
+        }
 
       .chat-message {
-        font-size: 0.875rem;
         display: flex;
         gap: 0.5rem;
+        align-items: center;
+
+        .message-preview {
+          max-width: 85%;
+          display: flex;
+          gap: 0.5rem;
+          font-size: 0.875rem;
+        }
+
+        .chat-time {
+          font-size: 0.75rem;
+          color: var(--gray);
+          margin-left: auto;
+        }
       }
-
-    }
-
-    .chat-time {
-      font-size: 0.75rem;
-      color: var(--text-dark);
     }
   }
 
@@ -70,4 +94,15 @@
       background-color: var(--gray-light);
     }
   }
+}
+
+.message-content {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--gray);
+}
+
+.message-draft {
+  color: var(--text-red);
 }

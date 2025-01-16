@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { ZERO_VALUE } from '~/libs/common/constants.js';
 import { ChatPicture, MessagePreview } from '~/libs/components/components.js';
 import { type Chats } from '~/modules/chat/libs/types/types.js';
 
@@ -13,7 +14,7 @@ type Properties = {
 const MESSAGE_CONTENT = 'message-content';
 
 const ChatItem: React.FC<Properties> = ({
-  chat: { chatPicture, draft, lastMessage, name, type }
+  chat: { chatPicture, draft, lastMessage, name, type, unreadCount }
 }) => {
   const lastMessageTime = lastMessage?.createdAt
     ? formatLastMessageTime(lastMessage.createdAt)
@@ -23,22 +24,29 @@ const ChatItem: React.FC<Properties> = ({
     <div className={styles['chat-item-content']}>
       <ChatPicture isCircular name={name} picture={chatPicture} />
       <div className={styles['chat-info']}>
-        <p className={styles['chat-name']}>{name}</p>
-        <div className={styles['chat-message']}>
-          {draft ? (
-            <>
-              <span className={styles['message-draft']}>Draft: </span>
-              <span className={styles[MESSAGE_CONTENT]}>{draft.content}</span>
-            </>
-          ) : (
-            <MessagePreview message={lastMessage} type={type} />
+        <div className={styles['chat-name-wrapper']}>
+          <p className={styles['chat-name']}>{name}</p>
+          {unreadCount !== ZERO_VALUE && (
+            <div className={styles['unread-count']}>{unreadCount}</div>
           )}
         </div>
-      </div>
-      <div className={styles['chat-time']}>
-        {draft?.createdAt
-          ? formatLastMessageTime(draft.createdAt)
-          : lastMessageTime}
+        <div className={styles['chat-message']}>
+          <div className={styles['message-preview']}>
+            {draft ? (
+              <>
+                <span className={styles['message-draft']}>Draft: </span>
+                <span className={styles[MESSAGE_CONTENT]}>{draft.content}</span>
+              </>
+            ) : (
+              <MessagePreview message={lastMessage} type={type} />
+            )}
+          </div>
+          <div className={styles['chat-time']}>
+            {draft?.createdAt
+              ? formatLastMessageTime(draft.createdAt)
+              : lastMessageTime}
+          </div>
+        </div>
       </div>
     </div>
   );
