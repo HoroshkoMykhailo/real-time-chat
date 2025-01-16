@@ -1,6 +1,10 @@
 import { type PayloadAction, createSlice, isAnyOf } from '@reduxjs/toolkit';
 
-import { MINUS_ONE_VALUE, ZERO_VALUE } from '~/libs/common/constants.js';
+import {
+  MINUS_ONE_VALUE,
+  ONE_VALUE,
+  ZERO_VALUE
+} from '~/libs/common/constants.js';
 import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
@@ -10,6 +14,8 @@ import {
   downloadFile,
   getMessages,
   getPinnedMessages,
+  loadAfterMessages,
+  loadBeforeMessages,
   transcribeMessage,
   translateMessage,
   updatePinMessage,
@@ -25,6 +31,11 @@ type State = {
   dataStatus: ValueOf<typeof DataStatus>;
   editDataStatus: ValueOf<typeof DataStatus>;
   fileBlob: Blob | null;
+  isAfter: boolean;
+  isBefore: boolean;
+  isTranscribedFirst: boolean;
+  lastViewedTime: null | string;
+  loadDataStatus: ValueOf<typeof DataStatus>;
   messages: MessageHistoryItem[];
   pinnedMessages: MessageHistoryItem[];
   writeDataStatus: ValueOf<typeof DataStatus>;
@@ -34,6 +45,11 @@ const initialState: State = {
   dataStatus: DataStatus.IDLE,
   editDataStatus: DataStatus.IDLE,
   fileBlob: null,
+  isAfter: true,
+  isBefore: true,
+  isTranscribedFirst: false,
+  lastViewedTime: null,
+  loadDataStatus: DataStatus.IDLE,
   messages: [],
   pinnedMessages: [],
   writeDataStatus: DataStatus.IDLE
@@ -46,15 +62,48 @@ const { actions, reducer } = createSlice({
         state.dataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(getMessages.fulfilled), (state, action) => {
-        state.messages = action.payload;
+        state.messages = action.payload.messages;
+
+        if (action.payload.lastViewedTime) {
+          state.lastViewedTime = action.payload.lastViewedTime;
+        }
+
         state.dataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(getMessages.rejected), state => {
         state.messages = [];
         state.dataStatus = DataStatus.REJECTED;
       })
+      .addMatcher(isAnyOf(loadAfterMessages.fulfilled), (state, action) => {
+        if (action.payload.messages.length === ZERO_VALUE) {
+          state.isAfter = false;
+        }
+
+        state.messages.push(...action.payload.messages);
+        state.loadDataStatus = DataStatus.FULFILLED;
+      })
+      .addMatcher(isAnyOf(loadAfterMessages.pending), state => {
+        state.loadDataStatus = DataStatus.PENDING;
+      })
+      .addMatcher(isAnyOf(loadAfterMessages.rejected), state => {
+        state.loadDataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(loadBeforeMessages.fulfilled), (state, action) => {
+        if (action.payload.messages.length === ZERO_VALUE) {
+          state.isBefore = false;
+        }
+
+        state.messages.unshift(...action.payload.messages);
+        state.loadDataStatus = DataStatus.FULFILLED;
+      })
+      .addMatcher(isAnyOf(loadBeforeMessages.pending), state => {
+        state.loadDataStatus = DataStatus.PENDING;
+      })
+      .addMatcher(isAnyOf(loadBeforeMessages.rejected), state => {
+        state.loadDataStatus = DataStatus.REJECTED;
+      })
       .addMatcher(isAnyOf(getPinnedMessages.fulfilled), (state, action) => {
-        state.pinnedMessages = action.payload;
+        state.pinnedMessages = action.payload.messages;
         state.dataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(getPinnedMessages.rejected), state => {
@@ -65,7 +114,7 @@ const { actions, reducer } = createSlice({
         state.dataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(writeTextMessage.fulfilled), (state, action) => {
-        state.messages.unshift(action.payload);
+        state.messages.push(action.payload);
         state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeTextMessage.pending), state => {
@@ -75,7 +124,7 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(writeImageMessage.fulfilled), (state, action) => {
-        state.messages.unshift(action.payload);
+        state.messages.push(action.payload);
         state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeImageMessage.pending), state => {
@@ -85,7 +134,7 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(writeVideoMessage.fulfilled), (state, action) => {
-        state.messages.unshift(action.payload);
+        state.messages.push(action.payload);
         state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeVideoMessage.pending), state => {
@@ -95,7 +144,7 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(writeFileMessage.fulfilled), (state, action) => {
-        state.messages.unshift(action.payload);
+        state.messages.push(action.payload);
         state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeFileMessage.pending), state => {
@@ -105,7 +154,7 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(writeAudioMessage.fulfilled), (state, action) => {
-        state.messages.unshift(action.payload);
+        state.messages.push(action.payload);
         state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeAudioMessage.pending), state => {
@@ -189,6 +238,9 @@ const { actions, reducer } = createSlice({
           state.messages[index] = action.payload;
           state.editDataStatus = DataStatus.FULFILLED;
         }
+
+        state.isTranscribedFirst =
+          index === state.messages.length - ONE_VALUE ? true : false;
       })
       .addMatcher(isAnyOf(transcribeMessage.rejected), state => {
         state.editDataStatus = DataStatus.REJECTED;
@@ -197,8 +249,15 @@ const { actions, reducer } = createSlice({
   initialState,
   name: 'messages',
   reducers: {
+    resetBeforeAfter: state => {
+      state.isAfter = true;
+      state.isBefore = true;
+    },
     resetEditDataStatus: state => {
       state.editDataStatus = DataStatus.IDLE;
+    },
+    resetLoadDataStatus: state => {
+      state.loadDataStatus = DataStatus.IDLE;
     },
     resetWriteDataStatus: state => {
       state.writeDataStatus = DataStatus.IDLE;

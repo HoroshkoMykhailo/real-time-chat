@@ -5,3 +5,4 @@ export { type ChatGetResponseDto } from './chat-get-response-dto.type.js';
 export { type ChatUpdateRequestDto } from './chat-update-request-dto.type.js';
 export { type ChatUpdateResponseDto } from './chat-update-response-dto.type.js';
 export { type ChatsResponseDto } from './chats-response-dto.type.js';
+export { type UpdateLastViewedTimeResponseDto } from './update-last-viewed-response-dto.type.js';

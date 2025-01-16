@@ -10,6 +10,7 @@ type ChatCreationResponseDto = {
   members: Profile[];
   name: string;
   type: ValueOf<typeof ChatType>;
+  unreadCount: number;
 };
 
 export { type ChatCreationResponseDto };

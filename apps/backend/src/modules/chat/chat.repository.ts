@@ -22,6 +22,14 @@ class Chat extends AbstractRepository<ChatDocument, TChat> {
     });
   }
 
+  public async getByIds(chatIds: string[]): Promise<TChat[]> {
+    const chats = await this.model.find({
+      _id: { $in: chatIds }
+    });
+
+    return chats.map(chat => this.mapToBusinessLogic(chat));
+  }
+
   public async getByProfileId(profileId: string): Promise<TChat[]> {
     const chats = await this.model.find({ members: profileId });
 

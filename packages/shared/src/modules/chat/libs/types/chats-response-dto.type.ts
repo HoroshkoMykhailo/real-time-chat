@@ -16,6 +16,7 @@ type ChatsResponseDto = {
   memberCount?: number;
   name: string;
   type: ValueOf<typeof ChatType>;
+  unreadCount: number;
 }[];
 
 export { type ChatsResponseDto };

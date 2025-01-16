@@ -1,5 +1,6 @@
 export {
   addMembers as addMembersValidationSchema,
   chatCreation as chatCreationValidationSchema,
-  chatUpdate as chatUpdateValidationSchema
+  chatUpdate as chatUpdateValidationSchema,
+  updateLastViewedTime as updateLastViewedTimeValidationSchema
 } from '@team-link/shared';

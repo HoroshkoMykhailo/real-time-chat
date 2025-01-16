@@ -11,7 +11,8 @@ import {
   type ChatGetResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto
+  type ChatsResponseDto,
+  type UpdateLastViewedTimeResponseDto
 } from './libs/types/types.js';
 
 type Constructor = {
@@ -139,6 +140,24 @@ class Chat implements ChatApi {
         hasAuth: true,
         method: HTTPMethod.PUT,
         payload: formData
+      }
+    );
+  }
+
+  public updateLastViewedTime(
+    chatId: string,
+    lastViewedTime: string
+  ): Promise<UpdateLastViewedTimeResponseDto> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.CHAT}${ChatApiPath.LAST_VIEWED_TIME}${ChatApiPath.$CHAT_ID.replace(
+        ':id',
+        chatId
+      )}`,
+      {
+        contentType: ContentType.JSON,
+        hasAuth: true,
+        method: HTTPMethod.PUT,
+        payload: JSON.stringify({ lastViewedTime })
       }
     );
   }

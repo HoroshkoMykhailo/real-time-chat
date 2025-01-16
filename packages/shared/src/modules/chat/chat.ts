@@ -12,12 +12,14 @@ export {
   type ChatGetResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto
+  type ChatsResponseDto,
+  type UpdateLastViewedTimeResponseDto
 } from './libs/types/types.js';
 export {
   addMembers,
   chatCreation,
   chatCreationFront,
   chatUpdate,
-  chatUpdateFront
+  chatUpdateFront,
+  updateLastViewedTime
 } from './libs/validation-schemas/validation-schemas.js';

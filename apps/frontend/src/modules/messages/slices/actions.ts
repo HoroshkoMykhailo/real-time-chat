@@ -32,6 +32,28 @@ const getPinnedMessages = createAsyncThunk<
   }
 );
 
+const loadAfterMessages = createAsyncThunk<
+  GetMessagesResponseDto,
+  { afterTime: string; chatId: string },
+  AsyncThunkConfig
+>(
+  ActionType.LOAD_AFTER_MESSAGES,
+  async ({ afterTime, chatId }, { extra: { messageApi } }) => {
+    return await messageApi.loadAfterMessages(chatId, afterTime);
+  }
+);
+
+const loadBeforeMessages = createAsyncThunk<
+  GetMessagesResponseDto,
+  { beforeTime: string; chatId: string },
+  AsyncThunkConfig
+>(
+  ActionType.LOAD_BEFORE_MESSAGES,
+  async ({ beforeTime, chatId }, { extra: { messageApi } }) => {
+    return await messageApi.loadBeforeMessages(chatId, beforeTime);
+  }
+);
+
 const writeTextMessage = createAsyncThunk<
   MessageCreationResponseDto,
   { chatId: string; content: TextMessageRequestDto },
@@ -178,6 +200,8 @@ export {
   downloadFile,
   getMessages,
   getPinnedMessages,
+  loadAfterMessages,
+  loadBeforeMessages,
   transcribeMessage,
   translateMessage,
   updatePinMessage,

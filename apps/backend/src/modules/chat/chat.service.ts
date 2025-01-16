@@ -3,6 +3,7 @@ import { savePicture } from '~/libs/modules/helpers/helpers.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
+import { type ChatToUser as ChatToUserRepository } from '../chat-to-user/chat-to-user.repository.js';
 import { type Message as MessageRepository } from '../message/message.repository.js';
 import { type Profile } from '../profile/libs/types/types.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
@@ -17,7 +18,8 @@ import {
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
   type ChatsResponseDto,
-  type Chat as TChat
+  type Chat as TChat,
+  type UpdateLastViewedTimeResponseDto
 } from './libs/types/types.js';
 
 const DEFAULT_VALUE = 0;
@@ -26,20 +28,24 @@ const POSITIVE_VALUE = 1;
 
 type Constructor = {
   chatRepository: ChatRepository;
+  chatToUserRepository: ChatToUserRepository;
   messageRepository: MessageRepository;
   profileRepository: ProfileRepository;
 };
 
 class Chat implements ChatService {
   #chatRepository: ChatRepository;
+  #chatToUserRepository: ChatToUserRepository;
   #messageRepository: MessageRepository;
   #profileRepository: ProfileRepository;
 
   public constructor({
     chatRepository,
+    chatToUserRepository,
     messageRepository,
     profileRepository
   }: Constructor) {
+    this.#chatToUserRepository = chatToUserRepository;
     this.#chatRepository = chatRepository;
     this.#messageRepository = messageRepository;
     this.#profileRepository = profileRepository;
@@ -56,6 +62,42 @@ class Chat implements ChatService {
     }
 
     return chat;
+  }
+
+  async #createChatToUserRecords(
+    chatId: string,
+    members: string[]
+  ): Promise<void> {
+    const now = new Date().toISOString();
+    await Promise.all(
+      members.map(userId =>
+        this.#chatToUserRepository.create({
+          chatId,
+          lastViewedAt: now,
+          userId
+        })
+      )
+    );
+  }
+
+  async #deleteChatToUserRecords(
+    chatId: string,
+    userIds?: string[]
+  ): Promise<void> {
+    if (userIds) {
+      await Promise.all(
+        userIds.map(userId => this.#chatToUserRepository.delete(chatId, userId))
+      );
+
+      return;
+    }
+
+    const chat = await this.#checkChatExists(chatId);
+    await Promise.all(
+      chat.members.map(userId =>
+        this.#chatToUserRepository.delete(chatId, userId)
+      )
+    );
   }
 
   async #fetchMemberProfiles(members: { value: string }[]): Promise<Profile[]> {
@@ -77,15 +119,32 @@ class Chat implements ChatService {
 
   async #formatChat(
     chat: TChat,
-    userId: string
+    userId: string,
+    lastViewedAt?: string
   ): Promise<ChatsResponseDto[number]> {
     const lastMessage = await this.#getLastMessage(chat);
     const { chatPicture, name } = await this.#getChatMetadata(chat, userId);
+
+    let hasUnreadMessages = false;
+    let unreadCount = 0;
+
+    if (lastViewedAt && lastMessage) {
+      const lastViewedDate = new Date(lastViewedAt);
+      hasUnreadMessages = new Date(lastMessage.createdAt) > lastViewedDate;
+
+      if (hasUnreadMessages) {
+        unreadCount = await this.#messageRepository.getUnreadCount(
+          chat.id,
+          lastViewedDate
+        );
+      }
+    }
 
     return {
       id: chat.id,
       name,
       type: chat.type,
+      unreadCount,
       ...(chat.type === ChatType.GROUP && { memberCount: chat.members.length }),
       ...(lastMessage && { lastMessage }),
       ...(chatPicture && { chatPicture })
@@ -121,6 +180,7 @@ class Chat implements ChatService {
       id: chat.id,
       members: memberProfiles,
       type: chat.type,
+      unreadCount: DEFAULT_VALUE,
       ...(chat.groupPicture && { chatPicture: chat.groupPicture }),
       name: chatName,
       ...(type === ChatType.GROUP && { adminId })
@@ -236,6 +296,7 @@ class Chat implements ChatService {
 
     return adminProfile;
   }
+
   #validateMembers(
     adminId: string,
     members: { value: string }[],
@@ -308,6 +369,8 @@ class Chat implements ChatService {
     const profiles =
       await this.#profileRepository.getProfilesByIds(updatedMembers);
 
+    await this.#createChatToUserRecords(id, newMembers);
+
     return {
       members: profiles,
       ...(chat.adminId && { adminId: chat.adminId })
@@ -364,6 +427,11 @@ class Chat implements ChatService {
 
     const createdChat = await this.#chatRepository.create(chatCreation);
 
+    await this.#createChatToUserRecords(
+      createdChat.id,
+      members.map(member => member.value)
+    );
+
     return this.#formatChatResponse({
       adminId,
       chat: createdChat,
@@ -389,6 +457,8 @@ class Chat implements ChatService {
     }
 
     await this.#messageRepository.deleteByChatId(id);
+
+    await this.#deleteChatToUserRecords(id);
 
     return !!(await this.#chatRepository.deleteById(id));
   }
@@ -428,10 +498,27 @@ class Chat implements ChatService {
   public async getMyChats(user: User): Promise<ChatsResponseDto> {
     const { profileId: userId } = user;
 
-    const chats = await this.#chatRepository.getByProfileId(userId);
+    const chatToUserRecords =
+      await this.#chatToUserRepository.getAllByUserId(userId);
+
+    if (chatToUserRecords.length === DEFAULT_VALUE) {
+      return [];
+    }
+
+    const chatIds = chatToUserRecords.map(record => record.chatId);
+
+    const chats = await this.#chatRepository.getByIds(chatIds);
+
+    const lastViewedMap = new Map(
+      chatToUserRecords.map(record => [record.chatId, record.lastViewedAt])
+    );
 
     const formattedChats = await Promise.all(
-      chats.map(chat => this.#formatChat(chat, userId))
+      chats.map(async chat => {
+        const lastViewedAt = lastViewedMap.get(chat.id);
+
+        return await this.#formatChat(chat, userId, lastViewedAt);
+      })
     );
 
     return formattedChats.sort((a, b) => {
@@ -451,6 +538,7 @@ class Chat implements ChatService {
       );
     });
   }
+
   public async leaveChat(
     id: string,
     user: User
@@ -472,6 +560,8 @@ class Chat implements ChatService {
         status: HTTPCode.FORBIDDEN
       });
     }
+
+    await this.#deleteChatToUserRecords(id, [user.profileId]);
 
     chat.members = chat.members.filter(member => member !== user.profileId);
 
@@ -506,7 +596,6 @@ class Chat implements ChatService {
       ...(chat.adminId && { adminId: chat.adminId })
     };
   }
-
   public async removeMember(
     id: string,
     user: User,
@@ -543,6 +632,8 @@ class Chat implements ChatService {
         status: HTTPCode.CONFLICT
       });
     }
+
+    await this.#deleteChatToUserRecords(id, [member]);
 
     chat.members = chat.members.filter(memberId => memberId !== member);
     await this.#chatRepository.updateById(id, chat);
@@ -607,6 +698,34 @@ class Chat implements ChatService {
     };
 
     return response;
+  }
+
+  public async updateLastViewedTime(
+    id: string,
+    user: User,
+    lastViewedMessageTime: string
+  ): Promise<UpdateLastViewedTimeResponseDto> {
+    const date = new Date(lastViewedMessageTime);
+
+    const relation = await this.#chatToUserRepository.update(
+      id,
+      user.profileId,
+      date
+    );
+
+    if (!relation) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const unreadCount = await this.#messageRepository.getUnreadCount(id, date);
+
+    return {
+      id,
+      unreadCount
+    };
   }
 }
 

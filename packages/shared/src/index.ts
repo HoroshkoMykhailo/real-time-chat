@@ -28,12 +28,15 @@ export {
   ChatValidationMessage,
   ChatValidationRule,
   type ChatsResponseDto,
+  type UpdateLastViewedTimeResponseDto,
   addMembers,
   chatCreation,
   chatCreationFront,
   chatUpdate,
-  chatUpdateFront
+  chatUpdateFront,
+  updateLastViewedTime
 } from './modules/chat/chat.js';
+export { type ChatToUser } from './modules/chat-to-user/chat-to-user.js';
 export {
   type FileMessageRequestDto,
   type GetMessagesResponseDto,

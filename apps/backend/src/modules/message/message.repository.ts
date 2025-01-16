@@ -70,7 +70,7 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
 
       const messagesAfter = await this.model
         .find({ chatId: chatObjectId, createdAt: { $gt: centerDate } })
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: 1 })
         .limit(halfLimit);
 
       const combinedMessages = [
@@ -100,15 +100,25 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
       .sort({ createdAt: -1 })
       .limit(limit ?? DEFAULT_LIMIT);
 
-    return messages.map(message => this.mapToBusinessLogic(message));
+    return messages.map(message => this.mapToBusinessLogic(message)).reverse();
   }
 
   public async getPinnedMessagesByChatId(chatId: string): Promise<TMessage[]> {
     const messages = await this.model
       .find({ chatId, isPinned: true })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: 1 });
 
     return messages.map(message => this.mapToBusinessLogic(message));
+  }
+
+  public async getUnreadCount(
+    chatId: string,
+    afterDate: Date
+  ): Promise<number> {
+    return await this.model.countDocuments({
+      chatId,
+      createdAt: { $gt: afterDate }
+    });
   }
 
   protected mapAdditionalBusinessLogic(

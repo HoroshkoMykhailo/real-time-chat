@@ -10,7 +10,8 @@ import {
   type ChatGetResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto
+  type ChatsResponseDto,
+  type UpdateLastViewedTimeResponseDto
 } from './types.js';
 
 type ChatController = {
@@ -70,6 +71,14 @@ type ChatController = {
       user: User;
     }>
   ) => Promise<ControllerAPIHandlerResponse<ChatUpdateResponseDto>>;
+
+  updateLastViewedTime: (
+    options: ControllerAPIHandlerOptions<{
+      body: { lastViewedTime: string };
+      params: { id: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<UpdateLastViewedTimeResponseDto>>;
 };
 
 export { type ChatController };

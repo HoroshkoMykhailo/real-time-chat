@@ -108,6 +108,7 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     setActiveChatView(ActiveChatView.ChatInfo);
+    setIsPinnedMessage(false);
     dispatch(chatActions.resetCreatedChat());
   }, [chatId, dispatch]);
 

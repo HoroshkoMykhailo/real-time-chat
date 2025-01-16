@@ -11,6 +11,7 @@ import {
 import { translate } from '~/libs/modules/localization/translate.js';
 import { toastNotifier } from '~/libs/modules/toast-notifier/toast-notifier.js';
 import { type ValueOf } from '~/libs/types/types.js';
+import { chatActions } from '~/modules/chat/chat.js';
 import {
   type MessageLanguage,
   MessageType,
@@ -49,6 +50,12 @@ const MessagePopover = ({
 
   const message = messages.find(message => message.id === messageId);
 
+  const handleClose = useCallback((): void => {
+    onClose();
+    setIsLanguageSelectorOpened(false);
+    setPopoverClass(POPOVER_CLASS);
+  }, [onClose]);
+
   const handleDeleteClick = useCallback((): void => {
     if (message) {
       void dispatch(messageActions.deleteMessage({ messageId: message.id }));
@@ -70,11 +77,10 @@ const MessagePopover = ({
             messageId: message.id
           })
         );
-        setIsLanguageSelectorOpened(false);
-        onClose();
+        handleClose();
       }
     },
-    [dispatch, message, onClose]
+    [dispatch, handleClose, message]
   );
 
   const handleCopyClick = useCallback((): void => {
@@ -83,10 +89,9 @@ const MessagePopover = ({
         ? void navigator.clipboard.writeText(message.translatedMessage)
         : void navigator.clipboard.writeText(message.content);
       toastNotifier.showSuccess(NotificationMessage.MESSAGE_COPIED);
-      setIsLanguageSelectorOpened(false);
-      onClose();
+      handleClose();
     }
-  }, [message, onClose]);
+  }, [handleClose, message]);
 
   const handlePinClick = useCallback((): void => {
     if (message) {
@@ -95,10 +100,21 @@ const MessagePopover = ({
           messageId: message.id
         })
       );
-      setIsLanguageSelectorOpened(false);
-      onClose();
+
+      if (!message.isPinned) {
+        dispatch(
+          chatActions.updateLastPinnedMessage({
+            message: {
+              ...message,
+              senderName: message.sender.username
+            }
+          })
+        );
+      }
+
+      handleClose();
     }
-  }, [dispatch, message, onClose]);
+  }, [dispatch, handleClose, message]);
 
   const handleOriginalClick = useCallback((): void => {
     if (message) {
@@ -107,10 +123,9 @@ const MessagePopover = ({
           messageId: message.id
         })
       );
-      setIsLanguageSelectorOpened(false);
-      onClose();
+      handleClose();
     }
-  }, [dispatch, message, onClose]);
+  }, [dispatch, handleClose, message]);
 
   const handleTranscribeClick = useCallback((): void => {
     if (message) {
@@ -119,17 +134,16 @@ const MessagePopover = ({
           messageId: message.id
         })
       );
-      onClose();
+      handleClose();
     }
-  }, [dispatch, message, onClose]);
+  }, [dispatch, handleClose, message]);
 
   const handleEditClick = useCallback((): void => {
     if (message && message.type === MessageType.TEXT && setEditingMessageId) {
       setEditingMessageId(message.id);
-      setIsLanguageSelectorOpened(false);
-      onClose();
+      handleClose();
     }
-  }, [message, onClose, setEditingMessageId]);
+  }, [handleClose, message, setEditingMessageId]);
 
   useEffect(() => {
     if (popoverReference.current) {
@@ -139,12 +153,6 @@ const MessagePopover = ({
       setPopoverClass(isNearBottom ? 'message-popover-up' : POPOVER_CLASS);
     }
   }, [isOpened]);
-
-  const handleClose = useCallback((): void => {
-    onClose();
-    setIsLanguageSelectorOpened(false);
-    setPopoverClass(POPOVER_CLASS);
-  }, [onClose]);
 
   if (!message || !chat || !profile) {
     return <></>;

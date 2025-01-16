@@ -7,7 +7,8 @@ import {
   getMyChats,
   leaveChat,
   removeMember,
-  updateGroup
+  updateGroup,
+  updateLastViewedTime
 } from './actions.js';
 import { actions } from './chat.slice.js';
 
@@ -21,7 +22,8 @@ const allActions = {
   getMyChats,
   leaveChat,
   removeMember,
-  updateGroup
+  updateGroup,
+  updateLastViewedTime
 };
 
 export { allActions as actions };
