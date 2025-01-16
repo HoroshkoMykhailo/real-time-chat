@@ -1,4 +1,9 @@
-import { ONE_HUNDRED, TWO_VALUE, ZERO_VALUE } from '~/libs/common/constants.js';
+import {
+  MINUS_ONE_VALUE,
+  ONE_HUNDRED,
+  TWO_VALUE,
+  ZERO_VALUE
+} from '~/libs/common/constants.js';
 import { Loader } from '~/libs/components/components.js';
 import { DataStatus } from '~/libs/enums/enums.js';
 import {
@@ -40,18 +45,21 @@ const MessageHistory = ({
   const [beforeMessageTime, setBeforeMessageTime] = useState<null | string>(
     null
   );
+  const [afterMessageTime, setAfterMessageTime] = useState<null | string>(null);
   const [isHidden, setIsHidden] = useState<boolean>(false);
   const previousScrollHeightReference = useRef<number>(ZERO_VALUE);
   const messagesListReference = useRef<HTMLDivElement | null>(null);
   const scrollTimeoutReference = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
-
+  const hasScrolledToUnreadReference = useRef<boolean>(false);
   const lastViewedMessageTimeReference = useRef<null | string>(null);
 
   const {
     dataStatus,
     editDataStatus,
+    isAfter,
+    isBefore,
     lastViewedTime,
     loadDataStatus,
     messages,
@@ -59,26 +67,53 @@ const MessageHistory = ({
     writeDataStatus
   } = useAppSelector(state => state.message);
 
+  const findFirstUnreadMessage = useCallback(() => {
+    if (!lastViewedTime) {
+      return null;
+    }
+
+    const messageElements = messagesListReference.current?.querySelectorAll(
+      '[data-message-time]'
+    );
+
+    if (!messageElements) {
+      return null;
+    }
+
+    for (const element of messageElements) {
+      const { messageTime } = (element as HTMLDivElement).dataset;
+
+      if (messageTime && new Date(messageTime) > new Date(lastViewedTime)) {
+        return {
+          element: element as HTMLDivElement,
+          messageId: (element as HTMLDivElement).dataset['messageId']
+        };
+      }
+    }
+
+    return null;
+  }, [lastViewedTime]);
+
   const scrollToFirstUnreadMessage = useCallback(() => {
-    if (!messagesListReference.current || !lastViewedTime) {
+    if (
+      !messagesListReference.current ||
+      !lastViewedTime ||
+      hasScrolledToUnreadReference.current
+    ) {
       return;
     }
 
-    const firstUnreadMessage = messages.find(
-      message => new Date(message.createdAt) > new Date(lastViewedTime)
-    );
+    const unreadMessage = findFirstUnreadMessage();
 
-    if (firstUnreadMessage) {
-      setFirstUnreadMessageId(firstUnreadMessage.id);
-      const element = messagesListReference.current.querySelector(
-        `[data-message-time="${firstUnreadMessage.createdAt}"]`
-      );
-
-      if (element) {
-        element.scrollIntoView({ behavior: 'auto', block: 'start' });
-      }
+    if (unreadMessage && unreadMessage.messageId) {
+      setFirstUnreadMessageId(unreadMessage.messageId);
+      unreadMessage.element.scrollIntoView({
+        behavior: 'auto',
+        block: 'center'
+      });
+      hasScrolledToUnreadReference.current = true;
     }
-  }, [messages, lastViewedTime]);
+  }, [findFirstUnreadMessage, lastViewedTime]);
 
   const updateLastViewedMessage = useCallback(() => {
     if (!messagesListReference.current) {
@@ -137,8 +172,12 @@ const MessageHistory = ({
       };
 
       const isAtTop = scrollData.scrollTop <= ONE_HUNDRED;
+      const isAtBottom =
+        scrollData.scrollTop + scrollData.clientHeight >=
+        scrollData.scrollHeight - ONE_HUNDRED;
 
       if (
+        isBefore &&
         isAtTop &&
         !beforeMessageTime &&
         loadDataStatus !== DataStatus.PENDING
@@ -155,11 +194,37 @@ const MessageHistory = ({
         }
       }
 
+      if (
+        isAfter &&
+        isAtBottom &&
+        !afterMessageTime &&
+        loadDataStatus !== DataStatus.PENDING
+      ) {
+        const element = messagesListReference.current;
+        const message = messages.at(MINUS_ONE_VALUE);
+
+        if (element) {
+          previousScrollHeightReference.current = element.scrollHeight;
+        }
+
+        if (message) {
+          setAfterMessageTime(message.createdAt);
+        }
+      }
+
       scrollTimeoutReference.current = setTimeout(() => {
         updateLastViewedMessage();
       }, ONE_HUNDRED);
     },
-    [beforeMessageTime, loadDataStatus, messages, updateLastViewedMessage]
+    [
+      afterMessageTime,
+      beforeMessageTime,
+      isAfter,
+      isBefore,
+      loadDataStatus,
+      messages,
+      updateLastViewedMessage
+    ]
   );
 
   useEffect(() => {
@@ -167,11 +232,13 @@ const MessageHistory = ({
     setIsHidden(true);
 
     if (element) {
+      hasScrolledToUnreadReference.current = false;
       scrollToFirstUnreadMessage();
     }
 
     lastViewedMessageTimeReference.current = null;
     setBeforeMessageTime(null);
+    setAfterMessageTime(null);
     updateLastViewedMessage();
     setTimeout(() => {
       setIsHidden(false);
@@ -213,7 +280,51 @@ const MessageHistory = ({
         clearTimeout(scrollTimeoutReference.current);
       }
     };
-  }, []);
+  }, [chat]);
+
+  useEffect(() => {
+    if (loadDataStatus === DataStatus.FULFILLED) {
+      const element = messagesListReference.current;
+
+      if (element) {
+        const newScrollHeight = element.scrollHeight;
+        const scrollDelta =
+          newScrollHeight - previousScrollHeightReference.current;
+
+        element.scrollTop += scrollDelta;
+      }
+
+      dispatch(messageActions.resetLoadDataStatus());
+    }
+  }, [dispatch, loadDataStatus]);
+
+  useEffect(() => {
+    if (!chat) {
+      return;
+    }
+
+    if (beforeMessageTime) {
+      void dispatch(
+        messageActions.loadBeforeMessages({
+          beforeTime: beforeMessageTime,
+          chatId: chat.id
+        })
+      );
+
+      setBeforeMessageTime(null);
+    }
+
+    if (afterMessageTime) {
+      void dispatch(
+        messageActions.loadAfterMessages({
+          afterTime: afterMessageTime,
+          chatId: chat.id
+        })
+      );
+
+      setAfterMessageTime(null);
+    }
+  }, [dispatch, beforeMessageTime, chat, afterMessageTime]);
 
   useEffect(() => {
     if (writeDataStatus === DataStatus.FULFILLED) {
@@ -253,7 +364,11 @@ const MessageHistory = ({
               </div>
             </div>
             {messages.map(message => (
-              <div data-message-time={message.createdAt} key={message.id}>
+              <div
+                data-message-id={message.id}
+                data-message-time={message.createdAt}
+                key={message.id}
+              >
                 {message.id === firstUnreadMessageId && (
                   <div className={styles['unread-messages-label-wrapper']}>
                     <div className={styles['unread-messages-label']}>

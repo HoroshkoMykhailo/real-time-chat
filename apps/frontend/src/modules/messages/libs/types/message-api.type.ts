@@ -16,6 +16,11 @@ type MessageApi = {
   getMessages(chatId: string): Promise<GetMessagesResponseDto>;
   getPinnedMessages(chatId: string): Promise<GetMessagesResponseDto>;
 
+  loadAfterMessages(
+    chatId: string,
+    afterTime: string
+  ): Promise<GetMessagesResponseDto>;
+
   loadBeforeMessages(
     chatId: string,
     beforeTime: string

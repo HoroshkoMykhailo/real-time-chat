@@ -32,6 +32,17 @@ const getPinnedMessages = createAsyncThunk<
   }
 );
 
+const loadAfterMessages = createAsyncThunk<
+  GetMessagesResponseDto,
+  { afterTime: string; chatId: string },
+  AsyncThunkConfig
+>(
+  ActionType.LOAD_AFTER_MESSAGES,
+  async ({ afterTime, chatId }, { extra: { messageApi } }) => {
+    return await messageApi.loadAfterMessages(chatId, afterTime);
+  }
+);
+
 const loadBeforeMessages = createAsyncThunk<
   GetMessagesResponseDto,
   { beforeTime: string; chatId: string },
@@ -189,6 +200,7 @@ export {
   downloadFile,
   getMessages,
   getPinnedMessages,
+  loadAfterMessages,
   loadBeforeMessages,
   transcribeMessage,
   translateMessage,

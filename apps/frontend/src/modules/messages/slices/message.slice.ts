@@ -10,6 +10,7 @@ import {
   downloadFile,
   getMessages,
   getPinnedMessages,
+  loadAfterMessages,
   loadBeforeMessages,
   transcribeMessage,
   translateMessage,
@@ -26,6 +27,8 @@ type State = {
   dataStatus: ValueOf<typeof DataStatus>;
   editDataStatus: ValueOf<typeof DataStatus>;
   fileBlob: Blob | null;
+  isAfter: boolean;
+  isBefore: boolean;
   lastViewedTime: null | string;
   loadDataStatus: ValueOf<typeof DataStatus>;
   messages: MessageHistoryItem[];
@@ -37,6 +40,8 @@ const initialState: State = {
   dataStatus: DataStatus.IDLE,
   editDataStatus: DataStatus.IDLE,
   fileBlob: null,
+  isAfter: true,
+  isBefore: true,
   lastViewedTime: null,
   loadDataStatus: DataStatus.IDLE,
   messages: [],
@@ -63,7 +68,25 @@ const { actions, reducer } = createSlice({
         state.messages = [];
         state.dataStatus = DataStatus.REJECTED;
       })
+      .addMatcher(isAnyOf(loadAfterMessages.fulfilled), (state, action) => {
+        if (action.payload.messages.length === ZERO_VALUE) {
+          state.isAfter = false;
+        }
+
+        state.messages.push(...action.payload.messages);
+        state.loadDataStatus = DataStatus.FULFILLED;
+      })
+      .addMatcher(isAnyOf(loadAfterMessages.pending), state => {
+        state.loadDataStatus = DataStatus.PENDING;
+      })
+      .addMatcher(isAnyOf(loadAfterMessages.rejected), state => {
+        state.loadDataStatus = DataStatus.REJECTED;
+      })
       .addMatcher(isAnyOf(loadBeforeMessages.fulfilled), (state, action) => {
+        if (action.payload.messages.length === ZERO_VALUE) {
+          state.isBefore = false;
+        }
+
         state.messages.unshift(...action.payload.messages);
         state.loadDataStatus = DataStatus.FULFILLED;
       })
@@ -217,6 +240,10 @@ const { actions, reducer } = createSlice({
   initialState,
   name: 'messages',
   reducers: {
+    resetBeforeAfter: state => {
+      state.isAfter = true;
+      state.isBefore = true;
+    },
     resetEditDataStatus: state => {
       state.editDataStatus = DataStatus.IDLE;
     },
