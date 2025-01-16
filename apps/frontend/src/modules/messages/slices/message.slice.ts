@@ -278,6 +278,9 @@ const { actions, reducer } = createSlice({
     resetLoadDataStatus: state => {
       state.loadDataStatus = DataStatus.IDLE;
     },
+    resetMessages: state => {
+      Object.assign(state, initialState);
+    },
     resetWriteDataStatus: state => {
       state.writeDataStatus = DataStatus.IDLE;
     },

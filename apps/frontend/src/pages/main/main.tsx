@@ -18,6 +18,7 @@ import {
 import { translate } from '~/libs/modules/localization/translate.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { chatActions } from '~/modules/chat/chat.js';
+import { messageActions } from '~/modules/messages/message.js';
 import { profileActions } from '~/modules/profile/profile.js';
 
 import { CreateChatPopover } from './libs/components/create-chat-popover/create-chat-popover.js';
@@ -77,6 +78,7 @@ const Main: React.FC = () => {
   const handleLogoClick = useCallback((): void => {
     setActiveView(ActiveSideView.ChatList);
     dispatch(chatActions.resetSelectedChat());
+    dispatch(messageActions.resetMessages());
     onCreateChatClose();
   }, [dispatch, onCreateChatClose]);
 
