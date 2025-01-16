@@ -107,6 +107,13 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(createPrivateChat.fulfilled), (state, action) => {
         state.createdChat = action.payload;
+        const chatExists = state.chats.some(
+          chat => chat.id === action.payload.id
+        );
+
+        if (!chatExists) {
+          state.chats = [action.payload, ...state.chats];
+        }
       })
       .addMatcher(isAnyOf(createPrivateChat.rejected), state => {
         state.createdChat = null;

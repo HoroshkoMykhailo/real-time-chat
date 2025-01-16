@@ -118,15 +118,32 @@ class Chat implements ChatService {
 
   async #formatChat(
     chat: TChat,
-    userId: string
+    userId: string,
+    lastViewedAt?: string
   ): Promise<ChatsResponseDto[number]> {
     const lastMessage = await this.#getLastMessage(chat);
     const { chatPicture, name } = await this.#getChatMetadata(chat, userId);
+
+    let hasUnreadMessages = false;
+    let unreadCount = 0;
+
+    if (lastViewedAt && lastMessage) {
+      const lastViewedDate = new Date(lastViewedAt);
+      hasUnreadMessages = new Date(lastMessage.createdAt) > lastViewedDate;
+
+      if (hasUnreadMessages) {
+        unreadCount = await this.#messageRepository.getUnreadCount(
+          chat.id,
+          lastViewedDate
+        );
+      }
+    }
 
     return {
       id: chat.id,
       name,
       type: chat.type,
+      unreadCount,
       ...(chat.type === ChatType.GROUP && { memberCount: chat.members.length }),
       ...(lastMessage && { lastMessage }),
       ...(chatPicture && { chatPicture })
@@ -162,6 +179,7 @@ class Chat implements ChatService {
       id: chat.id,
       members: memberProfiles,
       type: chat.type,
+      unreadCount: DEFAULT_VALUE,
       ...(chat.groupPicture && { chatPicture: chat.groupPicture }),
       name: chatName,
       ...(type === ChatType.GROUP && { adminId })
@@ -490,8 +508,16 @@ class Chat implements ChatService {
 
     const chats = await this.#chatRepository.getByIds(chatIds);
 
+    const lastViewedMap = new Map(
+      chatToUserRecords.map(record => [record.chatId, record.lastViewedAt])
+    );
+
     const formattedChats = await Promise.all(
-      chats.map(chat => this.#formatChat(chat, userId))
+      chats.map(async chat => {
+        const lastViewedAt = lastViewedMap.get(chat.id);
+
+        return await this.#formatChat(chat, userId, lastViewedAt);
+      })
     );
 
     return formattedChats.sort((a, b) => {

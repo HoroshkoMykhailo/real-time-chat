@@ -1,5 +1,5 @@
 const DatabaseCollectionName = {
-  CHAT_TO_USER: 'ChatToUser',
+  CHAT_TO_USER: 'chatToUser',
   CHATS: 'chats',
   MESSAGES: 'messages',
   PROFILES: 'profiles',

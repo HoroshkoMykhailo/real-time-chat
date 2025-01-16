@@ -111,6 +111,16 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     return messages.map(message => this.mapToBusinessLogic(message));
   }
 
+  public async getUnreadCount(
+    chatId: string,
+    afterDate: Date
+  ): Promise<number> {
+    return await this.model.countDocuments({
+      chatId,
+      createdAt: { $gt: afterDate }
+    });
+  }
+
   protected mapAdditionalBusinessLogic(
     document: MessageDocument
   ): Partial<TMessage> {
