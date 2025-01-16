@@ -279,6 +279,13 @@ const { actions, reducer } = createSlice({
         }
       }
     },
+    resetLastPinnedMessage(state) {
+      if (state.selectedChat) {
+        const { lastPinnedMessage, ...updatedChat } = state.selectedChat;
+
+        state.selectedChat = updatedChat;
+      }
+    },
     resetSelectedChat: state => {
       state.selectedChat = null;
     },
@@ -373,13 +380,7 @@ const { actions, reducer } = createSlice({
     ) {
       const { message } = action.payload;
 
-      if (
-        state.selectedChat &&
-        message &&
-        (!state.selectedChat.lastPinnedMessage ||
-          new Date(message.createdAt) >
-            new Date(state.selectedChat.lastPinnedMessage.createdAt))
-      ) {
+      if (state.selectedChat && message) {
         state.selectedChat.lastPinnedMessage = message;
       }
     }

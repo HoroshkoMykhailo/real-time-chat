@@ -194,10 +194,29 @@ const { actions, reducer } = createSlice({
         const message = state.messages[index];
 
         if (index !== MINUS_ONE_VALUE && message) {
+          const isPinned = !message.isPinned;
           state.messages[index] = {
             ...message,
-            isPinned: !message.isPinned
+            isPinned
           };
+
+          if (isPinned) {
+            const insertIndex = state.pinnedMessages.findIndex(
+              pinnedMessage =>
+                new Date(pinnedMessage.createdAt) > new Date(message.createdAt)
+            );
+
+            if (insertIndex === MINUS_ONE_VALUE) {
+              state.pinnedMessages.push(message);
+            } else {
+              state.pinnedMessages.splice(insertIndex, ZERO_VALUE, message);
+            }
+          } else {
+            state.pinnedMessages = state.pinnedMessages.filter(
+              pinnedMessage => pinnedMessage.id !== action.payload
+            );
+          }
+
           state.editDataStatus = DataStatus.FULFILLED;
         }
       })

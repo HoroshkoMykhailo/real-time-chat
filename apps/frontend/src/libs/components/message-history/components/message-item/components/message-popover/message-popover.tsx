@@ -1,5 +1,6 @@
+import { MINUS_ONE_VALUE } from '~/libs/common/constants.js';
 import { Icon, Popover } from '~/libs/components/components.js';
-import { NotificationMessage } from '~/libs/enums/enums.js';
+import { DataStatus, NotificationMessage } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppSelector,
@@ -43,7 +44,9 @@ const MessagePopover = ({
   const popoverReference = useRef<HTMLDivElement | null>(null);
   const { selectedChat: chat } = useAppSelector(state => state.chat);
   const { profile } = useAppSelector(state => state.profile);
-  const { messages } = useAppSelector(state => state.message);
+  const { editDataStatus, messages, pinnedMessages } = useAppSelector(
+    state => state.message
+  );
   const [popoverClass, setPopoverClass] = useState<string>(POPOVER_CLASS);
   const [isLanguageSelectorOpened, setIsLanguageSelectorOpened] =
     useState<boolean>(false);
@@ -101,17 +104,6 @@ const MessagePopover = ({
         })
       );
 
-      if (!message.isPinned) {
-        dispatch(
-          chatActions.updateLastPinnedMessage({
-            message: {
-              ...message,
-              senderName: message.sender.username
-            }
-          })
-        );
-      }
-
       handleClose();
     }
   }, [dispatch, handleClose, message]);
@@ -153,6 +145,25 @@ const MessagePopover = ({
       setPopoverClass(isNearBottom ? 'message-popover-up' : POPOVER_CLASS);
     }
   }, [isOpened]);
+
+  useEffect(() => {
+    if (editDataStatus === DataStatus.FULFILLED) {
+      const lastPinnedMessage = pinnedMessages.at(MINUS_ONE_VALUE);
+
+      if (lastPinnedMessage) {
+        dispatch(
+          chatActions.updateLastPinnedMessage({
+            message: {
+              ...lastPinnedMessage,
+              senderName: lastPinnedMessage.sender.username
+            }
+          })
+        );
+      } else {
+        dispatch(chatActions.resetLastPinnedMessage());
+      }
+    }
+  }, [dispatch, editDataStatus, pinnedMessages]);
 
   if (!message || !chat || !profile) {
     return <></>;
