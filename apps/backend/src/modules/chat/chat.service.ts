@@ -18,7 +18,8 @@ import {
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
   type ChatsResponseDto,
-  type Chat as TChat
+  type Chat as TChat,
+  type UpdateLastViewedTimeResponseDto
 } from './libs/types/types.js';
 
 const DEFAULT_VALUE = 0;
@@ -537,6 +538,7 @@ class Chat implements ChatService {
       );
     });
   }
+
   public async leaveChat(
     id: string,
     user: User
@@ -594,7 +596,6 @@ class Chat implements ChatService {
       ...(chat.adminId && { adminId: chat.adminId })
     };
   }
-
   public async removeMember(
     id: string,
     user: User,
@@ -697,6 +698,34 @@ class Chat implements ChatService {
     };
 
     return response;
+  }
+
+  public async updateLastViewedTime(
+    id: string,
+    user: User,
+    lastViewedMessageTime: string
+  ): Promise<UpdateLastViewedTimeResponseDto> {
+    const date = new Date(lastViewedMessageTime);
+
+    const relation = await this.#chatToUserRepository.update(
+      id,
+      user.profileId,
+      date
+    );
+
+    if (!relation) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const unreadCount = await this.#messageRepository.getUnreadCount(id, date);
+
+    return {
+      id,
+      unreadCount
+    };
   }
 }
 

@@ -10,7 +10,8 @@ import {
   type ChatGetResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto
+  type ChatsResponseDto,
+  type UpdateLastViewedTimeResponseDto
 } from '../libs/types/types.js';
 import { ActionType } from './common.js';
 
@@ -138,6 +139,17 @@ const updateGroup = createAsyncThunk<
   }
 );
 
+const updateLastViewedTime = createAsyncThunk<
+  UpdateLastViewedTimeResponseDto,
+  { id: string; lastViewedMessageTime: string },
+  AsyncThunkConfig
+>(
+  ActionType.UPDATE_LAST_VIEWED_TIME,
+  async ({ id, lastViewedMessageTime }, { extra: { chatApi } }) => {
+    return await chatApi.updateLastViewedTime(id, lastViewedMessageTime);
+  }
+);
+
 export {
   addMembers,
   createGroup,
@@ -147,5 +159,6 @@ export {
   getMyChats,
   leaveChat,
   removeMember,
-  updateGroup
+  updateGroup,
+  updateLastViewedTime
 };

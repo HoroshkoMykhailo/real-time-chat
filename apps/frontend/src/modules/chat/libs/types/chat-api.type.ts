@@ -4,7 +4,8 @@ import {
   type ChatGetResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto
+  type ChatsResponseDto,
+  type UpdateLastViewedTimeResponseDto
 } from './types.js';
 
 type ChatApi = {
@@ -19,6 +20,10 @@ type ChatApi = {
     chatId: string,
     payload: ChatUpdateRequestDto
   ): Promise<ChatUpdateResponseDto>;
+  updateLastViewedTime(
+    chatId: string,
+    lastViewedMessageTime: string
+  ): Promise<UpdateLastViewedTimeResponseDto>;
 };
 
 export { type ChatApi };

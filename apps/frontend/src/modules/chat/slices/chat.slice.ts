@@ -27,7 +27,8 @@ import {
   getMyChats,
   leaveChat,
   removeMember,
-  updateGroup
+  updateGroup,
+  updateLastViewedTime
 } from './actions.js';
 
 const sortChats = (chats: Chats): Chats => {
@@ -177,6 +178,34 @@ const { actions, reducer } = createSlice({
       .addMatcher(isAnyOf(updateGroup.rejected), state => {
         state.selectedChat = null;
         state.dataStatus = DataStatus.REJECTED;
+      })
+      .addMatcher(isAnyOf(updateLastViewedTime.fulfilled), (state, action) => {
+        const { id, unreadCount } = action.payload;
+
+        const chatIndex = state.chats.findIndex(chat => chat.id === id);
+
+        if (chatIndex >= ZERO_VALUE) {
+          const chat = state.chats[chatIndex];
+
+          if (chat) {
+            state.chats.splice(chatIndex, ONE_VALUE);
+
+            const updatedChat = {
+              ...chat,
+              unreadCount
+            };
+
+            state.chats.splice(
+              chatIndex,
+              ZERO_VALUE,
+              updatedChat as ChatsResponseDto[number]
+            );
+          }
+        }
+      })
+      .addMatcher(isAnyOf(updateLastViewedTime.rejected), state => {
+        state.dataStatus = DataStatus.REJECTED;
+        state.chats = [];
       });
   },
   initialState,

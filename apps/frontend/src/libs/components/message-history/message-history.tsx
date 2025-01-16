@@ -112,6 +112,9 @@ const MessageHistory = ({
         block: 'center'
       });
       hasScrolledToUnreadReference.current = true;
+    } else {
+      messagesListReference.current.scrollTop =
+        messagesListReference.current.scrollHeight;
     }
   }, [findFirstUnreadMessage, lastViewedTime]);
 
@@ -152,8 +155,17 @@ const MessageHistory = ({
           new Date(lastViewedMessageTimeReference.current))
     ) {
       lastViewedMessageTimeReference.current = lastVisibleMessageTime;
+
+      if (chat) {
+        void dispatch(
+          chatActions.updateLastViewedTime({
+            id: chat.id,
+            lastViewedMessageTime: lastVisibleMessageTime
+          })
+        );
+      }
     }
-  }, []);
+  }, [chat, dispatch]);
 
   const handleScroll = useCallback(
     (event: React.UIEvent<HTMLDivElement>): void => {
@@ -236,14 +248,24 @@ const MessageHistory = ({
       scrollToFirstUnreadMessage();
     }
 
-    lastViewedMessageTimeReference.current = null;
+    if (lastViewedTime) {
+      lastViewedMessageTimeReference.current = lastViewedTime;
+    }
+
+    dispatch(messageActions.resetBeforeAfter());
     setBeforeMessageTime(null);
     setAfterMessageTime(null);
     updateLastViewedMessage();
     setTimeout(() => {
       setIsHidden(false);
     }, ONE_HUNDRED);
-  }, [chat, scrollToFirstUnreadMessage, updateLastViewedMessage]);
+  }, [
+    chat,
+    dispatch,
+    lastViewedTime,
+    scrollToFirstUnreadMessage,
+    updateLastViewedMessage
+  ]);
 
   useEffect(() => {
     if (editDataStatus === DataStatus.FULFILLED) {

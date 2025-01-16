@@ -19,12 +19,14 @@ import {
   type ChatGetResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto
+  type ChatsResponseDto,
+  type UpdateLastViewedTimeResponseDto
 } from './libs/types/types.js';
 import {
   addMembersValidationSchema,
   chatCreationValidationSchema,
-  chatUpdateValidationSchema
+  chatUpdateValidationSchema,
+  updateLastViewedTimeValidationSchema
 } from './libs/validation-schemas/validation-schemas.js';
 
 type Constructor = {
@@ -167,6 +169,29 @@ class Chat extends Controller implements ChatController {
     };
   };
 
+  public updateLastViewedTime = async (
+    options: ControllerAPIHandlerOptions<{
+      body: { lastViewedTime: string };
+      params: { id: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<UpdateLastViewedTimeResponseDto>> => {
+    const {
+      body: { lastViewedTime },
+      params: { id },
+      user
+    } = options;
+
+    return {
+      payload: await this.#chatService.updateLastViewedTime(
+        id,
+        user,
+        lastViewedTime
+      ),
+      status: HTTPCode.OK
+    };
+  };
+
   public constructor({ apiPath, chatService, logger }: Constructor) {
     super({ apiPath, logger });
     this.#chatService = chatService;
@@ -217,6 +242,15 @@ class Chat extends Controller implements ChatController {
       handler: this.deleteChat as ControllerAPIHandler,
       method: HTTPMethod.DELETE,
       url: ChatApiPath.$CHAT_ID
+    });
+
+    this.addRoute({
+      handler: this.updateLastViewedTime as ControllerAPIHandler,
+      method: HTTPMethod.PUT,
+      schema: {
+        body: updateLastViewedTimeValidationSchema
+      },
+      url: `${ChatApiPath.LAST_VIEWED_TIME}${ChatApiPath.$CHAT_ID}`
     });
 
     this.addRoute({
