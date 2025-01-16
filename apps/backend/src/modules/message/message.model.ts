@@ -24,7 +24,7 @@ const MessageSchema = new Schema<MessageDocument>({
   content: { type: String },
   fileUrl: { type: String },
   isPinned: { required: true, type: Boolean },
-  senderId: { ref: 'User', required: true, type: Schema.Types.ObjectId },
+  senderId: { ref: 'Profile', required: true, type: Schema.Types.ObjectId },
   status: { enum: Object.values(MessageStatus), required: true, type: String },
   type: { enum: Object.values(MessageType), required: true, type: String }
 });
