@@ -34,6 +34,7 @@ export {
   chatUpdate,
   chatUpdateFront
 } from './modules/chat/chat.js';
+export { type ChatToUser } from './modules/chat-to-user/chat-to-user.js';
 export {
   type FileMessageRequestDto,
   type GetMessagesResponseDto,

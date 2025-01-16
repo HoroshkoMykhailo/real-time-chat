@@ -3,6 +3,7 @@ import { savePicture } from '~/libs/modules/helpers/helpers.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
+import { type ChatToUser as ChatToUserRepository } from '../chat-to-user/chat-to-user.repository.js';
 import { type Message as MessageRepository } from '../message/message.repository.js';
 import { type Profile } from '../profile/libs/types/types.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
@@ -26,20 +27,24 @@ const POSITIVE_VALUE = 1;
 
 type Constructor = {
   chatRepository: ChatRepository;
+  chatToUserRepository: ChatToUserRepository;
   messageRepository: MessageRepository;
   profileRepository: ProfileRepository;
 };
 
 class Chat implements ChatService {
   #chatRepository: ChatRepository;
+  #chatToUserRepository: ChatToUserRepository;
   #messageRepository: MessageRepository;
   #profileRepository: ProfileRepository;
 
   public constructor({
     chatRepository,
+    chatToUserRepository,
     messageRepository,
     profileRepository
   }: Constructor) {
+    this.#chatToUserRepository = chatToUserRepository;
     this.#chatRepository = chatRepository;
     this.#messageRepository = messageRepository;
     this.#profileRepository = profileRepository;
@@ -56,6 +61,42 @@ class Chat implements ChatService {
     }
 
     return chat;
+  }
+
+  async #createChatToUserRecords(
+    chatId: string,
+    members: string[]
+  ): Promise<void> {
+    const now = new Date().toISOString();
+    await Promise.all(
+      members.map(userId =>
+        this.#chatToUserRepository.create({
+          chatId,
+          lastViewedAt: now,
+          userId
+        })
+      )
+    );
+  }
+
+  async #deleteChatToUserRecords(
+    chatId: string,
+    userIds?: string[]
+  ): Promise<void> {
+    if (userIds) {
+      await Promise.all(
+        userIds.map(userId => this.#chatToUserRepository.delete(chatId, userId))
+      );
+
+      return;
+    }
+
+    const chat = await this.#checkChatExists(chatId);
+    await Promise.all(
+      chat.members.map(userId =>
+        this.#chatToUserRepository.delete(chatId, userId)
+      )
+    );
   }
 
   async #fetchMemberProfiles(members: { value: string }[]): Promise<Profile[]> {
@@ -236,6 +277,7 @@ class Chat implements ChatService {
 
     return adminProfile;
   }
+
   #validateMembers(
     adminId: string,
     members: { value: string }[],
@@ -308,6 +350,8 @@ class Chat implements ChatService {
     const profiles =
       await this.#profileRepository.getProfilesByIds(updatedMembers);
 
+    await this.#createChatToUserRecords(id, newMembers);
+
     return {
       members: profiles,
       ...(chat.adminId && { adminId: chat.adminId })
@@ -364,6 +408,11 @@ class Chat implements ChatService {
 
     const createdChat = await this.#chatRepository.create(chatCreation);
 
+    await this.#createChatToUserRecords(
+      createdChat.id,
+      members.map(member => member.value)
+    );
+
     return this.#formatChatResponse({
       adminId,
       chat: createdChat,
@@ -389,6 +438,8 @@ class Chat implements ChatService {
     }
 
     await this.#messageRepository.deleteByChatId(id);
+
+    await this.#deleteChatToUserRecords(id);
 
     return !!(await this.#chatRepository.deleteById(id));
   }
@@ -428,7 +479,16 @@ class Chat implements ChatService {
   public async getMyChats(user: User): Promise<ChatsResponseDto> {
     const { profileId: userId } = user;
 
-    const chats = await this.#chatRepository.getByProfileId(userId);
+    const chatToUserRecords =
+      await this.#chatToUserRepository.getAllByUserId(userId);
+
+    if (chatToUserRecords.length === DEFAULT_VALUE) {
+      return [];
+    }
+
+    const chatIds = chatToUserRecords.map(record => record.chatId);
+
+    const chats = await this.#chatRepository.getByIds(chatIds);
 
     const formattedChats = await Promise.all(
       chats.map(chat => this.#formatChat(chat, userId))
@@ -472,6 +532,8 @@ class Chat implements ChatService {
         status: HTTPCode.FORBIDDEN
       });
     }
+
+    await this.#deleteChatToUserRecords(id, [user.profileId]);
 
     chat.members = chat.members.filter(member => member !== user.profileId);
 
@@ -543,6 +605,8 @@ class Chat implements ChatService {
         status: HTTPCode.CONFLICT
       });
     }
+
+    await this.#deleteChatToUserRecords(id, [member]);
 
     chat.members = chat.members.filter(memberId => memberId !== member);
     await this.#chatRepository.updateById(id, chat);
