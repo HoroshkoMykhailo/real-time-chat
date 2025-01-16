@@ -11,8 +11,12 @@ import { type ValueOf } from '../types/types.js';
 const WEEK_DAYS = 7;
 
 const groupMessagesByDate = (
-  messages: MessageHistoryItem[]
+  messages: MessageHistoryItem[] | null
 ): Record<string, MessageHistoryItem[]> => {
+  if (!messages) {
+    return {};
+  }
+
   const groupedMessages: Record<string, MessageHistoryItem[]> = {};
 
   for (const message of messages) {

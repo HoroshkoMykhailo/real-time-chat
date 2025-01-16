@@ -60,6 +60,7 @@ const MessageHistory = ({
     editDataStatus,
     isAfter,
     isBefore,
+    isTranscribedFirst,
     lastViewedTime,
     loadDataStatus,
     messages,
@@ -156,7 +157,7 @@ const MessageHistory = ({
     ) {
       lastViewedMessageTimeReference.current = lastVisibleMessageTime;
 
-      if (chat) {
+      if (chat?.id) {
         void dispatch(
           chatActions.updateLastViewedTime({
             id: chat.id,
@@ -165,7 +166,7 @@ const MessageHistory = ({
         );
       }
     }
-  }, [chat, dispatch]);
+  }, [chat?.id, dispatch]);
 
   const handleScroll = useCallback(
     (event: React.UIEvent<HTMLDivElement>): void => {
@@ -260,7 +261,7 @@ const MessageHistory = ({
       setIsHidden(false);
     }, ONE_HUNDRED);
   }, [
-    chat,
+    chat?.id,
     dispatch,
     lastViewedTime,
     scrollToFirstUnreadMessage,
@@ -269,7 +270,7 @@ const MessageHistory = ({
 
   useEffect(() => {
     if (editDataStatus === DataStatus.FULFILLED) {
-      const message = messages.at(ZERO_VALUE);
+      const message = messages.at(MINUS_ONE_VALUE);
 
       dispatch(messageActions.resetEditDataStatus());
 
@@ -286,7 +287,7 @@ const MessageHistory = ({
             }
           })
         );
-      } else if (chat) {
+      } else if (chat?.id) {
         dispatch(
           chatActions.resetLastMessage({
             chatId: chat.id
@@ -294,7 +295,7 @@ const MessageHistory = ({
         );
       }
     }
-  }, [chat, dispatch, editDataStatus, messages]);
+  }, [chat?.id, dispatch, editDataStatus, messages]);
 
   useEffect(() => {
     return (): void => {
@@ -302,7 +303,7 @@ const MessageHistory = ({
         clearTimeout(scrollTimeoutReference.current);
       }
     };
-  }, [chat]);
+  }, [chat?.id]);
 
   useEffect(() => {
     if (loadDataStatus === DataStatus.FULFILLED) {
@@ -349,7 +350,7 @@ const MessageHistory = ({
   }, [dispatch, beforeMessageTime, chat, afterMessageTime]);
 
   useEffect(() => {
-    if (writeDataStatus === DataStatus.FULFILLED) {
+    if (writeDataStatus === DataStatus.FULFILLED || isTranscribedFirst) {
       const element = messagesListReference.current;
 
       if (element) {
@@ -357,7 +358,35 @@ const MessageHistory = ({
         setTimeout(updateLastViewedMessage, ONE_HUNDRED);
       }
     }
-  }, [writeDataStatus, updateLastViewedMessage]);
+  }, [writeDataStatus, updateLastViewedMessage, isTranscribedFirst]);
+
+  useEffect(() => {
+    const element = messagesListReference.current;
+    setIsHidden(true);
+
+    if (element) {
+      hasScrolledToUnreadReference.current = false;
+      scrollToFirstUnreadMessage();
+    }
+
+    setTimeout(() => {
+      setIsHidden(false);
+    }, ONE_HUNDRED);
+  }, [isPinned, scrollToFirstUnreadMessage]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (messagesListReference.current) {
+        const hasScroll =
+          messagesListReference.current.scrollHeight >
+          messagesListReference.current.clientHeight;
+
+        messagesListReference.current.style.justifyContent = hasScroll
+          ? 'flex-start'
+          : 'flex-end';
+      }
+    }, TWO_VALUE);
+  }, [isPinned, messages]);
 
   if (!chat || !profile) {
     return <></>;
@@ -374,7 +403,7 @@ const MessageHistory = ({
   return (
     <div className={styles['messages-list-wrapper']}>
       <div
-        className={`${styles['messages-list']} ${isHidden ? styles['hidden'] : ''}`}
+        className={`${styles['messages-list']} ${isHidden ? styles['hidden'] : ''} ${isPinned ? styles['pinned'] : ''}`}
         onScroll={handleScroll}
         ref={messagesListReference}
       >

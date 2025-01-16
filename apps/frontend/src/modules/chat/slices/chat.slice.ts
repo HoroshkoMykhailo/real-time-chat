@@ -364,6 +364,24 @@ const { actions, reducer } = createSlice({
           );
         }
       }
+    },
+    updateLastPinnedMessage(
+      state,
+      action: PayloadAction<{
+        message: ChatGetResponseDto['lastPinnedMessage'];
+      }>
+    ) {
+      const { message } = action.payload;
+
+      if (
+        state.selectedChat &&
+        message &&
+        (!state.selectedChat.lastPinnedMessage ||
+          new Date(message.createdAt) >
+            new Date(state.selectedChat.lastPinnedMessage.createdAt))
+      ) {
+        state.selectedChat.lastPinnedMessage = message;
+      }
     }
   }
 });

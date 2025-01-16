@@ -1,6 +1,10 @@
 import { type PayloadAction, createSlice, isAnyOf } from '@reduxjs/toolkit';
 
-import { MINUS_ONE_VALUE, ZERO_VALUE } from '~/libs/common/constants.js';
+import {
+  MINUS_ONE_VALUE,
+  ONE_VALUE,
+  ZERO_VALUE
+} from '~/libs/common/constants.js';
 import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
@@ -29,6 +33,7 @@ type State = {
   fileBlob: Blob | null;
   isAfter: boolean;
   isBefore: boolean;
+  isTranscribedFirst: boolean;
   lastViewedTime: null | string;
   loadDataStatus: ValueOf<typeof DataStatus>;
   messages: MessageHistoryItem[];
@@ -42,6 +47,7 @@ const initialState: State = {
   fileBlob: null,
   isAfter: true,
   isBefore: true,
+  isTranscribedFirst: false,
   lastViewedTime: null,
   loadDataStatus: DataStatus.IDLE,
   messages: [],
@@ -232,6 +238,9 @@ const { actions, reducer } = createSlice({
           state.messages[index] = action.payload;
           state.editDataStatus = DataStatus.FULFILLED;
         }
+
+        state.isTranscribedFirst =
+          index === state.messages.length - ONE_VALUE ? true : false;
       })
       .addMatcher(isAnyOf(transcribeMessage.rejected), state => {
         state.editDataStatus = DataStatus.REJECTED;

@@ -46,7 +46,7 @@ const ChatHeader = ({ onHeaderClick }: Properties): JSX.Element => {
         <div className={styles['last-pinned-message-wrapper']}>
           <div className={styles['last-pinned-message-container']}>
             <div className={styles['last-pinned-message-header']}>
-              Pinned messages:
+              {translate.translate('pinnedMessages', profile.language)}
             </div>
             <div className={styles['last-pinned-message']}>
               <MessagePreview
