@@ -10,6 +10,7 @@ import {
   useState
 } from '~/libs/hooks/hooks.js';
 import { translate } from '~/libs/modules/localization/translate.js';
+import { toastNotifier } from '~/libs/modules/toast-notifier/toast-notifier.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import { messageActions } from '~/modules/messages/message.js';
 
@@ -60,6 +61,8 @@ const MessageInput = ({
         })
       );
       setMessage('');
+    } else {
+      toastNotifier.showError('Message is empty');
     }
   }, [chat, dispatch, editingMessageId, message, setEditingMessageId]);
 
