@@ -4,11 +4,9 @@
   display: flex;
   overflow-y: hidden;
   flex-direction: column-reverse;
-  justify-content: flex-start;
 }
 
 .messages-list {
-  flex: 1;
   opacity: 1;
   width: 100%;
   margin: 0 auto;

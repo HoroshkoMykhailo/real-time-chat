@@ -355,20 +355,6 @@ const MessageHistory = ({
     }, ONE_HUNDRED);
   }, [isPinned, scrollToFirstUnreadMessage]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      if (messagesListReference.current) {
-        const hasScroll =
-          messagesListReference.current.scrollHeight >
-          messagesListReference.current.clientHeight;
-
-        messagesListReference.current.style.justifyContent = hasScroll
-          ? 'flex-start'
-          : 'flex-end';
-      }
-    }, TWO_VALUE);
-  }, [isPinned, messages]);
-
   if (!chat || !profile) {
     return <></>;
   }

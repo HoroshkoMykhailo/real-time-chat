@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useNavigate,
+  useRef,
   useState
 } from '~/libs/hooks/hooks.js';
 import { translate } from '~/libs/modules/localization/translate.js';
@@ -16,8 +17,6 @@ import { MemberItem } from '../member-item/member-item.js';
 import { MemberPopover } from '../member-popover/member-popover.js';
 import styles from './styles.module.scss';
 
-const MEMBERS_OVERFLOW_COUNT = 3;
-
 type Properties = {
   onOpenAddMembers: () => void;
 };
@@ -27,6 +26,8 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
   const navigate = useNavigate();
 
   const [popoverMemberId, setPopoverMemberId] = useState<null | string>(null);
+  const [isOverflow, setIsOverflow] = useState<boolean>(false);
+  const membersContainerReference = useRef<HTMLDivElement | null>(null);
   const { createdChat, selectedChat: chat } = useAppSelector(
     state => state.chat
   );
@@ -69,6 +70,13 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
   );
 
   useEffect(() => {
+    if (membersContainerReference.current) {
+      const { clientHeight, scrollHeight } = membersContainerReference.current;
+      setIsOverflow(scrollHeight > clientHeight);
+    }
+  }, [chat?.members]);
+
+  useEffect(() => {
     if (createdChat) {
       void dispatch(messageActions.getMessages({ chatId: createdChat.id }));
       void dispatch(chatActions.getChat({ id: createdChat.id }));
@@ -88,8 +96,6 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
 
   const { members } = chat;
 
-  const isOverflow = members.length > MEMBERS_OVERFLOW_COUNT;
-
   return (
     <>
       <div className={styles['members-list-header']}>
@@ -107,6 +113,7 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
       </div>
       <div
         className={` ${styles['members-list']} ${isOverflow ? styles['overflow'] : ''}`}
+        ref={membersContainerReference}
       >
         {members.map(member => (
           <MemberPopover
