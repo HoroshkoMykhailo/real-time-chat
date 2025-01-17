@@ -47,7 +47,6 @@ const MessageHistory = ({
   );
   const [afterMessageTime, setAfterMessageTime] = useState<null | string>(null);
   const [isHidden, setIsHidden] = useState<boolean>(false);
-  const previousScrollHeightReference = useRef<number>(ZERO_VALUE);
   const messagesListReference = useRef<HTMLDivElement | null>(null);
   const scrollTimeoutReference = useRef<ReturnType<typeof setTimeout> | null>(
     null
@@ -195,12 +194,7 @@ const MessageHistory = ({
         !beforeMessageTime &&
         loadDataStatus !== DataStatus.PENDING
       ) {
-        const element = messagesListReference.current;
         const message = messages.at(ZERO_VALUE);
-
-        if (element) {
-          previousScrollHeightReference.current = element.scrollHeight;
-        }
 
         if (message) {
           setBeforeMessageTime(message.createdAt);
@@ -213,12 +207,7 @@ const MessageHistory = ({
         !afterMessageTime &&
         loadDataStatus !== DataStatus.PENDING
       ) {
-        const element = messagesListReference.current;
         const message = messages.at(MINUS_ONE_VALUE);
-
-        if (element) {
-          previousScrollHeightReference.current = element.scrollHeight;
-        }
 
         if (message) {
           setAfterMessageTime(message.createdAt);
@@ -253,6 +242,7 @@ const MessageHistory = ({
       }
 
       dispatch(messageActions.resetBeforeAfter());
+      setFirstUnreadMessageId(null);
       setBeforeMessageTime(null);
       setAfterMessageTime(null);
       updateLastViewedMessage();
@@ -308,16 +298,6 @@ const MessageHistory = ({
 
   useEffect(() => {
     if (loadDataStatus === DataStatus.FULFILLED) {
-      const element = messagesListReference.current;
-
-      if (element) {
-        const newScrollHeight = element.scrollHeight;
-        const scrollDelta =
-          newScrollHeight - previousScrollHeightReference.current;
-
-        element.scrollTop += scrollDelta;
-      }
-
       dispatch(messageActions.resetLoadDataStatus());
     }
   }, [dispatch, loadDataStatus]);
