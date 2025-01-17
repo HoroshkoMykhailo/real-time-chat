@@ -41,7 +41,8 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
         chat &&
         memberId !== chat.adminId &&
         profile &&
-        memberId !== profile.id
+        memberId !== profile.id &&
+        profile.id === chat.adminId
       ) {
         event.stopPropagation();
         event.preventDefault();

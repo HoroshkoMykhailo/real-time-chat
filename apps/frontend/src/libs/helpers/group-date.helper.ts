@@ -44,7 +44,7 @@ const formatDateLabel = (
   }
 
   if (isYesterday(date)) {
-    return translate.translate('yestarday', language);
+    return translate.translate('yesterday', language);
   }
 
   const locale = language === ProfileLanguage.UKRAINIAN ? uk : enUS;
