@@ -13,7 +13,7 @@ The main goal of this project is to create a platform for messaging, suitable fo
 - **Group and Private Chats:** Ability to create group chats or have private conversations between two users.
 - **Media File Support:** Send images, videos, audio, and documents.
 - **Message History:** Store message history on the server, allowing users to view past conversations at any time.
-- **User Authentication and Authorization:** Secure login via email and password, as well as OAuth (e.g., Google or Facebook).
+- **User Authentication and Authorization:** Secure login via email and password.
 
 ## Technical Requirements
 
@@ -38,3 +38,28 @@ The main goal of this project is to create a platform for messaging, suitable fo
 
 3. **Database:**
    - MongoDB: A NoSQL database that efficiently stores and handles large amounts of data, such as chat messages, media files, and user data.
+
+## Local Setup
+
+To get the source code of the application, clone the repository using the following command `git clone <repository_link>`
+
+Then:
+
+1. Install dependencies: `npm install`.
+
+2. Build shared: `npm run build:shared`
+
+3. Run database. You can run it by installing mongoDb on your computer.
+
+4. Create Goggle Cloud API key and store it locally.
+
+5. Create and fill all .env files. These files are:
+
+- apps/frontend/.env
+- apps/backend/.env
+
+You should use .env.example files as a reference.
+
+6. Run backend: `npm run start:dev -w apps/backend`
+
+7. Run frontend: `npm run start:dev -w apps/frontend`
