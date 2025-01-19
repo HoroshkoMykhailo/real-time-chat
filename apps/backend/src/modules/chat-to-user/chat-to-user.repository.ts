@@ -33,6 +33,7 @@ class ChatToUser {
     const document = await this.model.findOneAndDelete({ chatId, userId });
 
     if (
+      document &&
       'chatId' in document &&
       'userId' in document &&
       'lastViewedAt' in document
