@@ -6,6 +6,7 @@ import {
   ZERO_VALUE
 } from '~/libs/common/constants.js';
 import { DataStatus, StorageKey } from '~/libs/enums/enums.js';
+import { joinChat } from '~/libs/modules/socket/socket.actions.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { type MessageType } from '~/modules/messages/message.js';
 import { storageApi } from '~/modules/storage/storage.js';
@@ -86,6 +87,11 @@ const { actions, reducer } = createSlice({
             };
           })
         );
+
+        for (const chat of state.chats) {
+          joinChat(chat.id);
+        }
+
         state.dataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(getMyChats.rejected), state => {

@@ -4,10 +4,11 @@ import fastify, {
   type FastifyError,
   type FastifyInstance,
   type FastifyPluginAsync,
+  type FastifyRegisterOptions,
   type FastifyServerOptions
 } from 'fastify';
 import fastifyIO from 'fastify-socket.io';
-import { type Server } from 'socket.io';
+import { type Server, type ServerOptions } from 'socket.io';
 
 import { ServerErrorType } from '~/libs/enums/enums.js';
 import { type ValidationError } from '~/libs/exceptions/exceptions.js';
@@ -70,7 +71,14 @@ class ServerApp {
       whiteRoutes: this.#whiteRoutes
     });
 
-    await this.#app.register(fastifyIO as unknown as FastifyPluginAsync);
+    await this.#app.register(
+      fastifyIO as unknown as FastifyPluginAsync,
+      {
+        cors: {
+          origin: '*'
+        }
+      } as FastifySocketIOOptions
+    );
 
     const { io } = this.#app;
 
@@ -226,5 +234,21 @@ declare module 'fastify' {
     io: Server;
   }
 }
+
+declare module 'fastify-socket.io' {
+  interface SocketIOOptions extends ServerOptions {
+    cors?: {
+      methods?: string[];
+      origin: string | string[];
+    };
+  }
+}
+
+type FastifySocketIOOptions = {
+  cors?: {
+    methods?: string[];
+    origin: string | string[];
+  };
+} & FastifyRegisterOptions<Record<never, never>>;
 
 export { ServerApp };

@@ -8,7 +8,10 @@ import {
 import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
-import { type MessageHistoryItem } from '../libs/types/types.js';
+import {
+  type MessageCreationResponseDto,
+  type MessageHistoryItem
+} from '../libs/types/types.js';
 import {
   deleteMessage,
   downloadFile,
@@ -268,6 +271,23 @@ const { actions, reducer } = createSlice({
   initialState,
   name: 'messages',
   reducers: {
+    addMessage: (state, action: PayloadAction<MessageCreationResponseDto>) => {
+      if (
+        state.messages[ZERO_VALUE] &&
+        state.messages[ZERO_VALUE].chatId === action.payload.chatId
+      ) {
+        const isDuplicate = state.messages.some(
+          message =>
+            message.id === action.payload.id &&
+            message.chatId === action.payload.chatId
+        );
+
+        if (!isDuplicate) {
+          state.messages.push(action.payload);
+          state.writeDataStatus = DataStatus.FULFILLED;
+        }
+      }
+    },
     resetBeforeAfter: state => {
       state.isAfter = true;
       state.isBefore = true;
