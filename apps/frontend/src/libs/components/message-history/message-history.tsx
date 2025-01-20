@@ -16,6 +16,7 @@ import {
   useCallback,
   useEffect,
   useRef,
+  useScrollManager,
   useState
 } from '~/libs/hooks/hooks.js';
 import { translate } from '~/libs/modules/localization/translate.js';
@@ -54,7 +55,10 @@ const MessageHistory = ({
   const hasScrolledToUnreadReference = useRef<boolean>(false);
   const lastViewedMessageTimeReference = useRef<null | string>(null);
 
+  const { scrollToBottom } = useScrollManager(messagesListReference);
+
   const {
+    addDataStatus,
     dataStatus,
     editDataStatus,
     isAfter,
@@ -113,10 +117,9 @@ const MessageHistory = ({
       });
       hasScrolledToUnreadReference.current = true;
     } else {
-      messagesListReference.current.scrollTop =
-        messagesListReference.current.scrollHeight;
+      scrollToBottom();
     }
-  }, [findFirstUnreadMessage, lastViewedTime]);
+  }, [findFirstUnreadMessage, lastViewedTime, scrollToBottom]);
 
   const updateLastViewedMessage = useCallback(() => {
     if (!messagesListReference.current) {
@@ -260,6 +263,24 @@ const MessageHistory = ({
   ]);
 
   useEffect(() => {
+    if (addDataStatus === DataStatus.FULFILLED) {
+      const element = messagesListReference.current;
+
+      dispatch(messageActions.resetAddDataStatus());
+
+      if (element) {
+        const isAtBottom =
+          element.scrollTop + element.clientHeight >=
+          element.scrollHeight - ONE_HUNDRED;
+
+        if (isAtBottom) {
+          scrollToBottom();
+        }
+      }
+    }
+  }, [addDataStatus, dispatch, scrollToBottom]);
+
+  useEffect(() => {
     if (editDataStatus === DataStatus.FULFILLED) {
       const message = messages.at(MINUS_ONE_VALUE);
 
@@ -272,6 +293,7 @@ const MessageHistory = ({
             message: {
               content: message.content,
               createdAt: message.createdAt,
+              id: message.id,
               senderName: message.sender.username,
               type: message.type,
               ...(message.fileUrl && { fileUrl: message.fileUrl })
@@ -335,11 +357,16 @@ const MessageHistory = ({
       const element = messagesListReference.current;
 
       if (element) {
-        element.scrollTop = element.scrollHeight;
+        scrollToBottom();
         setTimeout(updateLastViewedMessage, ONE_HUNDRED);
       }
     }
-  }, [writeDataStatus, updateLastViewedMessage, isTranscribedFirst]);
+  }, [
+    writeDataStatus,
+    updateLastViewedMessage,
+    isTranscribedFirst,
+    scrollToBottom
+  ]);
 
   useEffect(() => {
     const element = messagesListReference.current;

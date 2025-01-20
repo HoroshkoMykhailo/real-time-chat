@@ -8,7 +8,10 @@ import {
 import { DataStatus } from '~/libs/enums/enums.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
-import { type MessageHistoryItem } from '../libs/types/types.js';
+import {
+  type MessageCreationResponseDto,
+  type MessageHistoryItem
+} from '../libs/types/types.js';
 import {
   deleteMessage,
   downloadFile,
@@ -28,6 +31,7 @@ import {
 } from './actions.js';
 
 type State = {
+  addDataStatus: ValueOf<typeof DataStatus>;
   dataStatus: ValueOf<typeof DataStatus>;
   editDataStatus: ValueOf<typeof DataStatus>;
   fileBlob: Blob | null;
@@ -42,6 +46,7 @@ type State = {
 };
 
 const initialState: State = {
+  addDataStatus: DataStatus.IDLE,
   dataStatus: DataStatus.IDLE,
   editDataStatus: DataStatus.IDLE,
   fileBlob: null,
@@ -115,6 +120,7 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(writeTextMessage.fulfilled), (state, action) => {
         state.messages.push(action.payload);
+
         state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeTextMessage.pending), state => {
@@ -268,6 +274,27 @@ const { actions, reducer } = createSlice({
   initialState,
   name: 'messages',
   reducers: {
+    addMessage: (state, action: PayloadAction<MessageCreationResponseDto>) => {
+      if (
+        state.addDataStatus === DataStatus.IDLE &&
+        state.messages[ZERO_VALUE] &&
+        state.messages[ZERO_VALUE].chatId === action.payload.chatId
+      ) {
+        const isDuplicate = state.messages.some(
+          message =>
+            message.id === action.payload.id &&
+            message.chatId === action.payload.chatId
+        );
+
+        if (!isDuplicate) {
+          state.messages.push(action.payload);
+          state.addDataStatus = DataStatus.FULFILLED;
+        }
+      }
+    },
+    resetAddDataStatus: state => {
+      state.addDataStatus = DataStatus.IDLE;
+    },
     resetBeforeAfter: state => {
       state.isAfter = true;
       state.isBefore = true;

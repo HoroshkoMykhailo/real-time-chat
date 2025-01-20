@@ -3,8 +3,12 @@ import fastifyStatic from '@fastify/static';
 import fastify, {
   type FastifyError,
   type FastifyInstance,
+  type FastifyPluginAsync,
+  type FastifyRegisterOptions,
   type FastifyServerOptions
 } from 'fastify';
+import fastifyIO from 'fastify-socket.io';
+import { type Server, type ServerOptions } from 'socket.io';
 
 import { ServerErrorType } from '~/libs/enums/enums.js';
 import { type ValidationError } from '~/libs/exceptions/exceptions.js';
@@ -19,6 +23,7 @@ import { type UserService } from '~/modules/user/user.js';
 import { type DatabaseModule } from '../database/database.js';
 import { HTTPCode } from '../http/http.js';
 import { type LoggerModule } from '../logger/logger.js';
+import { SocketModule, socketManager } from '../socket/socket.js';
 import { getErrorInfo } from './libs/helpers/helpers.js';
 import { type ServerApi } from './libs/types/types.js';
 
@@ -65,6 +70,21 @@ class ServerApp {
       userService,
       whiteRoutes: this.#whiteRoutes
     });
+
+    await this.#app.register(
+      fastifyIO as unknown as FastifyPluginAsync,
+      {
+        cors: {
+          origin: '*'
+        }
+      } as FastifySocketIOOptions
+    );
+
+    const { io } = this.#app;
+
+    socketManager.setIo(io);
+
+    new SocketModule({ io, logger: this.#logger });
   };
 
   #initValidationCompiler = (): void => {
@@ -203,6 +223,32 @@ class ServerApp {
   public get database(): DatabaseModule {
     return this.#database;
   }
+
+  public get io(): Server {
+    return this.#app.io;
+  }
 }
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    io: Server;
+  }
+}
+
+declare module 'fastify-socket.io' {
+  interface SocketIOOptions extends ServerOptions {
+    cors?: {
+      methods?: string[];
+      origin: string | string[];
+    };
+  }
+}
+
+type FastifySocketIOOptions = {
+  cors?: {
+    methods?: string[];
+    origin: string | string[];
+  };
+} & FastifyRegisterOptions<Record<never, never>>;
 
 export { ServerApp };

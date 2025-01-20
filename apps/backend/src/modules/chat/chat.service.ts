@@ -245,6 +245,7 @@ class Chat implements ChatService {
     const lastMessage = {
       content: message.content,
       createdAt: message.createdAt,
+      id: message.id,
       senderName: '',
       type: message.type,
       ...(message.fileUrl && { fileUrl: message.fileUrl })

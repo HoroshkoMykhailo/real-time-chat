@@ -1,6 +1,10 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["**/*.ts", "**/*.js"],
+  "include": [
+    "**/*.ts",
+    "**/*.js",
+    "../../packages/shared/src/libs/modules/socket/enums/socket.events.enum.ts"
+  ],
   "files": ["src/index.d.ts"],
   "exclude": ["node_modules", "build"],
   "compilerOptions": {

@@ -29,7 +29,8 @@
     "react-select": "5.8.0",
     "react-redux": "9.1.2",
     "react-toastify": "10.0.5",
-    "react-router-dom": "6.23.1"
+    "react-router-dom": "6.23.1",
+    "socket.io-client": "4.7.2"
   },
   "browserslist": [
     ">0.2%",

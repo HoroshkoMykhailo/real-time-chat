@@ -2,8 +2,13 @@ import { NavLink } from 'react-router-dom';
 
 import { Popover } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
-import { useAppDispatch, useCallback } from '~/libs/hooks/hooks.js';
+import {
+  useAppDispatch,
+  useAppSelector,
+  useCallback
+} from '~/libs/hooks/hooks.js';
 import { translate } from '~/libs/modules/localization/translate.js';
+import { leaveChat } from '~/libs/modules/socket/socket.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { authActions } from '~/modules/auth/auth.js';
 import { type ProfileLanguage } from '~/modules/profile/libs/types/types.js';
@@ -29,9 +34,15 @@ const UserPopover = ({
 }: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
 
+  const { chats } = useAppSelector(state => state.chat);
+
   const handleLogout = useCallback((): void => {
     void dispatch(authActions.logout());
-  }, [dispatch]);
+
+    for (const chat of chats) {
+      leaveChat(chat.id);
+    }
+  }, [chats, dispatch]);
 
   return (
     <Popover

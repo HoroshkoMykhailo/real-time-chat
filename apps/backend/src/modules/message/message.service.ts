@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { type Server } from 'socket.io';
 
 import { ExceptionMessage } from '~/libs/enums/enums.js';
 import {
@@ -9,6 +10,7 @@ import {
 } from '~/libs/modules/helpers/helpers.js';
 import { saveAudio } from '~/libs/modules/helpers/save-audio/save-audio.helper.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
+import { SocketEvents } from '~/libs/modules/socket/socket.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
 import { type Chat as ChatRepository } from '../chat/chat.repository.js';
@@ -34,9 +36,12 @@ import {
 } from './libs/types/types.js';
 import { type Message as MessageRepository } from './message.repository.js';
 
+type IoGetter = () => Server;
+
 type Constructor = {
   chatRepository: ChatRepository;
   chatToUserRepository: ChatToUserRepository;
+  getIo: IoGetter;
   messageRepository: MessageRepository;
   profileRepository: ProfileRepository;
   transcriptionService: TranscriptionService;
@@ -46,6 +51,7 @@ type Constructor = {
 class Message implements MessageService {
   #chatRepository: ChatRepository;
   #chatToUserRepository: ChatToUserRepository;
+  #getIo: IoGetter;
   #isUserChatMember = async (user: User, chatId: string): Promise<boolean> => {
     const relation = await this.#chatToUserRepository.get(
       chatId,
@@ -73,6 +79,7 @@ class Message implements MessageService {
   public constructor({
     chatRepository,
     chatToUserRepository,
+    getIo,
     messageRepository,
     profileRepository,
     transcriptionService,
@@ -80,6 +87,7 @@ class Message implements MessageService {
   }: Constructor) {
     this.#chatRepository = chatRepository;
     this.#chatToUserRepository = chatToUserRepository;
+    this.#getIo = getIo;
     this.#transcriptionService = transcriptionService;
     this.#messageRepository = messageRepository;
     this.#profileRepository = profileRepository;
@@ -119,6 +127,13 @@ class Message implements MessageService {
     });
 
     await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    const io = this.#getIo();
+
+    io.to(chatId).emit(SocketEvents.MESSAGE, {
+      ...message,
+      sender: senderProfile
+    });
 
     return {
       ...message,
@@ -160,6 +175,13 @@ class Message implements MessageService {
 
     await this.#chatRepository.setLastMessage(chatId, message.id);
 
+    const io = this.#getIo();
+
+    io.to(chatId).emit(SocketEvents.MESSAGE, {
+      ...message,
+      sender: senderProfile
+    });
+
     return {
       ...message,
       sender: senderProfile
@@ -200,6 +222,13 @@ class Message implements MessageService {
 
     await this.#chatRepository.setLastMessage(chatId, message.id);
 
+    const io = this.#getIo();
+
+    io.to(chatId).emit(SocketEvents.MESSAGE, {
+      ...message,
+      sender: senderProfile
+    });
+
     return {
       ...message,
       sender: senderProfile
@@ -236,6 +265,13 @@ class Message implements MessageService {
     });
 
     await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    const io = this.#getIo();
+
+    io.to(chatId).emit(SocketEvents.MESSAGE, {
+      ...message,
+      sender: senderProfile
+    });
 
     return {
       ...message,
@@ -276,6 +312,13 @@ class Message implements MessageService {
     });
 
     await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    const io = this.#getIo();
+
+    io.to(chatId).emit(SocketEvents.MESSAGE, {
+      ...message,
+      sender: senderProfile
+    });
 
     return {
       ...message,
