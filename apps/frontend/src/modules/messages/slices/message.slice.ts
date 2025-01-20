@@ -31,6 +31,7 @@ import {
 } from './actions.js';
 
 type State = {
+  addDataStatus: ValueOf<typeof DataStatus>;
   dataStatus: ValueOf<typeof DataStatus>;
   editDataStatus: ValueOf<typeof DataStatus>;
   fileBlob: Blob | null;
@@ -45,6 +46,7 @@ type State = {
 };
 
 const initialState: State = {
+  addDataStatus: DataStatus.IDLE,
   dataStatus: DataStatus.IDLE,
   editDataStatus: DataStatus.IDLE,
   fileBlob: null,
@@ -117,8 +119,11 @@ const { actions, reducer } = createSlice({
         state.dataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(writeTextMessage.fulfilled), (state, action) => {
-        state.messages.push(action.payload);
-        state.writeDataStatus = DataStatus.FULFILLED;
+        const lastMessage = state.messages.at(MINUS_ONE_VALUE);
+
+        if (lastMessage && lastMessage.id === action.payload.id) {
+          state.writeDataStatus = DataStatus.FULFILLED;
+        }
       })
       .addMatcher(isAnyOf(writeTextMessage.pending), state => {
         state.writeDataStatus = DataStatus.PENDING;
@@ -147,8 +152,11 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(writeFileMessage.fulfilled), (state, action) => {
-        state.messages.push(action.payload);
-        state.writeDataStatus = DataStatus.FULFILLED;
+        const lastMessage = state.messages.at(MINUS_ONE_VALUE);
+
+        if (lastMessage && lastMessage.id === action.payload.id) {
+          state.writeDataStatus = DataStatus.FULFILLED;
+        }
       })
       .addMatcher(isAnyOf(writeFileMessage.pending), state => {
         state.writeDataStatus = DataStatus.PENDING;
@@ -273,6 +281,7 @@ const { actions, reducer } = createSlice({
   reducers: {
     addMessage: (state, action: PayloadAction<MessageCreationResponseDto>) => {
       if (
+        state.addDataStatus === DataStatus.IDLE &&
         state.messages[ZERO_VALUE] &&
         state.messages[ZERO_VALUE].chatId === action.payload.chatId
       ) {
@@ -284,9 +293,12 @@ const { actions, reducer } = createSlice({
 
         if (!isDuplicate) {
           state.messages.push(action.payload);
-          state.writeDataStatus = DataStatus.FULFILLED;
+          state.addDataStatus = DataStatus.FULFILLED;
         }
       }
+    },
+    resetAddDataStatus: state => {
+      state.addDataStatus = DataStatus.IDLE;
     },
     resetBeforeAfter: state => {
       state.isAfter = true;
