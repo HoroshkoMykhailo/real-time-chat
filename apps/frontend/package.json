@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "start:dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc -p tsconfig.build.json && vite build",
     "preview": "vite preview",
     "lint:css": "npx stylelint \"src/**/*.css\"",
     "lint:js": "npx eslint . --max-warnings=0",

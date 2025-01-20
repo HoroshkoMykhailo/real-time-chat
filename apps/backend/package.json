@@ -11,7 +11,7 @@
     "lint:type": "npx tsc --noEmit",
     "lint:js": "npx eslint . --max-warnings=0",
     "lint": "concurrently \"npm:lint:*\"",
-    "build": "tsc && tsc-alias",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "pretest": "cross-env NODE_ENV=test npm run migrate:dev",
     "test": "cross-env NODE_ENV=test node --experimental-vm-modules --expose-gc --no-compilation-cache ../../node_modules/jest/bin/jest.js --config jest.config.js --runInBand --forceExit --detectOpenHandles",
     "test:auth": "npm run test -- --verbose --rootDir=tests/modules/auth/"
