@@ -293,6 +293,7 @@ const MessageHistory = ({
             message: {
               content: message.content,
               createdAt: message.createdAt,
+              id: message.id,
               senderName: message.sender.username,
               type: message.type,
               ...(message.fileUrl && { fileUrl: message.fileUrl })

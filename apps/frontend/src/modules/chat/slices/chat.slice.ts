@@ -8,6 +8,7 @@ import {
 import { DataStatus, StorageKey } from '~/libs/enums/enums.js';
 import { joinChat } from '~/libs/modules/socket/socket.actions.js';
 import { type ValueOf } from '~/libs/types/types.js';
+import { type MessageCreationResponseDto } from '~/modules/messages/libs/types/types.js';
 import { type MessageType } from '~/modules/messages/message.js';
 import { storageApi } from '~/modules/storage/storage.js';
 
@@ -217,6 +218,53 @@ const { actions, reducer } = createSlice({
   initialState,
   name: 'chats',
   reducers: {
+    addMessage: (state, action: PayloadAction<MessageCreationResponseDto>) => {
+      const message = action.payload;
+      const { chatId } = message;
+      const chatIndex = state.chats.findIndex(chat => chat.id === chatId);
+
+      const oldChat = state.chats[chatIndex];
+
+      if (
+        chatIndex >= ZERO_VALUE &&
+        oldChat &&
+        oldChat.lastMessage &&
+        oldChat.lastMessage.id !== message.id
+      ) {
+        const updatedChat = {
+          ...oldChat,
+          lastMessage: {
+            content: message.content,
+            createdAt: message.createdAt,
+            fileUrl: message.fileUrl,
+            id: message.id,
+            senderName: message.sender.username,
+            type: message.type
+          },
+          unreadCount: oldChat.unreadCount + ONE_VALUE
+        };
+
+        state.chats.splice(chatIndex, ONE_VALUE);
+        const insertIndex = state.chats.findIndex(
+          chat =>
+            (!chat.lastMessage?.createdAt ||
+              new Date(chat.lastMessage.createdAt) <
+                new Date(message.createdAt)) &&
+            (!chat.draft?.createdAt ||
+              new Date(chat.draft.createdAt) < new Date(message.createdAt))
+        );
+
+        if (insertIndex === MINUS_ONE_VALUE) {
+          state.chats.push(updatedChat as ChatsResponseDto[number]);
+        } else {
+          state.chats.splice(
+            insertIndex,
+            ZERO_VALUE,
+            updatedChat as ChatsResponseDto[number]
+          );
+        }
+      }
+    },
     deleteDraft: (state, action: PayloadAction<{ chatId: string }>) => {
       const { chatId } = action.payload;
       const draftsJson = storageApi.get(StorageKey.DRAFTS);
@@ -343,6 +391,7 @@ const { actions, reducer } = createSlice({
           content: string;
           createdAt: string;
           fileUrl?: string;
+          id: string;
           senderName: string;
           type: ValueOf<typeof MessageType>;
         };

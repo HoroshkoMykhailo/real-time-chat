@@ -119,11 +119,9 @@ const { actions, reducer } = createSlice({
         state.dataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(writeTextMessage.fulfilled), (state, action) => {
-        const lastMessage = state.messages.at(MINUS_ONE_VALUE);
+        state.messages.push(action.payload);
 
-        if (lastMessage && lastMessage.id === action.payload.id) {
-          state.writeDataStatus = DataStatus.FULFILLED;
-        }
+        state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeTextMessage.pending), state => {
         state.writeDataStatus = DataStatus.PENDING;
@@ -152,11 +150,8 @@ const { actions, reducer } = createSlice({
         state.writeDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(writeFileMessage.fulfilled), (state, action) => {
-        const lastMessage = state.messages.at(MINUS_ONE_VALUE);
-
-        if (lastMessage && lastMessage.id === action.payload.id) {
-          state.writeDataStatus = DataStatus.FULFILLED;
-        }
+        state.messages.push(action.payload);
+        state.writeDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(writeFileMessage.pending), state => {
         state.writeDataStatus = DataStatus.PENDING;

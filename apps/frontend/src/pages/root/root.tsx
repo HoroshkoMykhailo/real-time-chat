@@ -10,6 +10,7 @@ import {
   initializeSocketListeners,
   leaveChat
 } from '~/libs/modules/socket/socket.js';
+import { store } from '~/libs/modules/store/store.js';
 import { authActions } from '~/modules/auth/auth.js';
 
 const Root: React.FC = () => {
@@ -20,7 +21,7 @@ const Root: React.FC = () => {
 
   useEffect(() => {
     void dispatch(authActions.getAuthenticatedUser());
-    initializeSocketListeners(dispatch);
+    initializeSocketListeners(dispatch, () => store.instance.getState());
   }, [dispatch]);
 
   useEffect(() => {

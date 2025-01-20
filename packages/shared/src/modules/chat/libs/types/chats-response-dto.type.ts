@@ -10,6 +10,7 @@ type ChatsResponseDto = {
     content: string;
     createdAt: string;
     fileUrl?: string;
+    id: string;
     senderName: string;
     type: ValueOf<typeof MessageType>;
   };
