@@ -128,6 +128,13 @@ class Message implements MessageService {
 
     await this.#chatRepository.setLastMessage(chatId, message.id);
 
+    const io = this.#getIo();
+
+    io.to(chatId).emit(SocketEvents.MESSAGE, {
+      ...message,
+      sender: senderProfile
+    });
+
     return {
       ...message,
       sender: senderProfile
@@ -168,6 +175,13 @@ class Message implements MessageService {
 
     await this.#chatRepository.setLastMessage(chatId, message.id);
 
+    const io = this.#getIo();
+
+    io.to(chatId).emit(SocketEvents.MESSAGE, {
+      ...message,
+      sender: senderProfile
+    });
+
     return {
       ...message,
       sender: senderProfile
@@ -207,6 +221,13 @@ class Message implements MessageService {
     });
 
     await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    const io = this.#getIo();
+
+    io.to(chatId).emit(SocketEvents.MESSAGE, {
+      ...message,
+      sender: senderProfile
+    });
 
     return {
       ...message,
@@ -291,6 +312,13 @@ class Message implements MessageService {
     });
 
     await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    const io = this.#getIo();
+
+    io.to(chatId).emit(SocketEvents.MESSAGE, {
+      ...message,
+      sender: senderProfile
+    });
 
     return {
       ...message,
