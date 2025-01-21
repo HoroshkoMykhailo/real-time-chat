@@ -6,7 +6,7 @@ import {
   ZERO_VALUE
 } from '~/libs/common/constants.js';
 import { DataStatus, StorageKey } from '~/libs/enums/enums.js';
-import { joinChat } from '~/libs/modules/socket/socket.actions.js';
+import { joinChat, leaveChatRoom } from '~/libs/modules/socket/socket.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { type MessageCreationResponseDto } from '~/modules/messages/libs/types/types.js';
 import { type MessageType } from '~/modules/messages/message.js';
@@ -111,6 +111,7 @@ const { actions, reducer } = createSlice({
         state.selectedChat = null;
       })
       .addMatcher(isAnyOf(leaveChat.fulfilled), (state, action) => {
+        leaveChatRoom(action.payload);
         state.chats = state.chats.filter(chat => chat.id !== action.payload);
       })
       .addMatcher(isAnyOf(createPrivateChat.fulfilled), (state, action) => {
@@ -120,6 +121,7 @@ const { actions, reducer } = createSlice({
         );
 
         if (!chatExists) {
+          joinChat(action.payload.id);
           state.chats = [action.payload, ...state.chats];
         }
       })
@@ -128,6 +130,7 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(createGroup.fulfilled), (state, action) => {
         state.createdChat = action.payload;
+        joinChat(action.payload.id);
         state.chats = [action.payload, ...state.chats];
       })
       .addMatcher(isAnyOf(createGroup.rejected), state => {

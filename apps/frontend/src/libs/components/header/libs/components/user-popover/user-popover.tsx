@@ -8,7 +8,7 @@ import {
   useCallback
 } from '~/libs/hooks/hooks.js';
 import { translate } from '~/libs/modules/localization/translate.js';
-import { leaveChat } from '~/libs/modules/socket/socket.js';
+import { leaveChatRoom } from '~/libs/modules/socket/socket.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { authActions } from '~/modules/auth/auth.js';
 import { type ProfileLanguage } from '~/modules/profile/libs/types/types.js';
@@ -40,7 +40,7 @@ const UserPopover = ({
     void dispatch(authActions.logout());
 
     for (const chat of chats) {
-      leaveChat(chat.id);
+      leaveChatRoom(chat.id);
     }
   }, [chats, dispatch]);
 

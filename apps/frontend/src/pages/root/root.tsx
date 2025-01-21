@@ -8,7 +8,7 @@ import {
 } from '~/libs/hooks/hooks.js';
 import {
   initializeSocketListeners,
-  leaveChat
+  leaveChatRoom
 } from '~/libs/modules/socket/socket.js';
 import { store } from '~/libs/modules/store/store.js';
 import { authActions } from '~/modules/auth/auth.js';
@@ -27,7 +27,7 @@ const Root: React.FC = () => {
   useEffect(() => {
     if (dataStatus === DataStatus.REJECTED && chats.length !== ZERO_VALUE) {
       for (const chat of chats) {
-        leaveChat(chat.id);
+        leaveChatRoom(chat.id);
       }
     }
   }, [chats, chats.length, dataStatus, dispatch]);

@@ -5,8 +5,8 @@ const joinChat = (chatId: string): void => {
   socket.emit(SocketEvents.JOIN_CHAT, chatId);
 };
 
-const leaveChat = (chatId: string): void => {
+const leaveChatRoom = (chatId: string): void => {
   socket.emit(SocketEvents.LEAVE_CHAT, chatId);
 };
 
-export { joinChat, leaveChat };
+export { joinChat, leaveChatRoom };

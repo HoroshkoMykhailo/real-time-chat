@@ -1,4 +1,4 @@
-import { ONE_HUNDRED } from '~/libs/common/constants.js';
+import { ONE_HUNDRED, TWO_VALUE } from '~/libs/common/constants.js';
 
 import { useCallback } from '../hooks.js';
 
@@ -31,12 +31,15 @@ const useScrollManager = (
   }, []);
 
   const scrollToBottom = useCallback(() => {
-    if (!messagesListReference.current) {
+    const reference = messagesListReference.current;
+
+    if (!reference) {
       return;
     }
 
-    messagesListReference.current.scrollTop =
-      messagesListReference.current.scrollHeight;
+    setTimeout(() => {
+      reference.scrollTop = reference.scrollHeight;
+    }, TWO_VALUE);
   }, []);
 
   return { isAtBottom, isAtTop, scrollToBottom };
