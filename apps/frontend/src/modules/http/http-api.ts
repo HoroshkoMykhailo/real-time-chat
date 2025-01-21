@@ -54,6 +54,10 @@ class Http implements HttpApi {
     });
   };
 
+  #parseBlob = <T>(response: Response): Promise<T> => {
+    return response.blob() as Promise<T>;
+  };
+
   #parseJSON = <T>(response: Response): Promise<T> => {
     return response.json() as Promise<T>;
   };
@@ -67,6 +71,16 @@ class Http implements HttpApi {
   async #checkResponse(response: Response): Promise<Response> {
     if (!response.ok) {
       await this.#handleError(response);
+    }
+
+    const contentType = response.headers.get('Content-Type');
+
+    if (
+      contentType &&
+      contentType.startsWith('application/') &&
+      !contentType.includes('json')
+    ) {
+      return await this.#parseBlob(response);
     }
 
     return await this.#parseJSON(response);

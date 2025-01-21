@@ -34,7 +34,7 @@ type State = {
   addDataStatus: ValueOf<typeof DataStatus>;
   dataStatus: ValueOf<typeof DataStatus>;
   editDataStatus: ValueOf<typeof DataStatus>;
-  fileBlob: Blob | null;
+  fileBlob: { blob: Blob; id: string } | null;
   isAfter: boolean;
   isBefore: boolean;
   isTranscribedFirst: boolean;
@@ -301,6 +301,9 @@ const { actions, reducer } = createSlice({
     },
     resetEditDataStatus: state => {
       state.editDataStatus = DataStatus.IDLE;
+    },
+    resetFileBlob: state => {
+      state.fileBlob = null;
     },
     resetLoadDataStatus: state => {
       state.loadDataStatus = DataStatus.IDLE;

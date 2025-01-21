@@ -36,7 +36,15 @@ class Controller implements ControllerModule {
     const handlerOptions = this.mapRequest(request);
     const { payload, status } = await handler(handlerOptions);
 
-    return await reply.status(status).send(payload);
+    return await (payload instanceof Blob
+      ? reply
+          .status(status)
+          .headers({
+            'Content-Length': payload.size.toString(),
+            'Content-Type': payload.type || 'application/octet-stream'
+          })
+          .send(Buffer.from(await payload.arrayBuffer()))
+      : reply.status(status).send(payload));
   }
 
   private mapRequest(

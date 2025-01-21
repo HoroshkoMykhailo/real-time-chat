@@ -185,13 +185,15 @@ const transcribeMessage = createAsyncThunk<
 );
 
 const downloadFile = createAsyncThunk<
-  Blob,
+  { blob: Blob; id: string },
   { messageId: string },
   AsyncThunkConfig
 >(
   ActionType.DOWNLOAD_FILE,
   async ({ messageId }, { extra: { messageApi } }) => {
-    return await messageApi.downloadFile(messageId);
+    const blob = await messageApi.downloadFile(messageId);
+
+    return { blob, id: messageId };
   }
 );
 

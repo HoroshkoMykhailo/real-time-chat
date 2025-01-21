@@ -28,6 +28,10 @@ class Store implements StoreModule {
       devTools: config.ENV.APP.ENVIRONMENT !== AppEnvironment.PRODUCTION,
       middleware: getDefaultMiddleware => {
         return getDefaultMiddleware({
+          serializableCheck: {
+            ignoredActions: ['messages/download-file/fulfilled'],
+            ignoredPaths: ['message.fileBlob']
+          },
           thunk: {
             extraArgument: this.extraArguments
           }

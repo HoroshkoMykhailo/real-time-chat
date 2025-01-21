@@ -39,10 +39,15 @@ const FileMessage = ({ fileMessage }: Properties): JSX.Element => {
   );
 
   useEffect(() => {
-    if (editDataStatus === DataStatus.FULFILLED && fileBlob) {
-      const downloadBlob = new Blob([fileBlob], {
+    if (
+      editDataStatus === DataStatus.FULFILLED &&
+      fileBlob &&
+      fileBlob.id === messageId
+    ) {
+      const downloadBlob = new Blob([fileBlob.blob], {
         type: 'application/octet-stream'
       });
+
       const url = window.URL.createObjectURL(downloadBlob);
       const link = document.createElement('a');
       link.href = url;
@@ -51,8 +56,9 @@ const FileMessage = ({ fileMessage }: Properties): JSX.Element => {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
+      dispatch(messageActions.resetFileBlob());
     }
-  }, [editDataStatus, fileBlob, fileName]);
+  }, [dispatch, editDataStatus, fileBlob, fileName, messageId]);
 
   return (
     <div className={styles['file-message']}>
