@@ -67,3 +67,15 @@
   color: #df1c3d;
   align-self: flex-start;
 }
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  color: var(--gray);
+  transform: translateY(-50%);
+}
+
+.input-icon-right {
+  right: 10px;
+  display: flex;
+}

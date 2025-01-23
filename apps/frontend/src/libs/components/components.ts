@@ -14,6 +14,7 @@ export { DatePicker } from './date-picker/date-picker.js';
 export { FileIcon } from './file-icon/file-icon.js';
 export { Header } from './header/header.js';
 export { Icon } from './icon/icon.js';
+export { IconButton } from './icon-button/icon-button.js';
 export { Image } from './image/image.js';
 export { Input } from './input/input.js';
 export { Loader } from './loader/loader.js';

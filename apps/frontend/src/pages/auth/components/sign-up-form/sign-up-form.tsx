@@ -1,11 +1,18 @@
-import { Button, Input, NavLink } from '~/libs/components/components.js';
+import {
+  Button,
+  IconButton,
+  Input,
+  NavLink
+} from '~/libs/components/components.js';
 import { AppRoute, ButtonColor, DataStatus } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppForm,
   useAppSelector,
+  useCallback,
   useEffect,
-  useNavigate
+  useNavigate,
+  useState
 } from '~/libs/hooks/hooks.js';
 import { type UserSignUpRequestDto } from '~/modules/auth/auth.js';
 import { signUp as signUpValidationSchema } from '~/modules/auth/libs/validation-schemas/validation-schemas.js';
@@ -23,6 +30,8 @@ const SignUpForm: React.FC<Properties> = ({ onSubmit }) => {
     defaultValues: DEFAULT_REGISTRATION_PAYLOAD,
     validationSchema: signUpValidationSchema
   });
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
@@ -45,6 +54,10 @@ const SignUpForm: React.FC<Properties> = ({ onSubmit }) => {
     onSubmit(values);
     reset();
   };
+
+  const handleTogglePasswordVisibility = useCallback(() => {
+    setIsPasswordVisible(previousState => !previousState);
+  }, []);
 
   return (
     <>
@@ -70,7 +83,14 @@ const SignUpForm: React.FC<Properties> = ({ onSubmit }) => {
             errors={errors}
             name={UserPayloadKey.PASSWORD}
             placeholder="Password"
-            type="password"
+            rightIcon={
+              <IconButton
+                iconName={isPasswordVisible ? 'strikedEye' : 'eye'}
+                label={isPasswordVisible ? 'Hide password' : 'Show password'}
+                onClick={handleTogglePasswordVisibility}
+              />
+            }
+            type={isPasswordVisible ? 'text' : 'password'}
           />
           <Button
             color={ButtonColor.TEAL}

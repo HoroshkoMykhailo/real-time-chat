@@ -7,7 +7,10 @@ import {
   type FieldValues
 } from 'react-hook-form';
 
-import { checkGreaterThanZero } from '~/libs/helpers/helpers.js';
+import {
+  checkGreaterThanZero,
+  getValidClassNames
+} from '~/libs/helpers/helpers.js';
 import { useController, useEffect, useRef } from '~/libs/hooks/hooks.js';
 
 import styles from './styles.module.scss';
@@ -22,6 +25,7 @@ type Properties<T extends FieldValues> = {
   isTextArea?: boolean;
   name: FieldPath<T>;
   placeholder: string;
+  rightIcon?: JSX.Element;
   type?: 'email' | 'password' | 'submit' | 'text';
 };
 
@@ -33,10 +37,12 @@ const Input = <T extends FieldValues>({
   isTextArea = false,
   name,
   placeholder,
+  rightIcon,
   type = 'text'
 }: Properties<T>): ReactElement => {
   const { field } = useController<T>({ control, name });
   const hasErrors = checkGreaterThanZero(Object.keys(errors).length);
+  const hasRightIcon = Boolean(rightIcon);
 
   const textareaReference = useRef<HTMLTextAreaElement | null>(null);
 
@@ -75,6 +81,16 @@ const Input = <T extends FieldValues>({
             type={type}
             value={field.value}
           />
+        )}
+        {hasRightIcon && (
+          <div
+            className={getValidClassNames(
+              styles['input-icon'],
+              styles['input-icon-right']
+            )}
+          >
+            {rightIcon}
+          </div>
         )}
       </div>
       {hasErrors && (

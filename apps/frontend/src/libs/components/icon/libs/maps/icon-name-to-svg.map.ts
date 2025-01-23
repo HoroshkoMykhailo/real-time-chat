@@ -7,6 +7,7 @@ import Cancel from '~/assets/images/icons/cancel.svg?react';
 import Copy from '~/assets/images/icons/copy.svg?react';
 import Download from '~/assets/images/icons/download.svg?react';
 import Error from '~/assets/images/icons/error.svg?react';
+import Eye from '~/assets/images/icons/eye.svg?react';
 import File from '~/assets/images/icons/file.svg?react';
 import Group from '~/assets/images/icons/group.svg?react';
 import Image from '~/assets/images/icons/image.svg?react';
@@ -18,6 +19,7 @@ import Person from '~/assets/images/icons/person.svg?react';
 import Pin from '~/assets/images/icons/pin.svg?react';
 import Remove from '~/assets/images/icons/remove.svg?react';
 import Search from '~/assets/images/icons/search.svg?react';
+import StrikedEye from '~/assets/images/icons/striked-eye.svg?react';
 import Transcribe from '~/assets/images/icons/transcribe.svg?react';
 import Translate from '~/assets/images/icons/translate.svg?react';
 import TrashBin from '~/assets/images/icons/trash-bin.svg?react';
@@ -32,6 +34,7 @@ const iconNameToSvg: Record<IconName, FC<React.SVGProps<SVGSVGElement>>> = {
   copy: Copy,
   download: Download,
   error: Error,
+  eye: Eye,
   file: File,
   group: Group,
   image: Image,
@@ -43,6 +46,7 @@ const iconNameToSvg: Record<IconName, FC<React.SVGProps<SVGSVGElement>>> = {
   pin: Pin,
   remove: Remove,
   search: Search,
+  strikedEye: StrikedEye,
   transcribe: Transcribe,
   translate: Translate,
   trashBin: TrashBin,

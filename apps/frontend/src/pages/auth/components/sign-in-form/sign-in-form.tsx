@@ -1,11 +1,18 @@
-import { Button, Input, NavLink } from '~/libs/components/components.js';
+import {
+  Button,
+  IconButton,
+  Input,
+  NavLink
+} from '~/libs/components/components.js';
 import { AppRoute, ButtonColor, DataStatus } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppForm,
   useAppSelector,
+  useCallback,
   useEffect,
-  useNavigate
+  useNavigate,
+  useState
 } from '~/libs/hooks/hooks.js';
 import { type UserSignInRequestDto } from '~/modules/auth/auth.js';
 import { UserPayloadKey } from '~/modules/profile/profile.js';
@@ -21,6 +28,8 @@ const SignInForm: React.FC<Properties> = ({ onSubmit }) => {
   const { control, errors, handleSubmit, reset } = useAppForm({
     defaultValues: DEFAULT_SIGN_IN_PAYLOAD
   });
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
@@ -44,6 +53,10 @@ const SignInForm: React.FC<Properties> = ({ onSubmit }) => {
     reset();
   };
 
+  const handleTogglePasswordVisibility = useCallback(() => {
+    setIsPasswordVisible(previousState => !previousState);
+  }, []);
+
   return (
     <>
       <h2 className={styles['title']}>Login to your account</h2>
@@ -61,7 +74,14 @@ const SignInForm: React.FC<Properties> = ({ onSubmit }) => {
             errors={errors}
             name={UserPayloadKey.PASSWORD}
             placeholder="Password"
-            type="password"
+            rightIcon={
+              <IconButton
+                iconName={isPasswordVisible ? 'strikedEye' : 'eye'}
+                label={isPasswordVisible ? 'Hide password' : 'Show password'}
+                onClick={handleTogglePasswordVisibility}
+              />
+            }
+            type={isPasswordVisible ? 'text' : 'password'}
           />
           <Button color={ButtonColor.TEAL} isFluid isPrimary type="submit">
             Sign In
