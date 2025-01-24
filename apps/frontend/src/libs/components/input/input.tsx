@@ -1,16 +1,13 @@
-import { ErrorMessage } from '@hookform/error-message';
 import clsx from 'clsx';
 import { type ReactElement } from 'react';
 import {
   type Control,
+  type FieldErrors,
   type FieldPath,
   type FieldValues
 } from 'react-hook-form';
 
-import {
-  checkGreaterThanZero,
-  getValidClassNames
-} from '~/libs/helpers/helpers.js';
+import { getValidClassNames } from '~/libs/helpers/helpers.js';
 import { useController, useEffect, useRef } from '~/libs/hooks/hooks.js';
 
 import styles from './styles.module.scss';
@@ -21,7 +18,7 @@ type Properties<T extends FieldValues> = {
   className?: string;
   control: Control<T>;
   disabled?: boolean;
-  errors?: object;
+  errors: FieldErrors<T>;
   isTextArea?: boolean;
   name: FieldPath<T>;
   placeholder: string;
@@ -41,7 +38,8 @@ const Input = <T extends FieldValues>({
   type = 'text'
 }: Properties<T>): ReactElement => {
   const { field } = useController<T>({ control, name });
-  const hasErrors = checkGreaterThanZero(Object.keys(errors).length);
+  const error = errors[name]?.message;
+  const hasError = Boolean(error);
   const hasRightIcon = Boolean(rightIcon);
 
   const textareaReference = useRef<HTMLTextAreaElement | null>(null);
@@ -93,10 +91,8 @@ const Input = <T extends FieldValues>({
           </div>
         )}
       </div>
-      {hasErrors && (
-        <span className={styles['errorWrapper']}>
-          <ErrorMessage errors={errors} name={name} />
-        </span>
+      {hasError && (
+        <span className={styles['errorWrapper']}>{error as string}</span>
       )}
     </div>
   );

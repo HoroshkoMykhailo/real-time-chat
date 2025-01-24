@@ -7,6 +7,13 @@ import {
 } from '../../../user/user.js';
 
 const signUp = Joi.object({
+  [UserPayloadKey.CONFIRM_PASSWORD]: Joi.string()
+    .valid(Joi.ref(UserPayloadKey.PASSWORD))
+    .required()
+    .messages({
+      'any.only': UserValidationMessage.CONFIRM_PASSWORD_MATCH,
+      'any.required': UserValidationMessage.CONFIRM_PASSWORD_REQUIRE
+    }),
   [UserPayloadKey.EMAIL]: Joi.string()
     .trim()
     .email({ tlds: { allow: false } })

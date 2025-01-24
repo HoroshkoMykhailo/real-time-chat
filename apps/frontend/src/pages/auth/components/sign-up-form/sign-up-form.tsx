@@ -92,6 +92,20 @@ const SignUpForm: React.FC<Properties> = ({ onSubmit }) => {
             }
             type={isPasswordVisible ? 'text' : 'password'}
           />
+          <Input
+            control={control}
+            errors={errors}
+            name={UserPayloadKey.CONFIRM_PASSWORD}
+            placeholder="Confirm Password"
+            rightIcon={
+              <IconButton
+                iconName={isPasswordVisible ? 'strikedEye' : 'eye'}
+                label={isPasswordVisible ? 'Hide password' : 'Show password'}
+                onClick={handleTogglePasswordVisibility}
+              />
+            }
+            type={isPasswordVisible ? 'text' : 'password'}
+          />
           <Button
             color={ButtonColor.TEAL}
             isFluid

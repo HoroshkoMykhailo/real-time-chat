@@ -1,6 +1,8 @@
 import { UserValidationRule } from './user-validation-rule.enum.js';
 
 const UserValidationMessage = {
+  CONFIRM_PASSWORD_MATCH: 'Passwords do not match',
+  CONFIRM_PASSWORD_REQUIRE: 'Confirm password is required',
   EMAIL_REQUIRE: 'Email is required',
   EMAIL_WRONG: 'Email is wrong',
   PASSWORD_MAX_LENGTH: `Password must be at most ${UserValidationRule.PASSWORD_MAX_LENGTH} characters long`,
