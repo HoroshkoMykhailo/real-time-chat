@@ -6,7 +6,7 @@ import { type ChatType } from '../enums/enums.js';
 
 type ChatCreationRequestDto = {
   groupPicture?: MultipartFile;
-  members: MultipartValue<string>[];
+  members: MultipartValue<string>;
   name?: MultipartValue<string>;
   type: MultipartValue<ValueOf<typeof ChatType>>;
 };

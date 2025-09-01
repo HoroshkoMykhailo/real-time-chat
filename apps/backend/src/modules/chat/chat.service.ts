@@ -100,10 +100,10 @@ class Chat implements ChatService {
     );
   }
 
-  async #fetchMemberProfiles(members: { value: string }[]): Promise<Profile[]> {
+  async #fetchMemberProfiles(members: string[]): Promise<Profile[]> {
     return await Promise.all(
       members.map(async member => {
-        const profile = await this.#profileRepository.getById(member.value);
+        const profile = await this.#profileRepository.getById(member);
 
         if (!profile) {
           throw new HTTPError({
@@ -263,11 +263,9 @@ class Chat implements ChatService {
 
   async #handleExistingPrivateChat(
     adminId: string,
-    members: { value: string }[]
+    members: string[]
   ): Promise<ChatCreationResponseDto | null> {
-    const memberIds = members
-      .map(member => member.value)
-      .sort((a, b) => a.localeCompare(b));
+    const memberIds = members.sort((a, b) => a.localeCompare(b));
     const existingChat =
       await this.#chatRepository.findPrivateChatByMembers(memberIds);
 
@@ -300,10 +298,10 @@ class Chat implements ChatService {
 
   #validateMembers(
     adminId: string,
-    members: { value: string }[],
+    members: string[],
     type: { value: ValueOf<typeof ChatType> }
   ): void {
-    if (!members.some(member => member.value === adminId)) {
+    if (!members.includes(adminId)) {
       throw new HTTPError({
         message: ExceptionMessage.FORBIDDEN,
         status: HTTPCode.BAD_REQUEST
@@ -383,7 +381,13 @@ class Chat implements ChatService {
     data: ChatCreationRequestDto
   ): Promise<ChatCreationResponseDto> {
     const { profileId: adminId } = user;
-    const { groupPicture, members, name, type } = data;
+    const {
+      groupPicture,
+      members: { value: JsonMembers },
+      name,
+      type
+    } = data;
+    const members = JSON.parse(JsonMembers) as string[];
 
     await this.#validateAdminProfile(adminId);
 
@@ -410,7 +414,7 @@ class Chat implements ChatService {
     const memberProfiles = await this.#fetchMemberProfiles(members);
 
     const chatCreation: Omit<TChat, 'createdAt' | 'id' | 'updatedAt'> = {
-      members: members.map(member => member.value),
+      members,
       type: type.value
     };
 
@@ -428,10 +432,7 @@ class Chat implements ChatService {
 
     const createdChat = await this.#chatRepository.create(chatCreation);
 
-    await this.#createChatToUserRecords(
-      createdChat.id,
-      members.map(member => member.value)
-    );
+    await this.#createChatToUserRecords(createdChat.id, members);
 
     return this.#formatChatResponse({
       adminId,
