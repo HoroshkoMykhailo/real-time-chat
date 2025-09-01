@@ -7,12 +7,11 @@ import {
 import { Icon, Image, Input } from '~/libs/components/components.js';
 import { checkGreaterThanZero } from '~/libs/helpers/helpers.js';
 import { useAppSelector, useCallback, useState } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { ChatPayloadKey } from '~/modules/chat/chat.js';
 
 import { type GroupFormValues } from '../../types/group-form-values.type.js';
 import styles from './styles.module.scss';
-// eslint-disable-next-line perfectionist/sort-imports
-import { translate } from '~/libs/modules/localization/translate.js';
 
 type Properties = {
   control: Control<GroupFormValues, null>;
