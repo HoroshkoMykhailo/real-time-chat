@@ -9,7 +9,7 @@ const profileApi = new ProfileApi({
 });
 
 export { profileApi };
-export { UserApiPath, UserPayloadKey } from './libs/enums/enums.js';
+export { UserPayloadKey } from './libs/enums/enums.js';
 export { type Profile } from './libs/types/types.js';
 export {
   actions as profileActions,

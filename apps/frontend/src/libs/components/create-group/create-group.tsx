@@ -15,9 +15,9 @@ import {
 } from '~/libs/hooks/hooks.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import {
-  ChatPayloadKey,
   chatActions,
-  chatCreationValidationSchema
+  chatCreationValidationSchema,
+  ChatPayloadKey
 } from '~/modules/chat/chat.js';
 import { type ChatCreationRequestDto } from '~/modules/chat/libs/types/types.js';
 import { messageActions } from '~/modules/messages/message.js';
@@ -109,7 +109,7 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
 
       void dispatch(chatActions.getChat({ id: createdChat.id }));
 
-      navigate(`${AppRoute.CHATS}/${createdChat.id}`);
+      void navigate(`${AppRoute.CHATS}/${createdChat.id}`);
       setActiveView(ActiveSideView.ChatList);
       dispatch(chatActions.resetCreatedChat());
     }
@@ -144,6 +144,5 @@ const CreateGroup = ({ setActiveView }: Properties): JSX.Element => {
 };
 
 export { CreateGroup };
-export { GroupForm } from './libs/components/group-form/group-form.js';
 export { CreateGroupHeader } from './libs/components/header/header.js';
 export { UserSearch } from './libs/components/user-search/user-search.js';

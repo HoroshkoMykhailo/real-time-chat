@@ -2,7 +2,9 @@ import { useEffect, useRef as useReference, useState } from '../hooks.js';
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
-  const timeoutReference = useReference<ReturnType<typeof setTimeout>>();
+  const timeoutReference = useReference<null | ReturnType<typeof setTimeout>>(
+    null
+  );
 
   useEffect(() => {
     if (timeoutReference.current) {

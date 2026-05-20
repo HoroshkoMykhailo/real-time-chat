@@ -19,8 +19,3 @@ const authController = new AuthController({
 });
 
 export { authController };
-export { AuthApiPath } from './libs/enums/enums.js';
-export {
-  type UserSignUpRequestDto,
-  type UserSignUpResponseDto
-} from './libs/types/types.js';

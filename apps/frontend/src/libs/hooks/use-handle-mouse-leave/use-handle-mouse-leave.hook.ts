@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { type RefObject, useEffect, useRef } from 'react';
 
 const DEFAULT_DELAY = 500;
 
 type Properties = {
   delay?: number;
   onMouseLeave: (() => void) | undefined;
-  reference: React.RefObject<HTMLElement>;
+  reference: RefObject<HTMLElement | null>;
 };
 
 const useHandleMouseLeave = ({
@@ -13,7 +13,7 @@ const useHandleMouseLeave = ({
   onMouseLeave,
   reference
 }: Properties): void => {
-  const timeoutReference = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timeoutReference = useRef<null | ReturnType<typeof setTimeout>>(null);
 
   useEffect(() => {
     if (!onMouseLeave) {

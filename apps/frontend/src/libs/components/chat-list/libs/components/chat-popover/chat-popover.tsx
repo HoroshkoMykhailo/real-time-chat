@@ -42,7 +42,7 @@ const ChatPopover = ({
     void dispatch(chatActions.leaveChat({ id: chatId }));
 
     if (currentChatId === chatId) {
-      navigate(AppRoute.ROOT);
+      void navigate(AppRoute.ROOT);
     }
   }, [chatId, currentChatId, dispatch, navigate]);
 

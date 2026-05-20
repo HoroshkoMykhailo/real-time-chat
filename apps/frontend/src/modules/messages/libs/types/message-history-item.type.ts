@@ -1,7 +1,7 @@
 import { type MessageCreationResponseDto } from './types.js';
 
-type MessageHistoryItem = {
+type MessageHistoryItem = MessageCreationResponseDto & {
   translatedMessage?: string;
-} & MessageCreationResponseDto;
+};
 
 export { type MessageHistoryItem };

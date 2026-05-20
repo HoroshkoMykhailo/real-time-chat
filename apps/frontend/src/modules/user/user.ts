@@ -9,8 +9,6 @@ const userApi = new UserApi({
 });
 
 export { userApi };
-export { UserPayloadKey } from './libs/enums/enums.js';
-export { UserApiPath } from './libs/enums/enums.js';
 export {
   actions as userActions,
   reducer as userReducer

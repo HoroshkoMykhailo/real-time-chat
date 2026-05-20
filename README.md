@@ -25,13 +25,11 @@ The main goal of this project is to create a platform for messaging, suitable fo
 ## Architecture
 
 1. **Client Side (Frontend):**
-
    - Built with React.js integrated with Socket.IO to connect to the server.
    - Displays the user interface, including the user list, message list, input form for new messages, and other UI elements.
    - State management using Redux to support single-page applications (SPA).
 
 2. **Server Side (Backend):**
-
    - Server developed using Node.js with Fastify for handling HTTP requests.
    - Socket.IO for managing real-time connections with clients.
    - MongoDB is used to store user information and message history.
@@ -45,21 +43,23 @@ To get the source code of the application, clone the repository using the follow
 
 Then:
 
-1. Install dependencies: `npm install`.
+1. Use the Node.js version in [`.nvmrc`](./.nvmrc) (for example `nvm use`).
 
-2. Build shared: `npm run build:shared`
+2. Install dependencies: `npm install`.
 
-3. Run database. You can run it by installing mongoDb on your computer.
+3. Build shared: `npm run build:shared`
 
-4. Create Goggle Cloud API key and store it locally.
+4. Run database. You can run it by installing mongoDb on your computer.
 
-5. Create and fill all .env files. These files are:
+5. Create Goggle Cloud API key and store it locally.
+
+6. Create and fill all .env files. These files are:
 
 - apps/frontend/.env
 - apps/backend/.env
 
 You should use .env.example files as a reference.
 
-6. Run backend: `npm run start:dev -w apps/backend`
+7. Run backend: `npm run start:dev -w apps/backend`
 
-7. Run frontend: `npm run start:dev -w apps/frontend`
+8. Run frontend: `npm run start:dev -w apps/frontend`

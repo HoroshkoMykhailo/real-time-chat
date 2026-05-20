@@ -68,7 +68,11 @@ const Main: React.FC = () => {
 
   const handleCancelClick = useCallback((): void => {
     if (activeView === ActiveSideView.ChatList) {
-      isCreateChatOpened ? onCreateChatClose() : onCreateChatOpen();
+      if (isCreateChatOpened) {
+        onCreateChatClose();
+      } else {
+        onCreateChatOpen();
+      }
     } else {
       setActiveView(ActiveSideView.ChatList);
       onCreateChatClose();

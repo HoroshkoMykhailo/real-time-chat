@@ -3,7 +3,6 @@ export { type MessageHistoryItem } from './message-history-item.type.js';
 export {
   type FileMessageRequestDto,
   type GetMessagesResponseDto,
-  type Message,
   type MessageCreationResponseDto,
   type TextMessageRequestDto,
   type TranslateMessageResponseDto

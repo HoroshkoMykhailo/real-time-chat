@@ -46,7 +46,7 @@ const SignUpForm: React.FC<Properties> = ({ onSubmit }) => {
 
   useEffect(() => {
     if (authenticatedUser) {
-      navigate(AppRoute.PROFILE);
+      void navigate(AppRoute.PROFILE);
     }
   }, [authenticatedUser, dispatch, navigate]);
 

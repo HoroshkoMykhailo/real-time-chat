@@ -5,15 +5,15 @@ import globals from 'globals';
 
 import baseConfig from '../../eslint.config.js';
 
-/** @typedef {import("eslint").Linter.FlatConfig} */
-let FlatConfig;
+/** @typedef {import("eslint").Linter.Config} */
+let Config;
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const ignoresConfig = {
   ignores: ['build']
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const mainConfig = {
   languageOptions: {
     globals: {
@@ -25,14 +25,14 @@ const mainConfig = {
   }
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const settingsConfig = {
   settings: {
     react: { version: 'detect' }
   }
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const reactConfig = {
   files: ['**/*.tsx'],
   plugins: {
@@ -49,7 +49,7 @@ const reactConfig = {
   }
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const reactHooksConfig = {
   files: ['**/*.tsx'],
   plugins: {
@@ -58,7 +58,7 @@ const reactHooksConfig = {
   rules: reactHooks.configs.recommended.rules
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const jsxA11yConfig = {
   files: ['**/*.tsx'],
   plugins: {
@@ -70,7 +70,7 @@ const jsxA11yConfig = {
   }
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const explicitGenericsConfig = {
   rules: {
     'require-explicit-generics/require-explicit-generics': [
@@ -80,7 +80,7 @@ const explicitGenericsConfig = {
   }
 };
 
-/** @type {FlatConfig[]} */
+/** @type {Config[]} */
 const overridesConfigs = [
   {
     files: ['vite.config.ts'],
@@ -96,7 +96,7 @@ const overridesConfigs = [
   }
 ];
 
-/** @type {FlatConfig[]} */
+/** @type {Config[]} */
 const config = [
   ...baseConfig,
   ignoresConfig,

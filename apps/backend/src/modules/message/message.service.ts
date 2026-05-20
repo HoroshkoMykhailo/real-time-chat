@@ -13,8 +13,8 @@ import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 import { SocketEvents } from '~/libs/modules/socket/socket.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
-import { type Chat as ChatRepository } from '../chat/chat.repository.js';
 import { type ChatToUser as ChatToUserRepository } from '../chat-to-user/chat-to-user.repository.js';
+import { type Chat as ChatRepository } from '../chat/chat.repository.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
 import { type TranscriptionService } from '../transcription/transcription.js';
 import { type TranslationService } from '../translation/translation.js';
@@ -36,8 +36,6 @@ import {
 } from './libs/types/types.js';
 import { type Message as MessageRepository } from './message.repository.js';
 
-type IoGetter = () => Server;
-
 type Constructor = {
   chatRepository: ChatRepository;
   chatToUserRepository: ChatToUserRepository;
@@ -48,26 +46,12 @@ type Constructor = {
   translationService: TranslationService;
 };
 
+type IoGetter = () => Server;
+
 class Message implements MessageService {
   #chatRepository: ChatRepository;
   #chatToUserRepository: ChatToUserRepository;
   #getIo: IoGetter;
-  #isUserChatMember = async (user: User, chatId: string): Promise<boolean> => {
-    const relation = await this.#chatToUserRepository.get(
-      chatId,
-      user.profileId
-    );
-
-    if (!relation) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
-    }
-
-    return true;
-  };
-
   #messageRepository: MessageRepository;
 
   #profileRepository: ProfileRepository;
@@ -502,6 +486,7 @@ class Message implements MessageService {
       )
     };
   }
+
   public async transcribeMessage(
     user: User,
     messageId: string
@@ -569,7 +554,6 @@ class Message implements MessageService {
       sender: senderProfile
     };
   }
-
   public async translateMessage(
     user: User,
     messageId: string,
@@ -664,6 +648,22 @@ class Message implements MessageService {
       sender
     };
   }
+
+  #isUserChatMember = async (user: User, chatId: string): Promise<boolean> => {
+    const relation = await this.#chatToUserRepository.get(
+      chatId,
+      user.profileId
+    );
+
+    if (!relation) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    return true;
+  };
 }
 
 export { Message };

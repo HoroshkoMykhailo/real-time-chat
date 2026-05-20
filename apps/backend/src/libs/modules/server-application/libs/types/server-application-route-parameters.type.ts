@@ -1,8 +1,8 @@
 import {
   type FastifyReply,
   type FastifyRequest,
-  type RouteGenericInterface,
-  type preHandlerHookHandler
+  type preHandlerHookHandler,
+  type RouteGenericInterface
 } from 'fastify';
 
 import { type HTTPMethod } from '~/libs/modules/http/http.js';

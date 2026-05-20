@@ -1,4 +1,4 @@
-import { type PayloadAction, createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { createSlice, isAnyOf, type PayloadAction } from '@reduxjs/toolkit';
 
 import {
   MINUS_ONE_VALUE,
@@ -34,7 +34,7 @@ type State = {
   addDataStatus: ValueOf<typeof DataStatus>;
   dataStatus: ValueOf<typeof DataStatus>;
   editDataStatus: ValueOf<typeof DataStatus>;
-  fileBlob: { blob: Blob; id: string } | null;
+  fileBlob: null | { blob: Blob; id: string };
   isAfter: boolean;
   isBefore: boolean;
   isTranscribedFirst: boolean;

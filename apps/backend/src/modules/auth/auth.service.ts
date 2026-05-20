@@ -23,6 +23,16 @@ class Auth implements AuthService {
   #tokenService: Token;
   #userService: UserService;
 
+  public constructor({
+    encryptionService,
+    tokenService,
+    userService
+  }: Constructor) {
+    this.#userService = userService;
+    this.#tokenService = tokenService;
+    this.#encryptionService = encryptionService;
+  }
+
   public register = async (
     userRequestDto: UserSignUpRequestDto
   ): Promise<UserSignUpResponseDto> => {
@@ -51,22 +61,14 @@ class Auth implements AuthService {
       });
     }
 
-    const token = await this.#tokenService.createToken({ userId: user.id });
+    const token = await this.#tokenService.createToken({
+      userId: user._id.toString()
+    });
 
     const mappedUser = this.#userService.mapUser(user);
 
     return { token, user: mappedUser };
   };
-
-  public constructor({
-    encryptionService,
-    tokenService,
-    userService
-  }: Constructor) {
-    this.#userService = userService;
-    this.#tokenService = tokenService;
-    this.#encryptionService = encryptionService;
-  }
 }
 
 export { Auth };

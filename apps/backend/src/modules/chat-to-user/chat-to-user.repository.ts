@@ -10,14 +10,6 @@ class ChatToUser {
     this.model = model;
   }
 
-  private mapToBusinessLogic(document: ChatToUserDocument): TChatToUser {
-    return {
-      chatId: document.chatId.toString(),
-      lastViewedAt: document.lastViewedAt.toISOString(),
-      userId: document.userId.toString()
-    };
-  }
-
   public async create(data: TChatToUser): Promise<TChatToUser> {
     const document = new this.model(data);
 
@@ -29,7 +21,7 @@ class ChatToUser {
   public async delete(
     chatId: string,
     userId: string
-  ): Promise<TChatToUser | null> {
+  ): Promise<null | TChatToUser> {
     const document = await this.model.findOneAndDelete({ chatId, userId });
 
     if (
@@ -38,7 +30,7 @@ class ChatToUser {
       'userId' in document &&
       'lastViewedAt' in document
     ) {
-      return this.mapToBusinessLogic(document as ChatToUserDocument);
+      return this.mapToBusinessLogic(document);
     }
 
     return null;
@@ -47,7 +39,7 @@ class ChatToUser {
   public async get(
     chatId: string,
     userId: string
-  ): Promise<TChatToUser | null> {
+  ): Promise<null | TChatToUser> {
     const document = await this.model.findOne({ chatId, userId });
 
     return document ? this.mapToBusinessLogic(document) : null;
@@ -63,7 +55,7 @@ class ChatToUser {
     chatId: string,
     userId: string,
     lastViewedAt: Date
-  ): Promise<TChatToUser | null> {
+  ): Promise<null | TChatToUser> {
     const document = await this.model.findOneAndUpdate(
       { chatId, userId },
       { lastViewedAt },
@@ -71,6 +63,14 @@ class ChatToUser {
     );
 
     return document ? this.mapToBusinessLogic(document) : null;
+  }
+
+  private mapToBusinessLogic(document: ChatToUserDocument): TChatToUser {
+    return {
+      chatId: document.chatId.toString(),
+      lastViewedAt: document.lastViewedAt.toISOString(),
+      userId: document.userId.toString()
+    };
   }
 }
 

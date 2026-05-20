@@ -1,5 +1,5 @@
 import { ENV } from '~/libs/enums/enums.js';
-import { Zero, getValidClassNames } from '~/libs/helpers/helpers.js';
+import { getValidClassNames, Zero } from '~/libs/helpers/helpers.js';
 
 import { Image } from '../image/image.js';
 import styles from './styles.module.scss';

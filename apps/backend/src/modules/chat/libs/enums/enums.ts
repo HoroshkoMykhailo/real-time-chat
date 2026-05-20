@@ -1,6 +1,1 @@
-export {
-  ChatApiPath,
-  ChatType,
-  ChatValidationMessage,
-  ChatValidationRule
-} from '@team-link/shared';
+export { ChatApiPath, ChatType, ChatValidationRule } from '@team-link/shared';

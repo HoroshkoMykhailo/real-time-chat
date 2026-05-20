@@ -12,6 +12,8 @@ const ExceptionMessage = {
   INVALID_CREDENTIALS: 'Invalid credentials.',
   INVALID_DATE_OF_BIRTH: 'Invalid date of birth.',
   INVALID_IMAGE_TYPE: 'Invalid image type.',
+  INVALID_LAST_VIEWED_AT: 'Invalid last viewed time.',
+  INVALID_MEMBERS_JSON: 'Members payload must be valid JSON.',
   INVALID_MESSAGE_TYPE: 'Invalid message type.',
   INVALID_TOKEN: 'Invalid token.',
   INVALID_TOKEN_NO_USER_ID: 'Token is invalid: userId missing.',

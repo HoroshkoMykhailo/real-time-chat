@@ -21,6 +21,22 @@ import {
 } from './libs/types/types.js';
 
 class Store implements StoreModule {
+  public get extraArguments(): ExtraArguments {
+    return {
+      authApi,
+      chatApi,
+      messageApi,
+      profileApi,
+      storageApi,
+      toastNotifier,
+      userApi
+    };
+  }
+
+  public get instance(): StoreInstance {
+    return this.#instance;
+  }
+
   #instance: StoreInstance;
 
   public constructor(config: ConfigModule) {
@@ -48,22 +64,6 @@ class Store implements StoreModule {
         user: userReducer
       }
     });
-  }
-
-  public get extraArguments(): ExtraArguments {
-    return {
-      authApi,
-      chatApi,
-      messageApi,
-      profileApi,
-      storageApi,
-      toastNotifier,
-      userApi
-    };
-  }
-
-  public get instance(): StoreInstance {
-    return this.#instance;
   }
 }
 

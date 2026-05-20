@@ -6,9 +6,10 @@ import {
 } from './abstract.document.js';
 import { type Repository } from './libs/types/types.js';
 
-class Abstract<T extends AbstractDocument, K extends AbstractModel>
-  implements Repository<K>
-{
+class Abstract<
+  T extends AbstractDocument,
+  K extends AbstractModel
+> implements Repository<K> {
   protected readonly model: Model<T>;
 
   public constructor(model: Model<T>) {
@@ -42,23 +43,6 @@ class Abstract<T extends AbstractDocument, K extends AbstractModel>
     return document ? this.mapToBusinessLogic(document) : null;
   }
 
-  protected mapAdditionalBusinessLogic(_document: T): Partial<K> {
-    return {};
-  }
-
-  protected mapToBusinessLogic(document: T): K {
-    return {
-      createdAt: document.createdAt.toISOString(),
-      id: document.id as string,
-      updatedAt: document.updatedAt.toISOString(),
-      ...this.mapAdditionalBusinessLogic(document)
-    } as unknown as K;
-  }
-
-  protected mapToDatabase(_data: Partial<K>): Partial<T> {
-    throw new Error('Not implemented: mapToDatabase');
-  }
-
   public async updateById(id: string, data: Partial<K>): Promise<K | null> {
     const transformedData = this.mapToDatabase(data);
 
@@ -67,6 +51,23 @@ class Abstract<T extends AbstractDocument, K extends AbstractModel>
     });
 
     return document ? this.mapToBusinessLogic(document) : null;
+  }
+
+  protected mapAdditionalBusinessLogic(_document: T): Partial<K> {
+    return {};
+  }
+
+  protected mapToBusinessLogic(document: T): K {
+    return {
+      createdAt: document.createdAt.toISOString(),
+      id: document._id.toString(),
+      updatedAt: document.updatedAt.toISOString(),
+      ...this.mapAdditionalBusinessLogic(document)
+    } as unknown as K;
+  }
+
+  protected mapToDatabase(_data: Partial<K>): Partial<T> {
+    throw new Error('Not implemented: mapToDatabase');
   }
 }
 

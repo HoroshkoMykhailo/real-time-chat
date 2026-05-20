@@ -13,6 +13,8 @@ const config = ({ mode }: ConfigEnv): ReturnType<typeof defineConfig> => {
     VITE_APP_PROXY_SERVER_URL
   } = loadEnv(mode, process.cwd());
 
+  const proxyTarget = VITE_APP_PROXY_SERVER_URL?.trim();
+
   return defineConfig({
     build: {
       outDir: 'build'
@@ -35,12 +37,14 @@ const config = ({ mode }: ConfigEnv): ReturnType<typeof defineConfig> => {
     server: {
       host: VITE_APP_HOST as string,
       port: Number(VITE_APP_PORT),
-      proxy: {
-        [VITE_API_PATH as string]: {
-          changeOrigin: true,
-          target: VITE_APP_PROXY_SERVER_URL
+      ...(proxyTarget && {
+        proxy: {
+          [VITE_API_PATH as string]: {
+            changeOrigin: true,
+            target: proxyTarget
+          }
         }
-      }
+      })
     }
   });
 };

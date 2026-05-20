@@ -32,28 +32,6 @@ type Constructor = {
 class Auth extends Controller implements AuthController {
   #authService: AuthService;
 
-  public register = async (
-    options: ControllerAPIHandlerOptions<{
-      body: UserSignUpRequestDto;
-    }>
-  ): Promise<ControllerAPIHandlerResponse<UserSignUpResponseDto>> => {
-    return {
-      payload: await this.#authService.register(options.body),
-      status: HTTPCode.CREATED
-    };
-  };
-
-  public signIn = async (
-    options: ControllerAPIHandlerOptions<{
-      body: UserSignInRequestDto;
-    }>
-  ): Promise<ControllerAPIHandlerResponse<UserSignInResponseDto>> => {
-    return {
-      payload: await this.#authService.signIn(options.body),
-      status: HTTPCode.OK
-    };
-  };
-
   public constructor({ apiPath, authService, logger }: Constructor) {
     super({ apiPath, logger });
     this.#authService = authService;
@@ -76,6 +54,28 @@ class Auth extends Controller implements AuthController {
       url: AuthApiPath.SIGN_IN
     });
   }
+
+  public register = async (
+    options: ControllerAPIHandlerOptions<{
+      body: UserSignUpRequestDto;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<UserSignUpResponseDto>> => {
+    return {
+      payload: await this.#authService.register(options.body),
+      status: HTTPCode.CREATED
+    };
+  };
+
+  public signIn = async (
+    options: ControllerAPIHandlerOptions<{
+      body: UserSignInRequestDto;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<UserSignInResponseDto>> => {
+    return {
+      payload: await this.#authService.signIn(options.body),
+      status: HTTPCode.OK
+    };
+  };
 }
 
 export { Auth };

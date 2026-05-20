@@ -54,7 +54,11 @@ class Transcription implements TranscriptionService {
       }
 
       const transcription = results
-        .map(result => result.alternatives?.[DEFAULT_VALUE]?.transcript ?? '')
+        .map(result => {
+          const alternative = result.alternatives?.[DEFAULT_VALUE];
+
+          return alternative?.transcript ?? '';
+        })
         .join(' ')
         .trim();
 

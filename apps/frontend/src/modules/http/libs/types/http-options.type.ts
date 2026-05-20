@@ -4,7 +4,7 @@ import { type ValueOf } from '~/libs/types/types.js';
 import { type HTTPMethod } from '../enums/enums.js';
 
 type HttpOptions = {
-  contentType?: ValueOf<typeof ContentType> | undefined;
+  contentType?: undefined | ValueOf<typeof ContentType>;
   hasAuth: boolean;
   headers: Headers;
   method: ValueOf<typeof HTTPMethod>;

@@ -15,6 +15,10 @@ type Constructor = {
 };
 
 class Controller implements ControllerModule {
+  public get routes(): ServerApplicationRouteParameters[] {
+    return this.#routes;
+  }
+
   #apiPath: string;
 
   #logger: LoggerModule;
@@ -24,6 +28,15 @@ class Controller implements ControllerModule {
   public constructor({ apiPath, logger }: Constructor) {
     this.#logger = logger;
     this.#apiPath = apiPath;
+  }
+
+  public addRoute(options: ControllerRouteParameters): void {
+    const { handler, url } = options;
+    this.#routes.push({
+      ...options,
+      handler: (request, reply) => this.mapHandler(handler, request, reply),
+      url: joinPath([this.#apiPath, url])
+    });
   }
 
   private async mapHandler(
@@ -58,19 +71,6 @@ class Controller implements ControllerModule {
       query,
       user
     };
-  }
-
-  public addRoute(options: ControllerRouteParameters): void {
-    const { handler, url } = options;
-    this.#routes.push({
-      ...options,
-      handler: (request, reply) => this.mapHandler(handler, request, reply),
-      url: joinPath([this.#apiPath, url])
-    });
-  }
-
-  public get routes(): ServerApplicationRouteParameters[] {
-    return this.#routes;
   }
 }
 

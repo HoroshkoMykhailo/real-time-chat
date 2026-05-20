@@ -10,7 +10,7 @@ import {
 import { type ValueOf } from '~/libs/types/types.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import { type MessageCreationResponseDto } from '~/modules/messages/libs/types/types.js';
-import { MessageType, messageActions } from '~/modules/messages/message.js';
+import { messageActions, MessageType } from '~/modules/messages/message.js';
 
 import {
   AudioMessage,
@@ -95,7 +95,7 @@ const MessageItem = ({
       void dispatch(messageActions.getMessages({ chatId: createdChat.id }));
       void dispatch(chatActions.getChat({ id: createdChat.id }));
 
-      navigate(`${AppRoute.CHATS}/${createdChat.id}`);
+      void navigate(`${AppRoute.CHATS}/${createdChat.id}`);
       dispatch(chatActions.setSelectedChat(createdChat));
     }
   }, [navigate, dispatch, createdChat]);

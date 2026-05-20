@@ -1,3 +1,5 @@
+import { type RefObject } from 'react';
+
 import { ONE_HUNDRED, TWO_VALUE } from '~/libs/common/constants.js';
 
 import { useCallback } from '../hooks.js';
@@ -9,7 +11,7 @@ type UseScrollManager = {
 };
 
 const useScrollManager = (
-  messagesListReference: React.RefObject<HTMLDivElement>
+  messagesListReference: RefObject<HTMLDivElement | null>
 ): UseScrollManager => {
   const isAtTop = useCallback(() => {
     if (!messagesListReference.current) {

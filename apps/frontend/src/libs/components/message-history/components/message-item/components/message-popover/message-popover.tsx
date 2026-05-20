@@ -14,9 +14,9 @@ import { toastNotifier } from '~/libs/modules/toast-notifier/toast-notifier.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import {
+  messageActions,
   type MessageLanguage,
-  MessageType,
-  messageActions
+  MessageType
 } from '~/modules/messages/message.js';
 
 import { LanguageSelector } from './components/language-selector/language-selector.js';
@@ -88,9 +88,9 @@ const MessagePopover = ({
 
   const handleCopyClick = useCallback((): void => {
     if (message) {
-      message.translatedMessage
-        ? void navigator.clipboard.writeText(message.translatedMessage)
-        : void navigator.clipboard.writeText(message.content);
+      const text = message.translatedMessage || message.content;
+
+      void navigator.clipboard.writeText(text);
       toastNotifier.showSuccess(NotificationMessage.MESSAGE_COPIED);
       handleClose();
     }
@@ -110,6 +110,7 @@ const MessagePopover = ({
 
   const handleOriginalClick = useCallback((): void => {
     if (message) {
+      // eslint-disable-next-line sonarjs/void-use -- RTK thunk; intentional fire-and-forget
       void dispatch(
         messageActions.toOriginalMessage({
           messageId: message.id

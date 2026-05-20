@@ -44,7 +44,7 @@ const SignInForm: React.FC<Properties> = ({ onSubmit }) => {
 
   useEffect(() => {
     if (authenticatedUser) {
-      navigate(AppRoute.ROOT);
+      void navigate(AppRoute.ROOT);
     }
   }, [authenticatedUser, dispatch, navigate]);
 

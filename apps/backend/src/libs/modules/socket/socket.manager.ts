@@ -1,8 +1,8 @@
 import { type Server } from 'socket.io';
 
 class SocketManager {
-  private _io: Server | null = null;
   private static instance: SocketManager;
+  private _io: null | Server = null;
 
   private constructor() {}
 

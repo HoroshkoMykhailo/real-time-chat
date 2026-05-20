@@ -34,6 +34,107 @@ type Constructor = {
 class Message extends Controller implements MessageController {
   #messageService: MessageService;
 
+  public constructor({ apiPath, logger, messageService }: Constructor) {
+    super({ apiPath, logger });
+    this.#messageService = messageService;
+
+    this.addRoute({
+      handler: this.createTextMessage as ControllerAPIHandler,
+      method: HTTPMethod.POST,
+      schema: {
+        body: textMessageValidationSchema
+      },
+      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.TEXT}`
+    });
+
+    this.addRoute({
+      handler: this.transcribeMessage as ControllerAPIHandler,
+      method: HTTPMethod.POST,
+      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.TRANSCRIBE}`
+    });
+
+    this.addRoute({
+      handler: this.getPinMessagesByChatId as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.PIN}`
+    });
+
+    this.addRoute({
+      handler: this.getMessagesByChatId as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: MessageApiPath.$CHAT_ID
+    });
+
+    this.addRoute({
+      handler: this.downloadFileMessage as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.FILE}`
+    });
+
+    this.addRoute({
+      handler: this.createImageMessage as ControllerAPIHandler,
+      method: HTTPMethod.POST,
+      schema: {
+        body: fileMessageValidationSchema
+      },
+      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.IMAGE}`
+    });
+
+    this.addRoute({
+      handler: this.createVideoMessage as ControllerAPIHandler,
+      method: HTTPMethod.POST,
+      schema: {
+        body: fileMessageValidationSchema
+      },
+      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.VIDEO}`
+    });
+
+    this.addRoute({
+      handler: this.translateMessage as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.TRANSLATE}`
+    });
+
+    this.addRoute({
+      handler: this.createFileMessage as ControllerAPIHandler,
+      method: HTTPMethod.POST,
+      schema: {
+        body: fileMessageValidationSchema
+      },
+      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.FILE}`
+    });
+
+    this.addRoute({
+      handler: this.createAudioMessage as ControllerAPIHandler,
+      method: HTTPMethod.POST,
+      schema: {
+        body: fileMessageValidationSchema
+      },
+      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.AUDIO}`
+    });
+
+    this.addRoute({
+      handler: this.updateTextMessage as ControllerAPIHandler,
+      method: HTTPMethod.PUT,
+      schema: {
+        body: textMessageValidationSchema
+      },
+      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.TEXT}`
+    });
+
+    this.addRoute({
+      handler: this.updatePinMessage as ControllerAPIHandler,
+      method: HTTPMethod.PUT,
+      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.PIN}`
+    });
+
+    this.addRoute({
+      handler: this.deleteMessage as ControllerAPIHandler,
+      method: HTTPMethod.DELETE,
+      url: MessageApiPath.$MESSAGE_ID
+    });
+  }
+
   public createAudioMessage = async (
     options: ControllerAPIHandlerOptions<{
       body: FileMessageRequestDto;
@@ -280,107 +381,6 @@ class Message extends Controller implements MessageController {
       status: HTTPCode.OK
     };
   };
-
-  public constructor({ apiPath, logger, messageService }: Constructor) {
-    super({ apiPath, logger });
-    this.#messageService = messageService;
-
-    this.addRoute({
-      handler: this.createTextMessage as ControllerAPIHandler,
-      method: HTTPMethod.POST,
-      schema: {
-        body: textMessageValidationSchema
-      },
-      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.TEXT}`
-    });
-
-    this.addRoute({
-      handler: this.transcribeMessage as ControllerAPIHandler,
-      method: HTTPMethod.POST,
-      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.TRANSCRIBE}`
-    });
-
-    this.addRoute({
-      handler: this.getPinMessagesByChatId as ControllerAPIHandler,
-      method: HTTPMethod.GET,
-      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.PIN}`
-    });
-
-    this.addRoute({
-      handler: this.getMessagesByChatId as ControllerAPIHandler,
-      method: HTTPMethod.GET,
-      url: MessageApiPath.$CHAT_ID
-    });
-
-    this.addRoute({
-      handler: this.downloadFileMessage as ControllerAPIHandler,
-      method: HTTPMethod.GET,
-      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.FILE}`
-    });
-
-    this.addRoute({
-      handler: this.createImageMessage as ControllerAPIHandler,
-      method: HTTPMethod.POST,
-      schema: {
-        body: fileMessageValidationSchema
-      },
-      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.IMAGE}`
-    });
-
-    this.addRoute({
-      handler: this.createVideoMessage as ControllerAPIHandler,
-      method: HTTPMethod.POST,
-      schema: {
-        body: fileMessageValidationSchema
-      },
-      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.VIDEO}`
-    });
-
-    this.addRoute({
-      handler: this.translateMessage as ControllerAPIHandler,
-      method: HTTPMethod.GET,
-      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.TRANSLATE}`
-    });
-
-    this.addRoute({
-      handler: this.createFileMessage as ControllerAPIHandler,
-      method: HTTPMethod.POST,
-      schema: {
-        body: fileMessageValidationSchema
-      },
-      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.FILE}`
-    });
-
-    this.addRoute({
-      handler: this.createAudioMessage as ControllerAPIHandler,
-      method: HTTPMethod.POST,
-      schema: {
-        body: fileMessageValidationSchema
-      },
-      url: `${MessageApiPath.$CHAT_ID}${MessageApiPath.AUDIO}`
-    });
-
-    this.addRoute({
-      handler: this.updateTextMessage as ControllerAPIHandler,
-      method: HTTPMethod.PUT,
-      schema: {
-        body: textMessageValidationSchema
-      },
-      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.TEXT}`
-    });
-
-    this.addRoute({
-      handler: this.updatePinMessage as ControllerAPIHandler,
-      method: HTTPMethod.PUT,
-      url: `${MessageApiPath.$MESSAGE_ID}${MessageApiPath.PIN}`
-    });
-
-    this.addRoute({
-      handler: this.deleteMessage as ControllerAPIHandler,
-      method: HTTPMethod.DELETE,
-      url: MessageApiPath.$MESSAGE_ID
-    });
-  }
 }
 
 export { Message };

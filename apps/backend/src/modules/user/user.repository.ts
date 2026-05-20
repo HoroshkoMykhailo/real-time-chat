@@ -14,7 +14,7 @@ class User
     super(userModel);
   }
 
-  public async getByEmail(email: string): Promise<UserDocument | null> {
+  public async getByEmail(email: string): Promise<null | UserDocument> {
     const user = await this.model.findOne({ email }).exec();
 
     return user ?? null;

@@ -1,9 +1,11 @@
+import { type RefObject } from 'react';
+
 import { useEffect } from '~/libs/hooks/hooks.js';
 
 const useHandleClickOutside = <T extends HTMLElement>(
-  reference: React.RefObject<T>,
+  reference: RefObject<null | T>,
   onOutsideClick: () => void,
-  contentReference?: React.RefObject<T>
+  contentReference?: RefObject<null | T>
 ): void => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent): void => {

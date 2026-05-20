@@ -1,5 +1,5 @@
 import { type ReactElement } from 'react';
-import { type DropdownIndicatorProps, components } from 'react-select';
+import { components, type DropdownIndicatorProps } from 'react-select';
 
 import { Icon } from '../../components.js';
 

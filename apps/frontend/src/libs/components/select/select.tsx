@@ -1,9 +1,7 @@
 import {
   type Control,
   type FieldPath,
-  type FieldValues,
-  type Path,
-  type PathValue
+  type FieldValues
 } from 'react-hook-form';
 import ReactSelect, { type MultiValue, type SingleValue } from 'react-select';
 
@@ -58,7 +56,7 @@ const Select = <TFieldValues extends FieldValues, TOptionValue>({
 
     return isMulti
       ? matchedOptions
-      : matchedOptions[FIRST_OPTION_INDEX] ?? null;
+      : (matchedOptions[FIRST_OPTION_INDEX] ?? null);
   }, [field.value, options, isMulti]);
 
   const handleChange = useCallback(
@@ -124,7 +122,7 @@ const Select = <TFieldValues extends FieldValues, TOptionValue>({
       isSearchable={isSearchable}
       name={name}
       onChange={handleChange}
-      options={options as PathValue<TFieldValues, Path<TFieldValues>>}
+      options={options}
       placeholder={placeholder}
       styles={{
         control: base => ({

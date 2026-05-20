@@ -49,7 +49,7 @@ const MessageHistory = ({
   const [afterMessageTime, setAfterMessageTime] = useState<null | string>(null);
   const [isHidden, setIsHidden] = useState<boolean>(false);
   const messagesListReference = useRef<HTMLDivElement | null>(null);
-  const scrollTimeoutReference = useRef<ReturnType<typeof setTimeout> | null>(
+  const scrollTimeoutReference = useRef<null | ReturnType<typeof setTimeout>>(
     null
   );
   const hasScrolledToUnreadReference = useRef<boolean>(false);

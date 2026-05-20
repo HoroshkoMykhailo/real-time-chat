@@ -1,8 +1,8 @@
 import {
+  type configureStore,
   type ThunkMiddleware,
   type Tuple,
-  type UnknownAction,
-  type configureStore
+  type UnknownAction
 } from '@reduxjs/toolkit';
 
 import { type ToastNotifier } from '~/libs/modules/toast-notifier/toast-notifier.js';
@@ -19,14 +19,6 @@ import {
 import { type storageApi } from '~/modules/storage/storage.js';
 import { type userApi, type userReducer } from '~/modules/user/user.js';
 
-type RootReducer = {
-  auth: ReturnType<typeof authReducer>;
-  chat: ReturnType<typeof chatReducer>;
-  message: ReturnType<typeof messageReducer>;
-  profile: ReturnType<typeof profileReducer>;
-  user: ReturnType<typeof userReducer>;
-};
-
 type ExtraArguments = {
   authApi: typeof authApi;
   chatApi: typeof chatApi;
@@ -35,6 +27,14 @@ type ExtraArguments = {
   storageApi: typeof storageApi;
   toastNotifier: ToastNotifier;
   userApi: typeof userApi;
+};
+
+type RootReducer = {
+  auth: ReturnType<typeof authReducer>;
+  chat: ReturnType<typeof chatReducer>;
+  message: ReturnType<typeof messageReducer>;
+  profile: ReturnType<typeof profileReducer>;
+  user: ReturnType<typeof userReducer>;
 };
 
 type StoreInstance = ReturnType<

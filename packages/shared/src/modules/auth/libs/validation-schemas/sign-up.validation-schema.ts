@@ -1,10 +1,8 @@
 import Joi from 'joi';
 
-import {
-  UserPayloadKey,
-  UserValidationMessage,
-  UserValidationRule
-} from '../../../user/user.js';
+import { UserPayloadKey } from '../../../user/libs/enums/user-payload-key.enum.js';
+import { UserValidationMessage } from '../../../user/libs/enums/user-validation-message.enum.js';
+import { UserValidationRule } from '../../../user/libs/enums/user-validation-rule.enum.js';
 
 const signUp = Joi.object({
   [UserPayloadKey.CONFIRM_PASSWORD]: Joi.string()

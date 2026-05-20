@@ -17,9 +17,9 @@ import { type ChatService } from './libs/types/chat-service.type.js';
 import {
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatsResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto,
   type UpdateLastViewedTimeResponseDto
 } from './libs/types/types.js';
 import {
@@ -37,6 +37,12 @@ type Constructor = {
 
 class Chat extends Controller implements ChatController {
   #chatService: ChatService;
+
+  public constructor({ apiPath, chatService, logger }: Constructor) {
+    super({ apiPath, logger });
+    this.#chatService = chatService;
+    this.#registerRoutes();
+  }
 
   public addMembers = async (
     options: ControllerAPIHandlerOptions<{
@@ -192,10 +198,8 @@ class Chat extends Controller implements ChatController {
     };
   };
 
-  public constructor({ apiPath, chatService, logger }: Constructor) {
-    super({ apiPath, logger });
-    this.#chatService = chatService;
-
+  /** Keeps the constructor focused on wiring; route table stays easy to scan. */
+  #registerRoutes(): void {
     this.addRoute({
       handler: this.createChat as ControllerAPIHandler,
       method: HTTPMethod.POST,

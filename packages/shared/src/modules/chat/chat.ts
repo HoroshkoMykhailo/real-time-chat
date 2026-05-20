@@ -2,7 +2,6 @@ export {
   ChatApiPath,
   ChatPayloadKey,
   ChatType,
-  ChatValidationMessage,
   ChatValidationRule
 } from './libs/enums/enums.js';
 export {
@@ -10,9 +9,9 @@ export {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatsResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto,
   type UpdateLastViewedTimeResponseDto
 } from './libs/types/types.js';
 export {

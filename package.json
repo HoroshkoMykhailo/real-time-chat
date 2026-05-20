@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": "20.11.x",
-    "npm": "10.2.x"
+    "node": "22.14.x",
+    "npm": "10.9.x"
   },
   "workspaces": [
     "apps/*",
@@ -29,39 +29,39 @@
     "ci:prepare": "simple-git-hooks"
   },
   "devDependencies": {
-    "@commitlint/cli": "19.3.0",
-    "@commitlint/config-conventional": "19.2.2",
-    "@commitlint/types": "19.0.3",
-    "@eslint/js": "9.4.0",
-    "@ls-lint/ls-lint": "2.2.3",
-    "@types/eslint": "8.56.10",
-    "@types/eslint__js": "8.42.3",
-    "@types/lint-staged": "13.3.0",
-    "@typescript-eslint/eslint-plugin": "7.12.0",
-    "@typescript-eslint/parser": "7.12.0",
-    "concurrently": "8.2.2",
-    "editorconfig-checker": "5.1.8",
-    "eslint": "8.57.0",
-    "eslint-import-resolver-typescript": "3.6.1",
-    "eslint-plugin-import": "2.29.1",
-    "eslint-plugin-jsdoc": "48.2.9",
-    "eslint-plugin-perfectionist": "2.10.0",
+    "@commitlint/cli": "21.0.1",
+    "@commitlint/config-conventional": "21.0.1",
+    "@commitlint/types": "21.0.1",
+    "@eslint/js": "9.39.4",
+    "@ls-lint/ls-lint": "2.3.1",
+    "@typescript-eslint/eslint-plugin": "8.59.4",
+    "@typescript-eslint/parser": "8.59.4",
+    "concurrently": "9.2.1",
+    "editorconfig-checker": "6.1.1",
+    "eslint": "9.39.4",
+    "eslint-import-resolver-typescript": "4.4.4",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-jsdoc": "63.0.0",
+    "eslint-plugin-perfectionist": "5.9.0",
     "eslint-plugin-require-explicit-generics": "1.0.0",
-    "eslint-plugin-sonarjs": "1.0.3",
-    "eslint-plugin-unicorn": "53.0.0",
-    "globals": "15.4.0",
-    "knip": "5.18.2",
-    "lint-staged": "15.2.5",
-    "prettier": "3.3.1",
-    "simple-git-hooks": "2.11.1",
-    "stylelint": "16.6.1",
-    "stylelint-config-recess-order": "5.0.1",
-    "stylelint-config-standard": "36.0.0",
-    "tsc-alias": "1.8.10",
-    "typescript": "5.4.5"
+    "eslint-plugin-sonarjs": "4.0.3",
+    "eslint-plugin-unicorn": "64.0.0",
+    "globals": "17.6.0",
+    "knip": "6.14.1",
+    "lint-staged": "16.4.0",
+    "prettier": "3.8.3",
+    "simple-git-hooks": "2.13.1",
+    "stylelint": "17.12.0",
+    "stylelint-config-recess-order": "7.7.0",
+    "stylelint-config-standard": "40.0.0",
+    "tsc-alias": "1.8.17",
+    "typescript": "5.9.3"
   },
   "simple-git-hooks": {
     "pre-commit": "npm run lint:type && npm run git:hook:precommit",
     "commit-msg": "npm run git:hook:commit"
+  },
+  "overrides": {
+    "eslint": "9.39.4"
   }
 }

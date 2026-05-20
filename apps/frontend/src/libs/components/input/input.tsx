@@ -30,7 +30,7 @@ const Input = <T extends FieldValues>({
   className,
   control,
   disabled,
-  errors = {},
+  errors,
   isTextArea = false,
   name,
   placeholder,

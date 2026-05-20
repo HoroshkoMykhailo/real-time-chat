@@ -1,4 +1,4 @@
-import { type PayloadAction, createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { createSlice, isAnyOf, type PayloadAction } from '@reduxjs/toolkit';
 
 import {
   MINUS_ONE_VALUE,
@@ -34,7 +34,7 @@ import {
 } from './actions.js';
 
 const sortChats = (chats: Chats): Chats => {
-  return chats.sort((a, b) => {
+  return chats.toSorted((a, b) => {
     const aDate = a.draft?.createdAt ?? a.lastMessage?.createdAt ?? null;
     const bDate = b.draft?.createdAt ?? b.lastMessage?.createdAt ?? null;
 
@@ -294,13 +294,9 @@ const { actions, reducer } = createSlice({
           );
 
           if (insertIndex === MINUS_ONE_VALUE) {
-            state.chats.push(updatedChat as ChatsResponseDto[number]);
+            state.chats.push(updatedChat);
           } else {
-            state.chats.splice(
-              insertIndex,
-              ZERO_VALUE,
-              updatedChat as ChatsResponseDto[number]
-            );
+            state.chats.splice(insertIndex, ZERO_VALUE, updatedChat);
           }
         }
       }
@@ -325,7 +321,7 @@ const { actions, reducer } = createSlice({
           );
 
           if (insertIndex === MINUS_ONE_VALUE) {
-            state.chats.push(updatedChat as ChatsResponseDto[number]);
+            state.chats.push(updatedChat);
           } else {
             state.chats.splice(
               insertIndex,
@@ -364,14 +360,12 @@ const { actions, reducer } = createSlice({
       if (chatIndex >= ZERO_VALUE && state.chats[chatIndex]) {
         const chat = state.chats[chatIndex];
 
-        if (chat) {
-          state.chats.splice(chatIndex, ONE_VALUE);
+        state.chats.splice(chatIndex, ONE_VALUE);
 
-          state.chats.unshift({
-            ...chat,
-            draft: action.payload.draft
-          });
-        }
+        state.chats.unshift({
+          ...chat,
+          draft: action.payload.draft
+        });
       }
     },
     setSelectedChat: (state, action: { payload: State['selectedChat'] }) => {
@@ -420,7 +414,7 @@ const { actions, reducer } = createSlice({
         );
 
         if (insertIndex === MINUS_ONE_VALUE) {
-          state.chats.push(updatedChat as ChatsResponseDto[number]);
+          state.chats.push(updatedChat);
         } else {
           state.chats.splice(
             insertIndex,

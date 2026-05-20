@@ -6,15 +6,10 @@ const config: KnipConfig = {
   workspaces: {
     '.': {},
     'apps/backend': {
-      entry: ['src/index.ts', 'src/db/**/*.ts'],
-      ignoreBinaries: ['ts-paths-esm-loader'],
-      ignoreDependencies: ['ts-paths-esm-loader', 'pino-pretty']
+      ignoreDependencies: ['pino-pretty']
     },
-    'apps/frontend': {
-      entry: ['src/index.tsx']
-    },
+    'apps/frontend': {},
     'packages/shared': {
-      entry: ['src/index.ts'],
       includeEntryExports: true
     }
   }

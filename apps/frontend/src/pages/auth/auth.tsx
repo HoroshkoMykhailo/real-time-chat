@@ -7,9 +7,9 @@ import {
   useLocation
 } from '~/libs/hooks/hooks.js';
 import {
+  authActions,
   type UserSignInRequestDto,
-  type UserSignUpRequestDto,
-  authActions
+  type UserSignUpRequestDto
 } from '~/modules/auth/auth.js';
 
 import { SignInForm, SignUpForm } from './components/components.js';

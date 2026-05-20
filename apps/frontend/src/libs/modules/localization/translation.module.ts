@@ -2,8 +2,8 @@ import { type ValueOf } from '~/libs/types/types.js';
 import { type ProfileLanguage } from '~/modules/profile/libs/types/types.js';
 
 import {
-  type TranslationService,
-  type Translations
+  type Translations,
+  type TranslationService
 } from './libs/types/types.js';
 
 type Constructor = {

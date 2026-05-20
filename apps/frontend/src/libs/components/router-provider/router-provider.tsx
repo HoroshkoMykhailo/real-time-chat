@@ -1,7 +1,7 @@
 import {
+  createBrowserRouter,
   RouterProvider as LibraryRouterProvider,
-  type RouteObject,
-  createBrowserRouter
+  type RouteObject
 } from 'react-router-dom';
 
 type Properties = {

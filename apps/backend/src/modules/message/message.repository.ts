@@ -22,7 +22,7 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     await this.model.deleteMany({ chatId });
   }
 
-  public async getLastMessage(chatId: string): Promise<TMessage | null> {
+  public async getLastMessage(chatId: string): Promise<null | TMessage> {
     const lastMessage = await this.model
       .findOne({ chatId })
       .sort({ createdAt: -1 })
@@ -33,7 +33,7 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
 
   public async getLastPinnedMessageByChatId(
     chatId: string
-  ): Promise<TMessage | null> {
+  ): Promise<null | TMessage> {
     const lastMessage = await this.model
       .findOne({ chatId, isPinned: true })
       .sort({ createdAt: -1 })
@@ -100,7 +100,9 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
       .sort({ createdAt: -1 })
       .limit(limit ?? DEFAULT_LIMIT);
 
-    return messages.map(message => this.mapToBusinessLogic(message)).reverse();
+    return messages
+      .map(message => this.mapToBusinessLogic(message))
+      .toReversed();
   }
 
   public async getPinnedMessagesByChatId(chatId: string): Promise<TMessage[]> {

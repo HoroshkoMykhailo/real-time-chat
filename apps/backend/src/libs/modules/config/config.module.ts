@@ -12,22 +12,12 @@ import {
 type Constructor = { logger: LoggerModule };
 
 class Config implements ConfigModule {
-  #ENV: EnvironmentSchema;
-  #logger: LoggerModule;
-
-  public constructor({ logger }: Constructor) {
-    config();
-
-    this.#logger = logger;
-    this.#envSchema.load({});
-    this.#envSchema.validate({
-      allowed: 'strict',
-      output: (message: string) => {
-        this.#logger.info(message);
-      }
-    });
-    this.#ENV = this.#envSchema.getProperties();
+  public get ENV(): EnvironmentSchema {
+    return this.#ENV;
   }
+  #ENV: EnvironmentSchema;
+
+  #logger: LoggerModule;
 
   get #envSchema(): LibraryConfig<EnvironmentSchema> {
     return convict<EnvironmentSchema>({
@@ -117,8 +107,18 @@ class Config implements ConfigModule {
     });
   }
 
-  public get ENV(): EnvironmentSchema {
-    return this.#ENV;
+  public constructor({ logger }: Constructor) {
+    config();
+
+    this.#logger = logger;
+    this.#envSchema.load({});
+    this.#envSchema.validate({
+      allowed: 'strict',
+      output: (message: string) => {
+        this.#logger.info(message);
+      }
+    });
+    this.#ENV = this.#envSchema.getProperties();
   }
 }
 

@@ -48,14 +48,14 @@ const FileMessage = ({ fileMessage }: Properties): JSX.Element => {
         type: 'application/octet-stream'
       });
 
-      const url = window.URL.createObjectURL(downloadBlob);
+      const url = globalThis.URL.createObjectURL(downloadBlob);
       const link = document.createElement('a');
       link.href = url;
       link.download = fileName;
       document.body.append(link);
       link.click();
       link.remove();
-      window.URL.revokeObjectURL(url);
+      globalThis.URL.revokeObjectURL(url);
       dispatch(messageActions.resetFileBlob());
     }
   }, [dispatch, editDataStatus, fileBlob, fileName, messageId]);

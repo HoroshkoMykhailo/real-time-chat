@@ -8,7 +8,7 @@ import {
   useNavigate
 } from '~/libs/hooks/hooks.js';
 import { translate } from '~/libs/modules/localization/translate.js';
-import { ChatType, chatActions } from '~/modules/chat/chat.js';
+import { chatActions, ChatType } from '~/modules/chat/chat.js';
 
 import { ChatInfoHeader } from './components/chat-info-header/chat-info-header.js';
 import { MembersList } from './components/members-list/member-list.js';
@@ -35,7 +35,7 @@ const ChatInfo = ({
   const handleDelete = useCallback((): void => {
     if (chat) {
       void dispatch(chatActions.deleteGroup({ id: chat.id }));
-      navigate(AppRoute.ROOT);
+      void navigate(AppRoute.ROOT);
     }
   }, [chat, dispatch, navigate]);
 

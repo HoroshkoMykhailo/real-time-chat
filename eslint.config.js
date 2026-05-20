@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
 import js from '@eslint/js';
 import ts from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
@@ -15,22 +14,22 @@ import { fileURLToPath } from 'node:url';
 
 const JS_MAX_PARAMS_ALLOWED = 3;
 
-/** @typedef {import('eslint').Linter.FlatConfig} */
-let FlatConfig;
+/** @typedef {import('eslint').Linter.Config} */
+let Config;
 /** @typedef {import('eslint').Linter.ParserModule} */
 let ParserModule;
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const filesConfig = {
   files: ['**/*.{js,ts,tsx}']
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const ignoresConfig = {
   ignores: ['apps', 'packages']
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const jsConfig = {
   languageOptions: {
     globals: globals.node,
@@ -78,7 +77,7 @@ const jsConfig = {
   }
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const importConfig = {
   plugins: {
     import: importPlugin
@@ -107,7 +106,7 @@ const importConfig = {
   }
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const sonarConfig = {
   plugins: {
     sonarjs
@@ -118,7 +117,7 @@ const sonarConfig = {
   }
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const unicornConfig = {
   plugins: {
     unicorn
@@ -130,7 +129,7 @@ const unicornConfig = {
   }
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const perfectionistConfig = {
   plugins: {
     perfectionist
@@ -138,8 +137,9 @@ const perfectionistConfig = {
   rules: perfectionist.configs['recommended-natural'].rules
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const typescriptConfig = {
+  files: ['**/*.ts', '**/*.tsx'],
   languageOptions: {
     parser: /** @type {ParserModule} */ (tsParser),
     parserOptions: {
@@ -183,24 +183,6 @@ const typescriptConfig = {
       'error',
       { 'argsIgnorePattern': '^_', 'ignoreRestSiblings': true }
     ],
-    '@typescript-eslint/padding-line-between-statements': [
-      'error',
-      {
-        blankLine: 'never',
-        next: 'export',
-        prev: 'export'
-      },
-      {
-        blankLine: 'always',
-        next: '*',
-        prev: ['block-like', 'throw', 'type']
-      },
-      {
-        blankLine: 'always',
-        next: ['return', 'block-like', 'throw', 'type'],
-        prev: '*'
-      }
-    ],
     '@typescript-eslint/restrict-plus-operands': ['off'],
     '@typescript-eslint/restrict-template-expressions': [
       'error',
@@ -210,7 +192,7 @@ const typescriptConfig = {
   }
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const jsdocConfig = {
   files: ['eslint.config.js', 'lint-staged.config.js'],
   plugins: {
@@ -223,14 +205,14 @@ const jsdocConfig = {
   }
 };
 
-/** @type {FlatConfig} */
+/** @type {Config} */
 const explicitGenericsConfig = {
   plugins: {
     'require-explicit-generics': explicitGenerics
   }
 };
 
-/** @type {FlatConfig[]} */
+/** @type {Config[]} */
 const overridesConfigs = [
   {
     files: [
@@ -260,7 +242,7 @@ const overridesConfigs = [
   }
 ];
 
-/** @type {FlatConfig[]} */
+/** @type {Config[]} */
 const config = [
   filesConfig,
   ignoresConfig,

@@ -15,7 +15,7 @@ const LanguageSelector = ({
   onLanguageChange
 }: Properties): JSX.Element => {
   const { control, handleSubmit, watch } = useAppForm<{
-    language: ValueOf<typeof MessageLanguage> | null;
+    language: null | ValueOf<typeof MessageLanguage>;
   }>({
     defaultValues: { language: null }
   });
