@@ -235,12 +235,19 @@ class Chat implements ChatService {
   public async deleteChat(id: string, user: User): Promise<boolean> {
     try {
       const chat = await this.#requireExistingChat(id);
+      const notifyMemberIds = [...chat.members];
 
       if (chat.type === ChatType.PRIVATE) {
         this.#requireChatMember(chat, user.profileId);
         await this.#messageRepository.deleteByChatId(id);
 
-        return Boolean(await this.#chatRepository.deleteById(id));
+        const deleted = Boolean(await this.#chatRepository.deleteById(id));
+
+        if (deleted) {
+          this.#emitChatDeleted(id, notifyMemberIds);
+        }
+
+        return deleted;
       }
 
       if (chat.adminId !== user.profileId && user.role !== UserRole.ADMIN) {
@@ -253,7 +260,13 @@ class Chat implements ChatService {
       await this.#messageRepository.deleteByChatId(id);
       await this.#deleteChatToUserRecords(id);
 
-      return Boolean(await this.#chatRepository.deleteById(id));
+      const deleted = Boolean(await this.#chatRepository.deleteById(id));
+
+      if (deleted) {
+        this.#emitChatDeleted(id, notifyMemberIds);
+      }
+
+      return deleted;
     } catch (error) {
       this.#fail('deleteChat', error);
     }
@@ -609,6 +622,18 @@ class Chat implements ChatService {
 
       for (const member of chat.members) {
         io.to(userRoomId(member.id)).emit(SocketEvents.CHAT_CREATED, payload);
+      }
+    } catch {
+      // Socket.IO may be uninitialized (e.g. in isolated unit tests).
+    }
+  }
+
+  #emitChatDeleted(chatId: string, memberIds: readonly string[]): void {
+    try {
+      const io = this.#getIo();
+
+      for (const memberId of memberIds) {
+        io.to(userRoomId(memberId)).emit(SocketEvents.CHAT_DELETED, { chatId });
       }
     } catch {
       // Socket.IO may be uninitialized (e.g. in isolated unit tests).

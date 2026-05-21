@@ -240,6 +240,7 @@ const { actions, reducer } = createSlice({
           content: action.meta.arg.content.content,
           createdAt: now,
           id: optimisticMessageId(action.meta.arg.clientMessageId),
+          isContentEdited: false,
           isPinned: false,
           sender: action.meta.arg.sender,
           status: MessageStatus.SENT,
@@ -268,6 +269,7 @@ const { actions, reducer } = createSlice({
           createdAt: now,
           fileUrl,
           id: optimisticMessageId(action.meta.arg.clientMessageId),
+          isContentEdited: false,
           isPinned: false,
           sender: action.meta.arg.sender,
           status: MessageStatus.SENT,
@@ -296,6 +298,7 @@ const { actions, reducer } = createSlice({
           createdAt: now,
           fileUrl,
           id: optimisticMessageId(action.meta.arg.clientMessageId),
+          isContentEdited: false,
           isPinned: false,
           sender: action.meta.arg.sender,
           status: MessageStatus.SENT,
@@ -323,6 +326,7 @@ const { actions, reducer } = createSlice({
           content: file.name,
           createdAt: now,
           id: optimisticMessageId(action.meta.arg.clientMessageId),
+          isContentEdited: false,
           isPinned: false,
           sender: action.meta.arg.sender,
           status: MessageStatus.SENT,
@@ -351,6 +355,7 @@ const { actions, reducer } = createSlice({
           createdAt: now,
           fileUrl,
           id: optimisticMessageId(action.meta.arg.clientMessageId),
+          isContentEdited: false,
           isPinned: false,
           sender: action.meta.arg.sender,
           status: MessageStatus.SENT,
@@ -387,37 +392,57 @@ const { actions, reducer } = createSlice({
         state.editDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(updatePinMessage.fulfilled), (state, action) => {
-        const index = state.messages.findIndex(
-          message => message.id === action.payload
-        );
-        const message = state.messages[index];
-
-        if (index !== MINUS_ONE_VALUE && message) {
-          const isPinned = !message.isPinned;
-          state.messages[index] = {
-            ...message,
-            isPinned
-          };
-
-          if (isPinned) {
-            const insertIndex = state.pinnedMessages.findIndex(
-              pinnedMessage =>
-                new Date(pinnedMessage.createdAt) > new Date(message.createdAt)
-            );
-
-            if (insertIndex === MINUS_ONE_VALUE) {
-              state.pinnedMessages.push(message);
-            } else {
-              state.pinnedMessages.splice(insertIndex, ZERO_VALUE, message);
-            }
-          } else {
-            state.pinnedMessages = state.pinnedMessages.filter(
-              pinnedMessage => pinnedMessage.id !== action.payload
-            );
-          }
-
-          state.editDataStatus = DataStatus.FULFILLED;
+        if (!action.payload) {
+          return;
         }
+
+        const messageId = action.payload;
+        const messageIndex = state.messages.findIndex(
+          message => message.id === messageId
+        );
+        const sourceMessage =
+          messageIndex === MINUS_ONE_VALUE
+            ? state.pinnedMessages.find(message => message.id === messageId)
+            : state.messages[messageIndex];
+
+        if (!sourceMessage) {
+          return;
+        }
+
+        const isPinned = !sourceMessage.isPinned;
+        const updated = {
+          ...sourceMessage,
+          isPinned
+        };
+
+        if (messageIndex !== MINUS_ONE_VALUE && state.messages[messageIndex]) {
+          state.messages[messageIndex] = updated;
+        }
+
+        if (isPinned) {
+          const withoutDuplicate = state.pinnedMessages.filter(
+            pinnedMessage => pinnedMessage.id !== messageId
+          );
+          const insertIndex = withoutDuplicate.findIndex(
+            pinnedMessage =>
+              new Date(pinnedMessage.createdAt) > new Date(updated.createdAt)
+          );
+
+          state.pinnedMessages =
+            insertIndex === MINUS_ONE_VALUE
+              ? [...withoutDuplicate, updated]
+              : [
+                  ...withoutDuplicate.slice(ZERO_VALUE, insertIndex),
+                  updated,
+                  ...withoutDuplicate.slice(insertIndex)
+                ];
+        } else {
+          state.pinnedMessages = state.pinnedMessages.filter(
+            pinnedMessage => pinnedMessage.id !== messageId
+          );
+        }
+
+        state.editDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(updatePinMessage.rejected), state => {
         state.editDataStatus = DataStatus.REJECTED;

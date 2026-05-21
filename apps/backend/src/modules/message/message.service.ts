@@ -104,6 +104,7 @@ class Message implements MessageService {
       chatId,
       content: '',
       fileUrl,
+      isContentEdited: false,
       isPinned: false,
       senderId: userId,
       status: MessageStatus.SENT,
@@ -151,6 +152,7 @@ class Message implements MessageService {
       chatId,
       content: file.filename,
       fileUrl,
+      isContentEdited: false,
       isPinned: false,
       senderId: userId,
       status: MessageStatus.SENT,
@@ -198,6 +200,7 @@ class Message implements MessageService {
       chatId,
       content: file.filename,
       fileUrl,
+      isContentEdited: false,
       isPinned: false,
       senderId: userId,
       status: MessageStatus.SENT,
@@ -242,6 +245,7 @@ class Message implements MessageService {
     const message = await this.#messageRepository.create({
       chatId,
       content: text,
+      isContentEdited: false,
       isPinned: false,
       senderId: userId,
       status: MessageStatus.SENT,
@@ -289,6 +293,7 @@ class Message implements MessageService {
       chatId,
       content: file.filename,
       fileUrl,
+      isContentEdited: false,
       isPinned: false,
       senderId: userId,
       status: MessageStatus.SENT,
@@ -633,7 +638,8 @@ class Message implements MessageService {
     const text = data.content;
 
     const updatedMessage = await this.#messageRepository.updateById(messageId, {
-      content: text
+      content: text,
+      isContentEdited: true
     });
 
     if (!updatedMessage) {

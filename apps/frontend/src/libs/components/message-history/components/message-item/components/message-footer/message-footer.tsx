@@ -13,7 +13,7 @@ type Properties = {
 };
 
 const MessageFooter = ({ language, message }: Properties): JSX.Element => {
-  const isEdited = message.createdAt !== message.updatedAt;
+  const isEdited = message.isContentEdited;
 
   const timeString = new Date(message.createdAt).toLocaleTimeString([], {
     hour: '2-digit',

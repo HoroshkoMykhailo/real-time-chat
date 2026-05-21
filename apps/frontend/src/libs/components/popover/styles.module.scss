@@ -18,6 +18,17 @@
   transform: translateX(-100%);
 }
 
+.popover-content--portal {
+  position: static;
+  margin: 0;
+  transform: none;
+  inset: unset;
+}
+
+.popover-portal-target {
+  pointer-events: auto;
+}
+
 .default-popover {
   transform: translateX(-120%);
 }

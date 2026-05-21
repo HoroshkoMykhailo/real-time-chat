@@ -6,6 +6,13 @@ export { useHandleClickOutside } from './use-handle-click-outside/use-handle-cli
 export { useHandleMouseLeave } from './use-handle-mouse-leave/use-handle-mouse-leave.hook.js';
 export { usePopover } from './use-popover/use-popover.hook.js';
 export { useScrollManager } from './use-scroll-manager/use-scroll-manager.hook.js';
-export { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+export {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 export { useController } from 'react-hook-form';
 export { useLocation, useNavigate, useParams } from 'react-router-dom';

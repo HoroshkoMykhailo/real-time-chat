@@ -2,31 +2,48 @@ import { type RefObject } from 'react';
 
 import { useEffect } from '~/libs/hooks/hooks.js';
 
-const useHandleClickOutside = <T extends HTMLElement>(
-  reference: RefObject<null | T>,
-  onOutsideClick: () => void,
-  contentReference?: RefObject<null | T>
-): void => {
+type Properties<T extends HTMLElement> = {
+  contentReference?: RefObject<null | T>;
+  enabled?: boolean;
+  onOutsideClick: () => void;
+  reference: RefObject<null | T>;
+};
+
+const useHandleClickOutside = <T extends HTMLElement>({
+  contentReference,
+  enabled = true,
+  onOutsideClick,
+  reference
+}: Properties<T>): void => {
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     const handleClickOutside = (event: MouseEvent): void => {
-      if (contentReference && !contentReference.current) {
+      const target = event.target as Node;
+
+      if (!reference.current) {
         return;
       }
 
-      if (
-        reference.current &&
-        !reference.current.contains(event.target as Node)
-      ) {
-        onOutsideClick();
+      if (reference.current.contains(target)) {
+        return;
       }
+
+      if (contentReference?.current?.contains(target)) {
+        return;
+      }
+
+      onOutsideClick();
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
 
     return (): void => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
-  }, [reference, onOutsideClick]);
+  }, [contentReference, enabled, onOutsideClick, reference]);
 };
 
 export { useHandleClickOutside };

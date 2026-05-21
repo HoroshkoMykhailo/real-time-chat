@@ -1,6 +1,8 @@
-import { MINUS_ONE_VALUE } from '~/libs/common/constants.js';
+import { type CSSProperties } from 'react';
+
 import { Icon, Popover } from '~/libs/components/components.js';
-import { DataStatus, NotificationMessage } from '~/libs/enums/enums.js';
+import { type GetPortalStyleArguments } from '~/libs/components/popover/popover.js';
+import { NotificationMessage } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppSelector,
@@ -12,7 +14,6 @@ import {
 import { translate } from '~/libs/modules/localization/translate.js';
 import { toastNotifier } from '~/libs/modules/toast-notifier/toast-notifier.js';
 import { type ValueOf } from '~/libs/types/types.js';
-import { chatActions } from '~/modules/chat/chat.js';
 import {
   messageActions,
   type MessageLanguage,
@@ -24,6 +25,10 @@ import styles from './styles.module.scss';
 
 const POPOVER_CLASS = 'message-popover';
 const POPOVER_OFFSET = 80;
+const MESSAGE_POPOVER_UP_CLASS = 'message-popover-up';
+const HORIZONTAL_OFFSET_REM = 8;
+const VERTICAL_ANCHOR_OFFSET_REM = 3;
+const PORTAL_BELOW_ANCHOR_GAP_PX = 4;
 
 type Properties = {
   children: React.ReactNode;
@@ -44,9 +49,7 @@ const MessagePopover = ({
   const popoverReference = useRef<HTMLDivElement | null>(null);
   const { selectedChat: chat } = useAppSelector(state => state.chat);
   const { profile } = useAppSelector(state => state.profile);
-  const { editDataStatus, messages, pinnedMessages } = useAppSelector(
-    state => state.message
-  );
+  const { messages } = useAppSelector(state => state.message);
   const [popoverClass, setPopoverClass] = useState<string>(POPOVER_CLASS);
   const [isLanguageSelectorOpened, setIsLanguageSelectorOpened] =
     useState<boolean>(false);
@@ -138,33 +141,39 @@ const MessagePopover = ({
     }
   }, [handleClose, message, setEditingMessageId]);
 
+  const getPortalStyle = useCallback(
+    ({ anchorRect }: GetPortalStyleArguments): CSSProperties => {
+      const rootFontSize = Number.parseFloat(
+        getComputedStyle(document.documentElement).fontSize
+      );
+      const left = anchorRect.left + HORIZONTAL_OFFSET_REM * rootFontSize;
+
+      if (popoverClass === MESSAGE_POPOVER_UP_CLASS) {
+        return {
+          bottom:
+            globalThis.innerHeight -
+            anchorRect.bottom +
+            VERTICAL_ANCHOR_OFFSET_REM * rootFontSize,
+          left
+        };
+      }
+
+      return {
+        left,
+        top: anchorRect.bottom + PORTAL_BELOW_ANCHOR_GAP_PX
+      };
+    },
+    [popoverClass]
+  );
+
   useEffect(() => {
     if (popoverReference.current) {
       const rect = popoverReference.current.getBoundingClientRect();
       const isNearBottom = rect.bottom > window.innerHeight - POPOVER_OFFSET;
 
-      setPopoverClass(isNearBottom ? 'message-popover-up' : POPOVER_CLASS);
+      setPopoverClass(isNearBottom ? MESSAGE_POPOVER_UP_CLASS : POPOVER_CLASS);
     }
   }, [isOpened]);
-
-  useEffect(() => {
-    if (editDataStatus === DataStatus.FULFILLED) {
-      const lastPinnedMessage = pinnedMessages.at(MINUS_ONE_VALUE);
-
-      if (lastPinnedMessage) {
-        dispatch(
-          chatActions.updateLastPinnedMessage({
-            message: {
-              ...lastPinnedMessage,
-              senderName: lastPinnedMessage.sender.username
-            }
-          })
-        );
-      } else {
-        dispatch(chatActions.resetLastPinnedMessage());
-      }
-    }
-  }, [dispatch, editDataStatus, pinnedMessages]);
 
   if (!message || !chat || !profile) {
     return <></>;
@@ -268,8 +277,10 @@ const MessagePopover = ({
           </div>
         </div>
       }
+      getPortalStyle={getPortalStyle}
       isOpened={isOpened}
       onClose={handleClose}
+      usePortal
     >
       {children}
     </Popover>

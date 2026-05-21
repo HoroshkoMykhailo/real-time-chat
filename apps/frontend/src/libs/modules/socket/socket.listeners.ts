@@ -12,6 +12,10 @@ type ChatCreatedSocketPayload = {
   createdByProfileId: string;
 };
 
+type ChatDeletedSocketPayload = {
+  chatId: string;
+};
+
 let socketListenersAttached = false;
 
 const initializeSocketListeners = (
@@ -52,6 +56,10 @@ const initializeSocketListeners = (
     }
 
     dispatch(chatActions.mergeRealtimeChat(chat));
+  });
+
+  socket.on(SocketEvents.CHAT_DELETED, (payload: ChatDeletedSocketPayload) => {
+    dispatch(chatActions.removeChatById(payload.chatId));
   });
 };
 

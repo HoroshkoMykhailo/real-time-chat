@@ -1,5 +1,6 @@
 const SocketEvents = {
   CHAT_CREATED: 'chat_created',
+  CHAT_DELETED: 'chat_deleted',
   CONNECT: 'connect',
   DISCONNECT: 'disconnect',
   JOIN_CHAT: 'join_chat',

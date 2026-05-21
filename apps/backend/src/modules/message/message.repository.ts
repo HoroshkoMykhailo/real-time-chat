@@ -129,6 +129,7 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     const result: Partial<TMessage> = {
       chatId: document.chatId.toString(),
       content: document.content,
+      isContentEdited: document.isContentEdited,
       isPinned: document.isPinned,
       senderId: document.senderId.toString(),
       status: document.status,
@@ -151,6 +152,10 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
 
     if (data.isPinned !== undefined) {
       result.isPinned = data.isPinned;
+    }
+
+    if (data.isContentEdited !== undefined) {
+      result.isContentEdited = data.isContentEdited;
     }
 
     if (data.status) {

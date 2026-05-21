@@ -9,6 +9,7 @@ type MessageCreationResponseDto = {
   createdAt: string;
   fileUrl?: string;
   id: string;
+  isContentEdited: boolean;
   isPinned: boolean;
   sender: Profile;
   status: ValueOf<typeof MessageStatus>;

@@ -68,6 +68,15 @@ const initialState: State = {
   selectedChat: null
 };
 
+const removeChatFromClientState = (state: State, chatId: string): void => {
+  leaveChatRoom(chatId);
+  state.chats = state.chats.filter(chat => chat.id !== chatId);
+
+  if (state.selectedChat?.id === chatId) {
+    state.selectedChat = null;
+  }
+};
+
 const { actions, reducer } = createSlice({
   extraReducers(builder) {
     builder
@@ -142,8 +151,14 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(createGroup.fulfilled), (state, action) => {
         state.createdChat = action.payload;
-        joinChat(action.payload.id);
-        state.chats = [action.payload, ...state.chats];
+        const chatExists = state.chats.some(
+          chat => chat.id === action.payload.id
+        );
+
+        if (!chatExists) {
+          joinChat(action.payload.id);
+          state.chats = [action.payload, ...state.chats];
+        }
       })
       .addMatcher(isAnyOf(createGroup.rejected), state => {
         state.createdChat = null;
@@ -162,11 +177,7 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(deleteGroup.fulfilled), (state, action) => {
         if (action.payload) {
-          state.chats = state.chats.filter(chat => chat.id !== action.payload);
-
-          if (state.selectedChat?.id === action.payload) {
-            state.selectedChat = null;
-          }
+          removeChatFromClientState(state, action.payload);
         }
       })
       .addMatcher(isAnyOf(deleteGroup.rejected), state => {
@@ -326,6 +337,9 @@ const { actions, reducer } = createSlice({
       joinChat(incomingChat.id);
       state.chats = [incomingChat, ...state.chats];
     },
+    removeChatById: (state, action: PayloadAction<string>) => {
+      removeChatFromClientState(state, action.payload);
+    },
     resetCreatedChat: state => {
       state.createdChat = null;
     },
@@ -397,13 +411,29 @@ const { actions, reducer } = createSlice({
       const draftsJson = storageApi.get(StorageKey.DRAFTS);
       const drafts = draftsJson ? (JSON.parse(draftsJson) as Drafts) : {};
 
-      if (action.payload) {
-        const draft = drafts[action.payload.id];
-        state.selectedChat = {
-          ...action.payload,
-          ...(draft && { draft })
-        };
+      const { payload } = action;
+
+      if (!payload) {
+        return;
       }
+
+      const draft = drafts[payload.id];
+      const previous = state.selectedChat;
+      const merged: State['selectedChat'] = {
+        ...payload,
+        ...(draft && { draft })
+      };
+
+      if (
+        previous &&
+        previous.id === payload.id &&
+        previous.lastPinnedMessage !== undefined &&
+        !Object.hasOwn(payload, 'lastPinnedMessage')
+      ) {
+        merged.lastPinnedMessage = previous.lastPinnedMessage;
+      }
+
+      state.selectedChat = merged;
     },
     updateLastMessage(
       state,
