@@ -188,7 +188,12 @@ class ServerApp {
 
     // SocketModule registers listeners; construction is intentionally side-effecting.
     // eslint-disable-next-line sonarjs/constructor-for-side-effects -- module wiring
-    new SocketModule({ io, logger: this.#logger });
+    new SocketModule({
+      io,
+      logger: this.#logger,
+      token: this.#token,
+      userService
+    });
   };
 
   #initValidationCompiler = (): void => {

@@ -1,7 +1,10 @@
+import { type Server } from 'socket.io';
+
 import { ExceptionMessage } from '~/libs/enums/enums.js';
 import { savePicture } from '~/libs/modules/helpers/helpers.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 import { type LoggerModule } from '~/libs/modules/logger/logger.js';
+import { SocketEvents, userRoomId } from '~/libs/modules/socket/socket.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
 import { type ChatToUser as ChatToUserRepository } from '../chat-to-user/chat-to-user.repository.js';
@@ -39,10 +42,13 @@ const INITIAL_UNREAD_COUNT = 0;
 type Constructor = {
   chatRepository: ChatRepository;
   chatToUserRepository: ChatToUserRepository;
+  getIo: IoGetter;
   logger: LoggerModule;
   messageRepository: MessageRepository;
   profileRepository: ProfileRepository;
 };
+
+type IoGetter = () => Server;
 
 const compareChatsByLastMessageDesc = (
   a: ChatsResponseDto[number],
@@ -69,6 +75,7 @@ const compareChatsByLastMessageDesc = (
 class Chat implements ChatService {
   #chatRepository: ChatRepository;
   #chatToUserRepository: ChatToUserRepository;
+  #getIo: IoGetter;
   #logger: LoggerModule;
   #messageRepository: MessageRepository;
   #profileRepository: ProfileRepository;
@@ -76,12 +83,14 @@ class Chat implements ChatService {
   public constructor({
     chatRepository,
     chatToUserRepository,
+    getIo,
     logger,
     messageRepository,
     profileRepository
   }: Constructor) {
     this.#chatToUserRepository = chatToUserRepository;
     this.#chatRepository = chatRepository;
+    this.#getIo = getIo;
     this.#logger = logger;
     this.#messageRepository = messageRepository;
     this.#profileRepository = profileRepository;
@@ -208,12 +217,16 @@ class Chat implements ChatService {
 
       await this.#createChatToUserRecords(createdChat.id, members);
 
-      return this.#formatChatResponse({
+      const creationPayload = this.#formatChatResponse({
         adminId,
         chat: createdChat,
         memberProfiles,
         type: type.value
       });
+
+      this.#emitChatCreated(creationPayload, adminId);
+
+      return creationPayload;
     } catch (error) {
       this.#fail('create', error);
     }
@@ -581,6 +594,25 @@ class Chat implements ChatService {
         this.#chatToUserRepository.delete(chatId, userId)
       )
     );
+  }
+
+  #emitChatCreated(
+    chat: ChatCreationResponseDto,
+    createdByProfileId: string
+  ): void {
+    try {
+      const io = this.#getIo();
+      const payload = {
+        chat,
+        createdByProfileId
+      };
+
+      for (const member of chat.members) {
+        io.to(userRoomId(member.id)).emit(SocketEvents.CHAT_CREATED, payload);
+      }
+    } catch {
+      // Socket.IO may be uninitialized (e.g. in isolated unit tests).
+    }
   }
 
   /** Maps HTTP errors through; logs and wraps unexpected failures so the process stays predictable. */

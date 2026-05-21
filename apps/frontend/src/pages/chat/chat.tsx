@@ -1,13 +1,15 @@
 import { Navigate } from 'react-router-dom';
 
 import { MessageHistory } from '~/libs/components/components.js';
-import { AppRoute } from '~/libs/enums/enums.js';
+import { Loader } from '~/libs/components/loader/loader.js';
+import { AppRoute, DataStatus } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppSelector,
   useCallback,
   useEffect,
   useParams,
+  useRef,
   useState
 } from '~/libs/hooks/hooks.js';
 import { type ValueOf } from '~/libs/types/types.js';
@@ -27,15 +29,19 @@ import styles from './styles.module.scss';
 const Chat: React.FC = () => {
   const dispatch = useAppDispatch();
   const { id: chatId } = useParams<{ id: string }>();
-  const { createdChat, selectedChat: chat } = useAppSelector(
-    state => state.chat
-  );
+  const {
+    chats,
+    createdChat,
+    dataStatus,
+    selectedChat: chat
+  } = useAppSelector(state => state.chat);
   const [activeChatView, setActiveChatView] = useState<
     ValueOf<typeof ActiveChatView>
   >(ActiveChatView.ChatInfo);
   const [isPinnedMessage, setIsPinnedMessage] = useState<boolean>(false);
   const [isChatInfo, setChatInfo] = useState<boolean>(false);
   const [editingMessageId, setEditingMessageId] = useState<null | string>(null);
+  const lastDetailFetchChatIdReference = useRef<null | string>(null);
 
   const viewMap = new Map<ValueOf<typeof ActiveChatView>, () => JSX.Element>([
     [
@@ -107,21 +113,67 @@ const Chat: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (chatId) {
-      void dispatch(
-        messageActions.getPinnedMessages({
-          chatId
-        })
-      );
+    if (!chatId) {
+      lastDetailFetchChatIdReference.current = null;
+
+      return;
     }
+
+    const chatFromList = chats.find(item => item.id === chatId);
+
+    if (chatFromList) {
+      dispatch(chatActions.setSelectedChat(chatFromList));
+
+      if (lastDetailFetchChatIdReference.current !== chatId) {
+        lastDetailFetchChatIdReference.current = chatId;
+        void dispatch(chatActions.getChat({ id: chatId }));
+        void dispatch(messageActions.getMessages({ chatId }));
+      }
+    }
+
+    void dispatch(
+      messageActions.getPinnedMessages({
+        chatId
+      })
+    );
 
     setActiveChatView(ActiveChatView.ChatInfo);
     setIsPinnedMessage(false);
     dispatch(chatActions.resetCreatedChat());
-  }, [chatId, dispatch]);
+  }, [chatId, chats, dispatch]);
 
-  if (chatId !== chat?.id && !createdChat) {
+  const chatInList = chatId ? chats.some(item => item.id === chatId) : false;
+  const isCreatedChatRoute = Boolean(
+    chatId && createdChat && createdChat.id === chatId
+  );
+
+  if (
+    chatId &&
+    (dataStatus === DataStatus.IDLE || dataStatus === DataStatus.PENDING)
+  ) {
+    return <Loader />;
+  }
+
+  if (chatId && dataStatus === DataStatus.REJECTED) {
     return <Navigate replace to={AppRoute.ROOT} />;
+  }
+
+  if (
+    chatId &&
+    dataStatus === DataStatus.FULFILLED &&
+    !chatInList &&
+    !isCreatedChatRoute
+  ) {
+    return <Navigate replace to={AppRoute.ROOT} />;
+  }
+
+  if (
+    chatId &&
+    dataStatus === DataStatus.FULFILLED &&
+    chat?.id !== chatId &&
+    !isCreatedChatRoute
+  ) {
+    return <Loader />;
   }
 
   return (

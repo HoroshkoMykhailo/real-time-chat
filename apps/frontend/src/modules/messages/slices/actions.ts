@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { type Profile } from '@team-link/shared';
 
 import { NotificationMessage } from '~/libs/enums/enums.js';
 import { type AsyncThunkConfig, type ValueOf } from '~/libs/types/types.js';
@@ -56,11 +57,19 @@ const loadBeforeMessages = createAsyncThunk<
 
 const writeTextMessage = createAsyncThunk<
   MessageCreationResponseDto,
-  { chatId: string; content: TextMessageRequestDto },
+  {
+    chatId: string;
+    clientMessageId: string;
+    content: TextMessageRequestDto;
+    sender: Profile;
+  },
   AsyncThunkConfig
 >(
   ActionType.WRITE_TEXT_MESSAGE,
-  async ({ chatId, content }, { extra: { messageApi } }) => {
+  async (
+    { chatId, clientMessageId: _clientMessageId, content, sender: _sender },
+    { extra: { messageApi } }
+  ) => {
     return await messageApi.writeTextMessage(chatId, content);
   }
 );
@@ -112,44 +121,76 @@ const updatePinMessage = createAsyncThunk<
 
 const writeImageMessage = createAsyncThunk<
   MessageCreationResponseDto,
-  { chatId: string; payload: FileMessageRequestDto },
+  {
+    chatId: string;
+    clientMessageId: string;
+    payload: FileMessageRequestDto;
+    sender: Profile;
+  },
   AsyncThunkConfig
 >(
   ActionType.WRITE_IMAGE_MESSAGE,
-  async ({ chatId, payload }, { extra: { messageApi } }) => {
+  async (
+    { chatId, clientMessageId: _clientMessageId, payload, sender: _sender },
+    { extra: { messageApi } }
+  ) => {
     return await messageApi.writeImageMessage(chatId, payload);
   }
 );
 
 const writeFileMessage = createAsyncThunk<
   MessageCreationResponseDto,
-  { chatId: string; payload: FileMessageRequestDto },
+  {
+    chatId: string;
+    clientMessageId: string;
+    payload: FileMessageRequestDto;
+    sender: Profile;
+  },
   AsyncThunkConfig
 >(
   ActionType.WRITE_FILE_MESSAGE,
-  async ({ chatId, payload }, { extra: { messageApi } }) => {
+  async (
+    { chatId, clientMessageId: _clientMessageId, payload, sender: _sender },
+    { extra: { messageApi } }
+  ) => {
     return await messageApi.writeFileMessage(chatId, payload);
   }
 );
 
 const writeVideoMessage = createAsyncThunk<
   MessageCreationResponseDto,
-  { chatId: string; payload: FileMessageRequestDto },
+  {
+    chatId: string;
+    clientMessageId: string;
+    payload: FileMessageRequestDto;
+    sender: Profile;
+  },
   AsyncThunkConfig
 >(
   ActionType.WRITE_VIDEO_MESSAGE,
-  async ({ chatId, payload }, { extra: { messageApi } }) => {
+  async (
+    { chatId, clientMessageId: _clientMessageId, payload, sender: _sender },
+    { extra: { messageApi } }
+  ) => {
     return await messageApi.writeVideoMessage(chatId, payload);
   }
 );
 
 const writeAudioMessage = createAsyncThunk<
   MessageCreationResponseDto,
-  { chatId: string; payload: FileMessageRequestDto },
+  {
+    chatId: string;
+    clientMessageId: string;
+    payload: FileMessageRequestDto;
+    sender: Profile;
+  },
   AsyncThunkConfig
 >(
   ActionType.WRITE_AUDIO_MESSAGE,
-  async ({ chatId, payload }, { extra: { messageApi } }) => {
+  async (
+    { chatId, clientMessageId: _clientMessageId, payload, sender: _sender },
+    { extra: { messageApi } }
+  ) => {
     return await messageApi.writeAudioMessage(chatId, payload);
   }
 );

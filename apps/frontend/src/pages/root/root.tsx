@@ -8,7 +8,9 @@ import {
 } from '~/libs/hooks/hooks.js';
 import {
   initializeSocketListeners,
-  leaveChatRoom
+  leaveChatRoom,
+  registerSocketUserSession,
+  socket
 } from '~/libs/modules/socket/socket.js';
 import { store } from '~/libs/modules/store/store.js';
 import { authActions } from '~/modules/auth/auth.js';
@@ -17,20 +19,39 @@ const Root: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const { chats } = useAppSelector(state => state.chat);
-  const { dataStatus } = useAppSelector(state => state.auth);
+  const { dataStatus: authDataStatus, user: authUser } = useAppSelector(
+    state => state.auth
+  );
 
   useEffect(() => {
     void dispatch(authActions.getAuthenticatedUser());
     initializeSocketListeners(dispatch, () => store.instance.getState());
+    registerSocketUserSession();
+
+    const handleSocketConnect = (): void => {
+      registerSocketUserSession();
+    };
+
+    socket.on('connect', handleSocketConnect);
+
+    return (): void => {
+      socket.off('connect', handleSocketConnect);
+    };
   }, [dispatch]);
 
   useEffect(() => {
-    if (dataStatus === DataStatus.REJECTED && chats.length !== ZERO_VALUE) {
+    if (authUser && authDataStatus === DataStatus.FULFILLED) {
+      registerSocketUserSession();
+    }
+  }, [authUser, authDataStatus]);
+
+  useEffect(() => {
+    if (authDataStatus === DataStatus.REJECTED && chats.length !== ZERO_VALUE) {
       for (const chat of chats) {
         leaveChatRoom(chat.id);
       }
     }
-  }, [chats, chats.length, dataStatus, dispatch]);
+  }, [authDataStatus, chats, chats.length, dispatch]);
 
   return <RouterOutlet />;
 };

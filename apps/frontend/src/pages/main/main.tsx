@@ -44,7 +44,6 @@ const Main: React.FC = () => {
   useEffect(() => {
     void dispatch(profileActions.getProfile());
     void dispatch(chatActions.getMyChats());
-    dispatch(chatActions.resetSelectedChat());
   }, [dispatch]);
 
   const handleMouseEnter = useCallback((): void => {

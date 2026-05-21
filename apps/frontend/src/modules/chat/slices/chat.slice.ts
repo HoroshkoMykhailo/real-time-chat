@@ -100,15 +100,27 @@ const { actions, reducer } = createSlice({
         state.dataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(getChat.fulfilled), (state, action) => {
-        if (state.selectedChat) {
+        const requestedId = action.meta.arg.id;
+        const listChat = state.chats.find(
+          chatItem => chatItem.id === requestedId
+        );
+
+        if (state.selectedChat?.id === requestedId) {
           state.selectedChat = {
             ...state.selectedChat,
             ...action.payload
           };
+        } else if (listChat) {
+          state.selectedChat = {
+            ...listChat,
+            ...action.payload
+          };
         }
       })
-      .addMatcher(isAnyOf(getChat.rejected), state => {
-        state.selectedChat = null;
+      .addMatcher(isAnyOf(getChat.rejected), (state, action) => {
+        if (state.selectedChat?.id === action.meta.arg.id) {
+          state.selectedChat = null;
+        }
       })
       .addMatcher(isAnyOf(leaveChat.fulfilled), (state, action) => {
         leaveChatRoom(action.payload);
@@ -300,6 +312,19 @@ const { actions, reducer } = createSlice({
           }
         }
       }
+    },
+    mergeRealtimeChat: (
+      state,
+      action: PayloadAction<ChatCreationResponseDto>
+    ) => {
+      const incomingChat = action.payload;
+
+      if (state.chats.some(chatItem => chatItem.id === incomingChat.id)) {
+        return;
+      }
+
+      joinChat(incomingChat.id);
+      state.chats = [incomingChat, ...state.chats];
     },
     resetCreatedChat: state => {
       state.createdChat = null;

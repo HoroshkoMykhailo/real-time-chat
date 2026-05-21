@@ -47,12 +47,24 @@ const MessageInput = ({
         );
         setEditingMessageId(null);
       } else {
+        if (!profile) {
+          return;
+        }
+
+        const clientMessageId = crypto.randomUUID();
+
         void dispatch(
           messageActions.writeTextMessage({
             chatId: chat.id,
-            content: { content: message }
+            clientMessageId,
+            content: { content: message },
+            sender: profile
           })
-        );
+        )
+          .unwrap()
+          .catch(() => {
+            toastNotifier.showError('Failed to send message');
+          });
       }
 
       dispatch(
@@ -64,7 +76,7 @@ const MessageInput = ({
     } else {
       toastNotifier.showError('Message is empty');
     }
-  }, [chat, dispatch, editingMessageId, message, setEditingMessageId]);
+  }, [chat, dispatch, editingMessageId, message, profile, setEditingMessageId]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -89,21 +101,21 @@ const MessageInput = ({
 
   useEffect(() => {
     if (writeDataStatus === DataStatus.FULFILLED) {
-      const message = messages.at(MINUS_ONE_VALUE);
+      const lastMessage = messages.at(MINUS_ONE_VALUE);
 
       dispatch(messageActions.resetWriteDataStatus());
 
-      if (message) {
+      if (lastMessage && !lastMessage.id.startsWith('optimistic:')) {
         dispatch(
           chatActions.updateLastMessage({
-            chatId: message.chatId,
+            chatId: lastMessage.chatId,
             message: {
-              content: message.content,
-              createdAt: message.createdAt,
-              id: message.id,
-              senderName: message.sender.username,
-              type: message.type,
-              ...(message.fileUrl && { fileUrl: message.fileUrl })
+              content: lastMessage.content,
+              createdAt: lastMessage.createdAt,
+              id: lastMessage.id,
+              senderName: lastMessage.sender.username,
+              type: lastMessage.type,
+              ...(lastMessage.fileUrl && { fileUrl: lastMessage.fileUrl })
             }
           })
         );

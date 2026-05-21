@@ -6,6 +6,7 @@ import {
   useCallback
 } from '~/libs/hooks/hooks.js';
 import { translate } from '~/libs/modules/localization/translate.js';
+import { toastNotifier } from '~/libs/modules/toast-notifier/toast-notifier.js';
 import { messageActions } from '~/modules/messages/message.js';
 
 import styles from './styles.module.scss';
@@ -35,31 +36,48 @@ const FilePopover = ({
         const [file] = event.target.files;
 
         if (file) {
+          if (!profile) {
+            return;
+          }
+
           const isImage = file.type.includes('image');
+          const clientMessageId = crypto.randomUUID();
+          const sender = profile;
+          const failToast = (): void => {
+            toastNotifier.showError('Failed to send message');
+          };
 
           if (isImage) {
             void dispatch(
               messageActions.writeImageMessage({
                 chatId: chat.id,
+                clientMessageId,
                 payload: {
                   file
-                }
+                },
+                sender
               })
-            );
+            )
+              .unwrap()
+              .catch(failToast);
           } else {
             void dispatch(
               messageActions.writeVideoMessage({
                 chatId: chat.id,
+                clientMessageId,
                 payload: {
                   file
-                }
+                },
+                sender
               })
-            );
+            )
+              .unwrap()
+              .catch(failToast);
           }
         }
       }
     },
-    [chat, dispatch]
+    [chat, dispatch, profile]
   );
 
   const handleFileChange = useCallback(
@@ -72,18 +90,30 @@ const FilePopover = ({
         const [file] = event.target.files;
 
         if (file) {
+          if (!profile) {
+            return;
+          }
+
+          const clientMessageId = crypto.randomUUID();
+
           void dispatch(
             messageActions.writeFileMessage({
               chatId: chat.id,
+              clientMessageId,
               payload: {
                 file
-              }
+              },
+              sender: profile
             })
-          );
+          )
+            .unwrap()
+            .catch(() => {
+              toastNotifier.showError('Failed to send message');
+            });
         }
       }
     },
-    [chat, dispatch]
+    [chat, dispatch, profile]
   );
 
   if (!profile) {
