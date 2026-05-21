@@ -69,9 +69,16 @@ const MessagePopover = ({
   }, [dispatch, message]);
 
   const handleTranslateClick = useCallback((): void => {
-    if (message) {
-      setIsLanguageSelectorOpened(true);
+    if (!message) {
+      return;
     }
+
+    // Defer until after this click finishes bubbling to `document`. Otherwise
+    // `useHandleClickOutside` runs while `event.target` is already detached from
+    // the portal tree and treats the click as "outside", closing the popover.
+    queueMicrotask(() => {
+      setIsLanguageSelectorOpened(true);
+    });
   }, [message]);
 
   const handleLanguageSelect = useCallback(
@@ -185,7 +192,11 @@ const MessagePopover = ({
       content={
         <div className={styles[POPOVER_CLASS]} ref={popoverReference}>
           <div className={styles['buttons']}>
-            <button className={styles['pin-button']} onClick={handlePinClick}>
+            <button
+              className={styles['pin-button']}
+              onClick={handlePinClick}
+              type="button"
+            >
               {message.isPinned ? (
                 <>
                   <Icon height={24} name="unPin" width={24} />
@@ -202,6 +213,7 @@ const MessagePopover = ({
               <button
                 className={styles['transcribe-button']}
                 onClick={handleTranscribeClick}
+                type="button"
               >
                 <Icon height={24} name="transcribe" width={24} />
                 <span>
@@ -216,6 +228,7 @@ const MessagePopover = ({
                   <button
                     className={styles['copy-button']}
                     onClick={handleOriginalClick}
+                    type="button"
                   >
                     <Icon height={24} name="translate" width={24} />
                     <span>
@@ -224,14 +237,17 @@ const MessagePopover = ({
                   </button>
                 )}
                 {isLanguageSelectorOpened ? (
-                  <LanguageSelector
-                    language={profile.language}
-                    onLanguageChange={handleLanguageSelect}
-                  />
+                  <div className={styles['language-selector-stack']}>
+                    <LanguageSelector
+                      language={profile.language}
+                      onLanguageChange={handleLanguageSelect}
+                    />
+                  </div>
                 ) : (
                   <button
                     className={styles['translate-button']}
                     onClick={handleTranslateClick}
+                    type="button"
                   >
                     <Icon height={24} name="translate" width={24} />
                     <span>
@@ -247,6 +263,7 @@ const MessagePopover = ({
                 <button
                   className={styles['copy-button']}
                   onClick={handleCopyClick}
+                  type="button"
                 >
                   <Icon height={24} name="copy" width={24} />
                   <span>{translate.translate('copy', profile.language)}</span>
@@ -259,6 +276,7 @@ const MessagePopover = ({
                 <button
                   className={styles['edit-button']}
                   onClick={handleEditClick}
+                  type="button"
                 >
                   <Icon height={24} name="pencil" width={24} />
                   <span>{translate.translate('edit', profile.language)}</span>
@@ -269,6 +287,7 @@ const MessagePopover = ({
               <button
                 className={styles['delete-button']}
                 onClick={handleDeleteClick}
+                type="button"
               >
                 <Icon height={24} name="trashBin" width={24} />
                 <span>{translate.translate('delete', profile.language)}</span>
