@@ -3,6 +3,7 @@ export { Button } from './button/button.js';
 export { ChatList } from './chat-list/chat-list.js';
 export { ChatPicture } from './chat-picture/chat-picture.js';
 export { Checkbox } from './checkbox/checkbox.js';
+export { CircularAvatarCropField } from './circular-avatar-crop-field/circular-avatar-crop-field.js';
 export { CreateChat } from './create-chat/create-chat.js';
 export {
   CreateGroup,

@@ -4,11 +4,11 @@ import {
   type UseFormSetValue
 } from 'react-hook-form';
 
-import { Icon, Image, Input } from '~/libs/components/components.js';
 import {
-  checkGreaterThanZero,
-  resolveServerMediaUrl
-} from '~/libs/helpers/helpers.js';
+  CircularAvatarCropField,
+  Input
+} from '~/libs/components/components.js';
+import { resolveServerMediaUrl } from '~/libs/helpers/helpers.js';
 import {
   useAppSelector,
   useCallback,
@@ -37,24 +37,29 @@ const EditGroupForm = ({
   const { profile } = useAppSelector(state => state.profile);
 
   useEffect(() => {
-    if (chat && chat.chatPicture) {
-      setImageUrl(resolveServerMediaUrl(chat.chatPicture));
+    if (!chat) {
+      return;
     }
+
+    setImageUrl(previous => {
+      if (previous?.startsWith('blob:')) {
+        URL.revokeObjectURL(previous);
+      }
+
+      return chat.chatPicture ? resolveServerMediaUrl(chat.chatPicture) : null;
+    });
   }, [chat]);
 
-  const handleImageChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>): void => {
-      if (
-        event.target.files &&
-        checkGreaterThanZero(event.target.files.length)
-      ) {
-        const [file] = event.target.files;
-
-        if (file) {
-          setImageUrl(URL.createObjectURL(file));
-          setValue(ChatPayloadKey.GROUP_PICTURE, file);
+  const handleGroupPictureCropped = useCallback(
+    (file: File): void => {
+      setValue(ChatPayloadKey.GROUP_PICTURE, file);
+      setImageUrl(previous => {
+        if (previous?.startsWith('blob:')) {
+          URL.revokeObjectURL(previous);
         }
-      }
+
+        return URL.createObjectURL(file);
+      });
     },
     [setValue]
   );
@@ -67,38 +72,25 @@ const EditGroupForm = ({
     <form name="groupForm">
       <fieldset className={styles['fieldset']}>
         <div className={styles['imageGroup']}>
-          <label
-            className={styles['groupPicture']}
-            htmlFor={ChatPayloadKey.GROUP_PICTURE}
-          >
-            {imageUrl ? (
-              <>
-                <Image
-                  alt="Selected"
-                  height="144"
-                  isCircular
-                  src={imageUrl}
-                  width="144"
-                />
-                <div
-                  className={`${styles['cameraIcon']} ${styles['hasImage']}`}
-                >
-                  <Icon height={48} name="camera" width={48} />
-                </div>
-              </>
-            ) : (
-              <div className={`${styles['cameraIcon']} ${styles['noImage']}`}>
-                <Icon height={48} name="camera" width={48} />
-              </div>
+          <CircularAvatarCropField
+            applyLabel={translate.translate('applyCrop', profile.language)}
+            cameraIconClassName={
+              imageUrl
+                ? `${styles['cameraIcon']} ${styles['hasImage']}`
+                : `${styles['cameraIcon']} ${styles['noImage']}`
+            }
+            cancelLabel={translate.translate('cancel', profile.language)}
+            cropTitle={translate.translate('adjustAvatar', profile.language)}
+            imagePreviewAlt={translate.translate(
+              'groupPhotoPreview',
+              profile.language
             )}
-            <input
-              accept="image/*"
-              id={ChatPayloadKey.GROUP_PICTURE}
-              onChange={handleImageChange}
-              style={{ display: 'none' }}
-              type="file"
-            />
-          </label>
+            imageUrl={imageUrl}
+            inputId={ChatPayloadKey.GROUP_PICTURE}
+            labelClassName={styles['groupPicture'] ?? ''}
+            onCroppedFile={handleGroupPictureCropped}
+            zoomLabel={translate.translate('avatarCropZoom', profile.language)}
+          />
         </div>
         <div className={styles['GroupName']}>
           <label className={styles['label']} htmlFor={ChatPayloadKey.NAME}>

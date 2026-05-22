@@ -9,6 +9,7 @@ export { useScrollManager } from './use-scroll-manager/use-scroll-manager.hook.j
 export {
   useCallback,
   useEffect,
+  useId,
   useLayoutEffect,
   useMemo,
   useRef,

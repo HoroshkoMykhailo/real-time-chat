@@ -1,14 +1,12 @@
 import {
   Button,
+  CircularAvatarCropField,
   DatePicker,
   Header,
-  Icon,
-  Image,
   Input,
   Select
 } from '~/libs/components/components.js';
 import { ButtonColor } from '~/libs/enums/enums.js';
-import { checkGreaterThanZero } from '~/libs/helpers/check-greater-than-zero.helper.js';
 import { resolveServerMediaUrl } from '~/libs/helpers/helpers.js';
 import {
   useAppForm,
@@ -69,24 +67,27 @@ const ProfileEdit: React.FC<Properties> = ({
       username: profile.username
     });
 
-    if (profile.profilePicture) {
-      setImageUrl(resolveServerMediaUrl(profile.profilePicture));
-    }
+    setImageUrl(previous => {
+      if (previous?.startsWith('blob:')) {
+        URL.revokeObjectURL(previous);
+      }
+
+      return profile.profilePicture
+        ? resolveServerMediaUrl(profile.profilePicture)
+        : null;
+    });
   }, [profile, reset]);
 
-  const handleImageChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>): void => {
-      if (
-        event.target.files &&
-        checkGreaterThanZero(event.target.files.length)
-      ) {
-        const [file] = event.target.files;
-
-        if (file) {
-          setImageUrl(URL.createObjectURL(file));
-          setValue(UserPayloadKey.PROFILE_PICTURE, file);
+  const handleProfilePictureCropped = useCallback(
+    (file: File): void => {
+      setValue(UserPayloadKey.PROFILE_PICTURE, file);
+      setImageUrl(previous => {
+        if (previous?.startsWith('blob:')) {
+          URL.revokeObjectURL(previous);
         }
-      }
+
+        return URL.createObjectURL(file);
+      });
     },
     [setValue]
   );
@@ -209,40 +210,34 @@ const ProfileEdit: React.FC<Properties> = ({
                 </div>
               </div>
               <div className={styles['imageGroup']}>
-                <label
-                  className={styles['profilePicture']}
-                  htmlFor={UserPayloadKey.PROFILE_PICTURE}
-                >
-                  {imageUrl ? (
-                    <>
-                      <Image
-                        alt="Selected"
-                        height="144"
-                        isCircular
-                        src={imageUrl}
-                        width="144"
-                      />
-                      <div
-                        className={`${styles['cameraIcon']} ${styles['hasImage']}`}
-                      >
-                        <Icon height={48} name="camera" width={48} />
-                      </div>
-                    </>
-                  ) : (
-                    <div
-                      className={`${styles['cameraIcon']} ${styles['noImage']}`}
-                    >
-                      <Icon height={48} name="camera" width={48} />
-                    </div>
+                <CircularAvatarCropField
+                  applyLabel={translate.translate(
+                    'applyCrop',
+                    profile.language
                   )}
-                  <input
-                    accept="image/*"
-                    id={UserPayloadKey.PROFILE_PICTURE}
-                    onChange={handleImageChange}
-                    style={{ display: 'none' }}
-                    type="file"
-                  />
-                </label>
+                  cameraIconClassName={
+                    imageUrl
+                      ? `${styles['cameraIcon']} ${styles['hasImage']}`
+                      : `${styles['cameraIcon']} ${styles['noImage']}`
+                  }
+                  cancelLabel={translate.translate('cancel', profile.language)}
+                  cropTitle={translate.translate(
+                    'adjustAvatar',
+                    profile.language
+                  )}
+                  imagePreviewAlt={translate.translate(
+                    'profilePhotoPreview',
+                    profile.language
+                  )}
+                  imageUrl={imageUrl}
+                  inputId={UserPayloadKey.PROFILE_PICTURE}
+                  labelClassName={styles['profilePicture'] ?? ''}
+                  onCroppedFile={handleProfilePictureCropped}
+                  zoomLabel={translate.translate(
+                    'avatarCropZoom',
+                    profile.language
+                  )}
+                />
               </div>
             </fieldset>
             <div className={styles['buttonsContainer']}>

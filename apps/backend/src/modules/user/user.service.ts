@@ -5,6 +5,7 @@ import {
   savePicture
 } from '~/libs/modules/helpers/helpers.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
+import { deleteStoredUserMedia } from '~/libs/modules/storage/storage.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
 import { type UserSignUpRequestDto } from '../auth/libs/types/types.js';
@@ -171,8 +172,10 @@ class User implements UserService {
     }
 
     const { profilePicture, ...otherData } = data;
+    let previousProfilePicture: string | undefined;
 
     if (profilePicture) {
+      previousProfilePicture = profile.profilePicture;
       const fileName = await savePicture(profilePicture);
       profile.profilePicture = fileName;
     }
@@ -199,6 +202,10 @@ class User implements UserService {
         message: ExceptionMessage.ERROR_UPDATING_PROFILE,
         status: HTTPCode.INTERNAL_SERVER_ERROR
       });
+    }
+
+    if (profilePicture && previousProfilePicture) {
+      void deleteStoredUserMedia(previousProfilePicture).catch(() => {});
     }
 
     return updatedProfile;

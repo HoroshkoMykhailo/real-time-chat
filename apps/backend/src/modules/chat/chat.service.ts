@@ -5,6 +5,7 @@ import { savePicture } from '~/libs/modules/helpers/helpers.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 import { type LoggerModule } from '~/libs/modules/logger/logger.js';
 import { SocketEvents, userRoomId } from '~/libs/modules/socket/socket.js';
+import { deleteStoredUserMedia } from '~/libs/modules/storage/storage.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
 import { type ChatToUser as ChatToUserRepository } from '../chat-to-user/chat-to-user.repository.js';
@@ -524,6 +525,7 @@ class Chat implements ChatService {
       const chat = await this.#requireExistingChat(id);
 
       const { groupPicture, name } = data;
+      let previousGroupPicture: string | undefined;
 
       if (user.profileId !== chat.adminId && user.role !== UserRole.ADMIN) {
         throw new HTTPError({
@@ -544,6 +546,8 @@ class Chat implements ChatService {
       }
 
       if (groupPicture) {
+        previousGroupPicture = chat.groupPicture;
+
         try {
           chat.groupPicture = await savePicture(groupPicture);
         } catch {
@@ -571,6 +575,10 @@ class Chat implements ChatService {
         ...(groupPicture && { chatPicture: updatedChat.groupPicture }),
         ...(name && { name: name.value })
       };
+
+      if (groupPicture && previousGroupPicture) {
+        void deleteStoredUserMedia(previousGroupPicture).catch(() => {});
+      }
 
       return response;
     } catch (error) {
