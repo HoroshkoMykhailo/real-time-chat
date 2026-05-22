@@ -1,5 +1,6 @@
 import { FileIcon } from '~/libs/components/components.js';
-import { DataStatus, ENV } from '~/libs/enums/enums.js';
+import { DataStatus } from '~/libs/enums/enums.js';
+import { resolveServerMediaUrl } from '~/libs/helpers/helpers.js';
 import {
   useAppDispatch,
   useAppSelector,
@@ -19,7 +20,7 @@ const FileMessage = ({ fileMessage }: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
   const { editDataStatus, fileBlob } = useAppSelector(state => state.message);
   const { content: fileName, fileUrl: file, id: messageId } = fileMessage;
-  const fileUrl = `${ENV.SERVER_URL}${file}`;
+  const fileUrl = resolveServerMediaUrl(file);
 
   const handleDownload = useCallback(
     (event: React.MouseEvent) => {

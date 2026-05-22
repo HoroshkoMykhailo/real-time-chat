@@ -83,6 +83,12 @@ class Config implements ConfigModule {
           env: 'GOOGLE_CLOUD_PROJECT_ID',
           format: String
         },
+        STORAGE_BUCKET: {
+          default: '',
+          doc: 'Google Cloud Storage bucket for uploads (images, audio, etc.). Empty = store under backend public folder.',
+          env: 'GOOGLE_CLOUD_STORAGE_BUCKET',
+          format: String
+        },
         SUMMARY_MODEL: {
           default: 'gemini-2.5-flash',
           doc: 'Vertex AI model id for chat summaries (see generative AI model docs)',

@@ -51,7 +51,7 @@ Then:
 
 4. Run database. You can run it by installing mongoDb on your computer.
 
-5. Create Goggle Cloud API key and store it locally.
+5. Create Google Cloud API key or Application Default Credentials and store them locally (see Google Cloud Speech / Vertex docs). For media uploads in production, create a **Cloud Storage** bucket, set `GOOGLE_CLOUD_STORAGE_BUCKET` in `apps/backend/.env`, and grant the app’s service account permission to write objects. Objects are stored with a public `https://storage.googleapis.com/...` URL in the database, so the bucket (or objects) should allow public read for anonymous clients, unless you later add signed URLs or a download proxy.
 
 6. Create and fill all .env files. These files are:
 

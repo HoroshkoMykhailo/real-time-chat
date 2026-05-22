@@ -1,4 +1,4 @@
-import { ENV } from '~/libs/enums/enums.js';
+import { resolveServerMediaUrl } from '~/libs/helpers/helpers.js';
 import { type MessageCreationResponseDto } from '~/modules/messages/libs/types/types.js';
 
 import { TextMessage } from '../components.js';
@@ -9,7 +9,7 @@ type Properties = {
 };
 
 const AudioMessage = ({ audioMessage }: Properties): JSX.Element => {
-  const audioUrl = `${ENV.SERVER_URL}${audioMessage.fileUrl}`;
+  const audioUrl = resolveServerMediaUrl(audioMessage.fileUrl);
 
   return (
     <>

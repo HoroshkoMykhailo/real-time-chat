@@ -5,8 +5,10 @@ import {
 } from 'react-hook-form';
 
 import { Icon, Image, Input } from '~/libs/components/components.js';
-import { ENV } from '~/libs/enums/enums.js';
-import { checkGreaterThanZero } from '~/libs/helpers/helpers.js';
+import {
+  checkGreaterThanZero,
+  resolveServerMediaUrl
+} from '~/libs/helpers/helpers.js';
 import {
   useAppSelector,
   useCallback,
@@ -36,7 +38,7 @@ const EditGroupForm = ({
 
   useEffect(() => {
     if (chat && chat.chatPicture) {
-      setImageUrl(`${ENV.SERVER_URL}${chat.chatPicture}`);
+      setImageUrl(resolveServerMediaUrl(chat.chatPicture));
     }
   }, [chat]);
 

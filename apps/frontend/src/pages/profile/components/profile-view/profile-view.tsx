@@ -1,5 +1,6 @@
 import { Button, Header, Icon, Image } from '~/libs/components/components.js';
-import { ButtonColor, ENV } from '~/libs/enums/enums.js';
+import { ButtonColor } from '~/libs/enums/enums.js';
+import { resolveServerMediaUrl } from '~/libs/helpers/helpers.js';
 import { translate } from '~/libs/modules/localization/translate.js';
 import { type Profile } from '~/modules/profile/libs/types/types.js';
 
@@ -13,7 +14,7 @@ type Properties = {
 
 const ProfileView: React.FC<Properties> = ({ onBack, onEdit, profile }) => {
   const imageUrl = profile.profilePicture
-    ? `${ENV.SERVER_URL}${profile.profilePicture}`
+    ? resolveServerMediaUrl(profile.profilePicture)
     : null;
 
   return (

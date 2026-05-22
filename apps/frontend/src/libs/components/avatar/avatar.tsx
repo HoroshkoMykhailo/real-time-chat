@@ -1,5 +1,8 @@
-import { ENV } from '~/libs/enums/enums.js';
-import { getValidClassNames, Zero } from '~/libs/helpers/helpers.js';
+import {
+  getValidClassNames,
+  resolveServerMediaUrl,
+  Zero
+} from '~/libs/helpers/helpers.js';
 
 import { Image } from '../image/image.js';
 import styles from './styles.module.scss';
@@ -13,7 +16,7 @@ const Avatar = ({ name, picture }: Properties): JSX.Element => {
   const firstLetter = name[Zero];
   const hasImage = Boolean(picture);
 
-  const imageUrl = `${ENV.SERVER_URL}${picture}`;
+  const imageUrl = resolveServerMediaUrl(picture);
 
   return (
     <div

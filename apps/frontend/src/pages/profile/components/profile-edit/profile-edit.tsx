@@ -7,8 +7,9 @@ import {
   Input,
   Select
 } from '~/libs/components/components.js';
-import { ButtonColor, ENV } from '~/libs/enums/enums.js';
+import { ButtonColor } from '~/libs/enums/enums.js';
 import { checkGreaterThanZero } from '~/libs/helpers/check-greater-than-zero.helper.js';
+import { resolveServerMediaUrl } from '~/libs/helpers/helpers.js';
 import {
   useAppForm,
   useCallback,
@@ -69,7 +70,7 @@ const ProfileEdit: React.FC<Properties> = ({
     });
 
     if (profile.profilePicture) {
-      setImageUrl(`${ENV.SERVER_URL}${profile.profilePicture}`);
+      setImageUrl(resolveServerMediaUrl(profile.profilePicture));
     }
   }, [profile, reset]);
 

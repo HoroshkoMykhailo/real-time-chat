@@ -1,6 +1,9 @@
 import { Image } from '~/libs/components/components.js';
-import { ENV } from '~/libs/enums/enums.js';
-import { getValidClassNames, Zero } from '~/libs/helpers/helpers.js';
+import {
+  getValidClassNames,
+  resolveServerMediaUrl,
+  Zero
+} from '~/libs/helpers/helpers.js';
 
 import styles from './styles.module.scss';
 
@@ -26,7 +29,7 @@ const ChatPicture = ({
   const firstLetter = name[Zero];
   const hasImage = Boolean(picture);
 
-  const imageUrl = `${ENV.SERVER_URL}${picture}`;
+  const imageUrl = resolveServerMediaUrl(picture);
 
   if (size) {
     height = size;

@@ -1,9 +1,6 @@
-import fs from 'node:fs';
-
 import { ExceptionMessage } from '~/libs/enums/enums.js';
-import { staticPath } from '~/libs/modules/constants/constants.js';
+import { readUploadedMediaBuffer } from '~/libs/modules/helpers/read-uploaded-media-buffer/read-uploaded-media-buffer.helper.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
-import { joinPath } from '~/libs/modules/path/path.js';
 
 import {
   type TranscriptionService,
@@ -26,9 +23,8 @@ class Transcription implements TranscriptionService {
 
   public async transcribe(audioFilePath: string): Promise<string> {
     try {
-      const fullPath = joinPath([staticPath, audioFilePath]);
-
-      const audioContent = fs.readFileSync(fullPath).toString('base64');
+      const audioBuffer = await readUploadedMediaBuffer(audioFilePath);
+      const audioContent = audioBuffer.toString('base64');
 
       const request = {
         audio: {
@@ -70,7 +66,11 @@ class Transcription implements TranscriptionService {
       }
 
       return transcription;
-    } catch {
+    } catch (error) {
+      if (error instanceof HTTPError) {
+        throw error;
+      }
+
       throw new HTTPError({
         message: ExceptionMessage.TRANSCRIPTION_ERROR,
         status: HTTPCode.INTERNAL_SERVER_ERROR

@@ -1,4 +1,4 @@
-import { ENV } from '~/libs/enums/enums.js';
+import { resolveServerMediaUrl } from '~/libs/helpers/helpers.js';
 import { type MessageCreationResponseDto } from '~/modules/messages/libs/types/types.js';
 
 import styles from './styles.module.scss';
@@ -8,7 +8,7 @@ type Properties = {
 };
 
 const VideoMessage = ({ videoMessage }: Properties): JSX.Element => {
-  const videoUrl = `${ENV.SERVER_URL}${videoMessage.fileUrl}`;
+  const videoUrl = resolveServerMediaUrl(videoMessage.fileUrl);
 
   return (
     <video
