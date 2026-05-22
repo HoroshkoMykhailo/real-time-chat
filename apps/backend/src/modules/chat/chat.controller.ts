@@ -18,6 +18,8 @@ import {
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
   type ChatsResponseDto,
+  type ChatSummaryRequestDto,
+  type ChatSummaryResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
   type UpdateLastViewedTimeResponseDto
@@ -25,6 +27,7 @@ import {
 import {
   addMembersValidationSchema,
   chatCreationValidationSchema,
+  chatSummaryValidationSchema,
   chatUpdateValidationSchema,
   updateLastViewedTimeValidationSchema
 } from './libs/validation-schemas/validation-schemas.js';
@@ -156,6 +159,25 @@ class Chat extends Controller implements ChatController {
     };
   };
 
+  public summarizeChatHistory = async (
+    options: ControllerAPIHandlerOptions<{
+      body: ChatSummaryRequestDto;
+      params: { id: string };
+      user: TUser;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<ChatSummaryResponseDto>> => {
+    const {
+      body,
+      params: { id },
+      user
+    } = options;
+
+    return {
+      payload: await this.#chatService.summarizeChatHistory(id, user, body),
+      status: HTTPCode.OK
+    };
+  };
+
   public updateChat = async (
     options: ControllerAPIHandlerOptions<{
       body: ChatUpdateRequestDto;
@@ -246,6 +268,15 @@ class Chat extends Controller implements ChatController {
       handler: this.deleteChat as ControllerAPIHandler,
       method: HTTPMethod.DELETE,
       url: ChatApiPath.$CHAT_ID
+    });
+
+    this.addRoute({
+      handler: this.summarizeChatHistory as ControllerAPIHandler,
+      method: HTTPMethod.POST,
+      schema: {
+        body: chatSummaryValidationSchema
+      },
+      url: `${ChatApiPath.$CHAT_ID}${ChatApiPath.SUMMARY}`
     });
 
     this.addRoute({

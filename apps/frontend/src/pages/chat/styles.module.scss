@@ -8,3 +8,62 @@
   flex-direction: column;
   flex-grow: 1;
 }
+
+.chat-header-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border-layout);
+}
+
+.chat-header-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.summary-action {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.35rem 0.65rem 0.35rem 0.35rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.65rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--white, #fff);
+  background-color: var(--teal);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 14%);
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.summary-action:hover {
+  background-color: var(--button-hover);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 18%);
+}
+
+.summary-action:active {
+  transform: scale(0.98);
+}
+
+.summary-action:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.summary-action-icon-wrap {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary-action-text {
+  white-space: nowrap;
+}

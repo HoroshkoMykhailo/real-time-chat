@@ -1,7 +1,6 @@
 import { Navigate } from 'react-router-dom';
 
-import { MessageHistory } from '~/libs/components/components.js';
-import { Loader } from '~/libs/components/loader/loader.js';
+import { Icon, Loader, MessageHistory } from '~/libs/components/components.js';
 import { AppRoute, DataStatus } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
@@ -12,6 +11,7 @@ import {
   useRef,
   useState
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import { messageActions } from '~/modules/messages/message.js';
@@ -20,6 +20,7 @@ import { AddMembers } from './libs/components/add-members/add-members.js';
 import { ChatHeader } from './libs/components/chat-header/chat-header.js';
 import chatHeaderstyles from './libs/components/chat-header/styles.module.scss';
 import { ChatInfo } from './libs/components/chat-info/chat-info.js';
+import { ChatSummaryPanel } from './libs/components/chat-summary-panel/chat-summary-panel.js';
 import { GroupEdit } from './libs/components/group-edit/group-edit.js';
 import { MessageInput } from './libs/components/message-input/message-input.js';
 import { PinnedHeader } from './libs/components/pinned-header/pinned-header.js';
@@ -35,12 +36,14 @@ const Chat: React.FC = () => {
     dataStatus,
     selectedChat: chat
   } = useAppSelector(state => state.chat);
+  const { profile } = useAppSelector(state => state.profile);
   const [activeChatView, setActiveChatView] = useState<
     ValueOf<typeof ActiveChatView>
   >(ActiveChatView.ChatInfo);
   const [isPinnedMessage, setIsPinnedMessage] = useState<boolean>(false);
   const [isChatInfo, setChatInfo] = useState<boolean>(false);
   const [editingMessageId, setEditingMessageId] = useState<null | string>(null);
+  const [isSummaryOpen, setIsSummaryOpen] = useState<boolean>(false);
   const lastDetailFetchChatIdReference = useRef<null | string>(null);
 
   const viewMap = new Map<ValueOf<typeof ActiveChatView>, () => JSX.Element>([
@@ -111,6 +114,18 @@ const Chat: React.FC = () => {
   const handleToGroupEdit = useCallback(() => {
     setActiveChatView(ActiveChatView.GroupEdit);
   }, []);
+
+  const handleCloseSummaryPanel = useCallback(() => {
+    setIsSummaryOpen(false);
+  }, []);
+
+  const handleOpenSummaryPanel = useCallback(() => {
+    setIsSummaryOpen(true);
+  }, []);
+
+  useEffect(() => {
+    setIsSummaryOpen(false);
+  }, [chatId]);
 
   useEffect(() => {
     if (!chatId) {
@@ -186,7 +201,28 @@ const Chat: React.FC = () => {
           </>
         ) : (
           <>
-            <ChatHeader onHeaderClick={handleHeaderClick} />
+            <div className={styles['chat-header-row']}>
+              <div className={styles['chat-header-main']}>
+                <ChatHeader onHeaderClick={handleHeaderClick} />
+              </div>
+              {profile && chatId ? (
+                <button
+                  className={styles['summary-action']}
+                  onClick={handleOpenSummaryPanel}
+                  type="button"
+                >
+                  <span
+                    aria-hidden
+                    className={styles['summary-action-icon-wrap']}
+                  >
+                    <Icon height={20} name="file" width={20} />
+                  </span>
+                  <span className={styles['summary-action-text']}>
+                    {translate.translate('chatSummary', profile.language)}
+                  </span>
+                </button>
+              ) : null}
+            </div>
             <MessageHistory setEditingMessageId={setEditingMessageId} />
             <MessageInput
               editingMessageId={editingMessageId}
@@ -195,6 +231,13 @@ const Chat: React.FC = () => {
           </>
         )}
       </div>
+      {chatId ? (
+        <ChatSummaryPanel
+          chatId={chatId}
+          isOpen={isSummaryOpen}
+          onClose={handleCloseSummaryPanel}
+        />
+      ) : null}
       {renderContent()}
     </div>
   );

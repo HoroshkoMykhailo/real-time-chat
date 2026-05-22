@@ -6,6 +6,8 @@ export {
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
   type ChatsResponseDto,
+  type ChatSummaryRequestDto,
+  type ChatSummaryResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
   type UpdateLastViewedTimeResponseDto

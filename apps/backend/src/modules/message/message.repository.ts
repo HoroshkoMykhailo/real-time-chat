@@ -105,6 +105,27 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
       .toReversed();
   }
 
+  public async getMessagesByChatIdInTimeRange({
+    chatId,
+    endTime,
+    startTime
+  }: {
+    chatId: string;
+    endTime: Date;
+    startTime: Date;
+  }): Promise<TMessage[]> {
+    const chatObjectId = new Types.ObjectId(chatId);
+
+    const messages = await this.model
+      .find({
+        chatId: chatObjectId,
+        createdAt: { $gte: startTime, $lte: endTime }
+      })
+      .sort({ createdAt: 1 });
+
+    return messages.map(message => this.mapToBusinessLogic(message));
+  }
+
   public async getPinnedMessagesByChatId(chatId: string): Promise<TMessage[]> {
     const messages = await this.model
       .find({ chatId, isPinned: true })

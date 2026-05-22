@@ -19,6 +19,8 @@ type EnvironmentSchema = {
   };
   GOOGLE_CLOUD: {
     PROJECT_ID: string;
+    SUMMARY_MODEL: string;
+    VERTEX_LOCATION: string;
   };
   JWT: {
     ALGORITHM: string;

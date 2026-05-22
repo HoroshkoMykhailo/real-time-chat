@@ -82,6 +82,18 @@ class Config implements ConfigModule {
           doc: 'Google Cloud project ID',
           env: 'GOOGLE_CLOUD_PROJECT_ID',
           format: String
+        },
+        SUMMARY_MODEL: {
+          default: 'gemini-2.5-flash',
+          doc: 'Vertex AI model id for chat summaries (see generative AI model docs)',
+          env: 'GOOGLE_CLOUD_SUMMARY_MODEL',
+          format: String
+        },
+        VERTEX_LOCATION: {
+          default: 'us-central1',
+          doc: 'Vertex AI region',
+          env: 'GOOGLE_CLOUD_VERTEX_LOCATION',
+          format: String
         }
       },
       JWT: {

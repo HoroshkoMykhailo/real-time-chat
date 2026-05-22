@@ -4,7 +4,8 @@ const ChatApiPath = {
   LAST_VIEWED_TIME: '/last-viewed-time',
   MEMBERS: '/members',
   MY_GROUPS: '/my-groups',
-  ROOT: '/'
+  ROOT: '/',
+  SUMMARY: '/summary'
 } as const;
 
 export { ChatApiPath };

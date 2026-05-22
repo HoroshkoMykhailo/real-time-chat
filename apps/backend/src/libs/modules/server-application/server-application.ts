@@ -34,10 +34,12 @@ const serverApp = new ServerApp({
   logger,
   maximumFileSize: MAXIMUM_MEGABYTE * KILOBYTE * KILOBYTE,
   options: {
-    ignoreTrailingSlash: true,
     logger: { transport: { target: 'pino-pretty' } },
-    querystringParser: (stringToParse: string): ParsedQs => {
-      return parse(stringToParse, { comma: true });
+    routerOptions: {
+      ignoreTrailingSlash: true,
+      querystringParser: (stringToParse: string): ParsedQs => {
+        return parse(stringToParse, { comma: true });
+      }
     }
   },
   services: { userService },

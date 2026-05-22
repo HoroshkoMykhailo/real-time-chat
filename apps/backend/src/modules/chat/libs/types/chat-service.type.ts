@@ -5,6 +5,8 @@ import {
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
   type ChatsResponseDto,
+  type ChatSummaryRequestDto,
+  type ChatSummaryResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
   type UpdateLastViewedTimeResponseDto
@@ -33,6 +35,13 @@ type ChatService = {
     user: User,
     member: string
   ): Promise<ChatGetResponseDto>;
+
+  summarizeChatHistory(
+    id: string,
+    user: User,
+    payload: ChatSummaryRequestDto
+  ): Promise<ChatSummaryResponseDto>;
+
   updateChat(
     id: string,
     user: User,

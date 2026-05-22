@@ -10,6 +10,7 @@ import {
   messageRepository
 } from '../initializations/repositories.js';
 import { profileRepository } from '../profile/profile.js';
+import { summaryService } from '../summary/summary.js';
 import { Chat as ChatController } from './chat.controller.js';
 import { Chat as ChatService } from './chat.service.js';
 
@@ -19,7 +20,8 @@ const chatService = new ChatService({
   getIo: (): Server => socketManager.getIo(),
   logger,
   messageRepository,
-  profileRepository
+  profileRepository,
+  summaryService
 });
 
 const chatController = new ChatController({

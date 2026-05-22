@@ -11,6 +11,8 @@ import { type ChatToUser as ChatToUserRepository } from '../chat-to-user/chat-to
 import { type Message as MessageRepository } from '../message/message.repository.js';
 import { type Profile } from '../profile/libs/types/types.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
+import { MAX_MESSAGES_FOR_SUMMARY } from '../summary/libs/constants/constants.js';
+import { type SummaryService } from '../summary/summary.js';
 import { type User, UserRole } from '../user/user.js';
 import { type Chat as ChatRepository } from './chat.repository.js';
 import { ChatType, ChatValidationRule } from './libs/enums/enums.js';
@@ -20,6 +22,8 @@ import {
   type ChatGetResponseDto,
   type ChatService,
   type ChatsResponseDto,
+  type ChatSummaryRequestDto,
+  type ChatSummaryResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
   type Chat as TChat,
@@ -46,6 +50,7 @@ type Constructor = {
   logger: LoggerModule;
   messageRepository: MessageRepository;
   profileRepository: ProfileRepository;
+  summaryService: SummaryService;
 };
 
 type IoGetter = () => Server;
@@ -79,6 +84,7 @@ class Chat implements ChatService {
   #logger: LoggerModule;
   #messageRepository: MessageRepository;
   #profileRepository: ProfileRepository;
+  #summaryService: SummaryService;
 
   public constructor({
     chatRepository,
@@ -86,7 +92,8 @@ class Chat implements ChatService {
     getIo,
     logger,
     messageRepository,
-    profileRepository
+    profileRepository,
+    summaryService
   }: Constructor) {
     this.#chatToUserRepository = chatToUserRepository;
     this.#chatRepository = chatRepository;
@@ -94,6 +101,7 @@ class Chat implements ChatService {
     this.#logger = logger;
     this.#messageRepository = messageRepository;
     this.#profileRepository = profileRepository;
+    this.#summaryService = summaryService;
   }
 
   public async addMembers(
@@ -440,6 +448,70 @@ class Chat implements ChatService {
       };
     } catch (error) {
       this.#fail('removeMember', error);
+    }
+  }
+
+  public async summarizeChatHistory(
+    id: string,
+    user: User,
+    { endTime, startTime }: ChatSummaryRequestDto
+  ): Promise<ChatSummaryResponseDto> {
+    try {
+      await this.#requireChatAsMember(id, user.profileId);
+
+      const startDate = this.#assertValidDate(
+        startTime,
+        ExceptionMessage.INVALID_LAST_VIEWED_AT
+      );
+      const endDate = this.#assertValidDate(
+        endTime,
+        ExceptionMessage.INVALID_LAST_VIEWED_AT
+      );
+
+      if (endDate.getTime() < startDate.getTime()) {
+        throw new HTTPError({
+          message: ExceptionMessage.SUMMARY_INVALID_TIME_RANGE,
+          status: HTTPCode.BAD_REQUEST
+        });
+      }
+
+      const messages =
+        await this.#messageRepository.getMessagesByChatIdInTimeRange({
+          chatId: id,
+          endTime: endDate,
+          startTime: startDate
+        });
+
+      if (messages.length === EMPTY_LENGTH) {
+        throw new HTTPError({
+          message: ExceptionMessage.SUMMARY_NO_MESSAGES_IN_RANGE,
+          status: HTTPCode.BAD_REQUEST
+        });
+      }
+
+      if (messages.length > MAX_MESSAGES_FOR_SUMMARY) {
+        throw new HTTPError({
+          message: ExceptionMessage.SUMMARY_TOO_MANY_MESSAGES,
+          status: HTTPCode.BAD_REQUEST
+        });
+      }
+
+      const senderIds = [...new Set(messages.map(message => message.senderId))];
+      const profiles =
+        await this.#profileRepository.getProfilesByIds(senderIds);
+
+      const nameById = new Map(
+        profiles.map(profile => [profile.id, profile.username] as const)
+      );
+
+      const summary = await this.#summaryService.summarizeFromMessages(
+        messages,
+        nameById
+      );
+
+      return { summary };
+    } catch (error) {
+      this.#fail('summarizeChatHistory', error);
     }
   }
 

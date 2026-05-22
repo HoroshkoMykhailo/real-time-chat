@@ -26,6 +26,13 @@ const ExceptionMessage = {
   NOTIFICATION_NOT_FOUND: 'Notification not found.',
   PRIVATE_CHAT_EXISTS: 'Private chat already exists.',
   PROFILE_NOT_FOUND: 'Profile not found.',
+  SUMMARY_GENERATION_FAILED: 'Unable to generate chat summary.',
+  SUMMARY_INVALID_TIME_RANGE:
+    'Summary end time must be on or after start time.',
+  SUMMARY_NO_MESSAGES_IN_RANGE:
+    'No messages found for the selected time range.',
+  SUMMARY_TOO_MANY_MESSAGES:
+    'Too many messages in the selected range. Choose a shorter period.',
   TOKEN_EXPIRED: 'Token is expired.',
   TRANSCRIPTION_ERROR: 'Transcription error.',
   TRANSLATION_ERROR: 'Translation error.',
