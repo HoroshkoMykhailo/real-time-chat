@@ -15,6 +15,7 @@ export {
   type ValidationSchema,
   type ValueOf
 } from './libs/types/types.js';
+export { AdminApiPath } from './modules/admin/admin.js';
 export { AuthApiPath, signIn, signUp } from './modules/auth/auth.js';
 export { type ChatToUser } from './modules/chat-to-user/chat-to-user.js';
 export {

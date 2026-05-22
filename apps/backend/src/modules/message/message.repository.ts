@@ -22,6 +22,20 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     await this.model.deleteMany({ chatId });
   }
 
+  public async deleteManyBySenderId(senderId: string): Promise<void> {
+    await this.model.deleteMany({ senderId: new Types.ObjectId(senderId) });
+  }
+
+  public async getDistinctChatIdsBySenderId(
+    senderId: string
+  ): Promise<string[]> {
+    const ids = await this.model.distinct('chatId', {
+      senderId: new Types.ObjectId(senderId)
+    });
+
+    return ids.map(String);
+  }
+
   public async getLastMessage(chatId: string): Promise<null | TMessage> {
     const lastMessage = await this.model
       .findOne({ chatId })

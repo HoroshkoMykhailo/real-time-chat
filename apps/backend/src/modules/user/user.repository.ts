@@ -6,6 +6,8 @@ import { type UserDocument, type UserModel } from './user.model.js';
 
 type Constructor = Record<'userModel', typeof UserModel>;
 
+const NO_UPDATE_FIELDS = 0;
+
 class User
   extends AbstractRepository<UserDocument, TUser>
   implements UserRepository
@@ -18,6 +20,33 @@ class User
     const user = await this.model.findOne({ email }).exec();
 
     return user ?? null;
+  }
+
+  public async updatePartialById(
+    id: string,
+    patch: Partial<Pick<TUser, 'email' | 'role'>>
+  ): Promise<null | TUser> {
+    const $set: Partial<UserDocument> = {};
+
+    if (patch.email !== undefined) {
+      $set.email = patch.email;
+    }
+
+    if (patch.role !== undefined) {
+      $set.role = patch.role;
+    }
+
+    if (Object.keys($set).length === NO_UPDATE_FIELDS) {
+      return await this.getById(id);
+    }
+
+    const document = await this.model.findByIdAndUpdate(
+      id,
+      { $set },
+      { new: true }
+    );
+
+    return document ? this.mapToBusinessLogic(document) : null;
   }
 
   protected mapAdditionalBusinessLogic(document: UserDocument): Partial<TUser> {

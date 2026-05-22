@@ -1,3 +1,4 @@
+export { AdminRoute } from './admin-route/admin-route.js';
 export { Avatar } from './avatar/avatar.js';
 export { Button } from './button/button.js';
 export { ChatList } from './chat-list/chat-list.js';

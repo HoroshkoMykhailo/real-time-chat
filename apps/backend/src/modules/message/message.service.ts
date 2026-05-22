@@ -15,6 +15,7 @@ import { type ValueOf } from '~/libs/types/types.js';
 
 import { type ChatToUser as ChatToUserRepository } from '../chat-to-user/chat-to-user.repository.js';
 import { type Chat as ChatRepository } from '../chat/chat.repository.js';
+import { ProfileLanguage } from '../profile/libs/enums/enums.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
 import { type TranscriptionService } from '../transcription/transcription.js';
 import { type TranslationService } from '../translation/translation.js';
@@ -442,6 +443,68 @@ class Message implements MessageService {
               message: ExceptionMessage.PROFILE_NOT_FOUND,
               status: HTTPCode.NOT_FOUND
             });
+          }
+
+          return {
+            ...message,
+            sender: senderProfile
+          };
+        })
+      )
+    };
+  }
+
+  public async getMessagesByChatIdForAdmin(
+    chatId: string,
+    query: {
+      after?: string;
+      before?: string;
+      limit?: number;
+    }
+  ): Promise<GetMessagesResponseDto> {
+    let { after, before, limit = DEFAULT_LIMIT * LIMIT_DIVISOR } = query;
+
+    if (!Types.ObjectId.isValid(chatId)) {
+      throw new HTTPError({
+        message: ExceptionMessage.INVALID_CHAT_ID,
+        status: HTTPCode.UNPROCESSED_ENTITY
+      });
+    }
+
+    const chat = await this.#chatRepository.getById(chatId);
+
+    if (!chat) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const messages = await this.#messageRepository.getMessagesByChatId({
+      chatId,
+      ...(after && { after }),
+      ...(before && { before }),
+      limit
+    });
+
+    return {
+      messages: await Promise.all(
+        messages.map(async message => {
+          const senderProfile = await this.#profileRepository.getById(
+            message.senderId
+          );
+
+          if (!senderProfile) {
+            return {
+              ...message,
+              sender: {
+                createdAt: message.createdAt,
+                id: message.senderId,
+                language: ProfileLanguage.ENGLISH,
+                updatedAt: message.updatedAt,
+                username: 'Невідомий відправник'
+              }
+            };
           }
 
           return {

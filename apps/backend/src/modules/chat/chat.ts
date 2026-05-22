@@ -30,4 +30,4 @@ const chatController = new ChatController({
   logger
 });
 
-export { chatController };
+export { chatController, chatService };

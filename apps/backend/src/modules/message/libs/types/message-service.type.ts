@@ -55,6 +55,15 @@ type MessageService = {
     }
   ): Promise<GetMessagesResponseDto>;
 
+  getMessagesByChatIdForAdmin(
+    chatId: string,
+    query: {
+      after?: string;
+      before?: string;
+      limit?: number;
+    }
+  ): Promise<GetMessagesResponseDto>;
+
   getPinMessagesByChatId(
     user: User,
     chatId: string

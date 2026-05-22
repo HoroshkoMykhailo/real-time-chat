@@ -8,4 +8,9 @@ export {
 export { ButtonColor, ImageSize } from './components/components.js';
 export { ServerErrorType } from './exception/exception.js';
 export { ContentType } from './file/file.js';
-export { APIPath, AppEnvironment } from '@team-link/shared';
+export {
+  AdminApiPath,
+  APIPath,
+  AppEnvironment,
+  UserRole
+} from '@team-link/shared';

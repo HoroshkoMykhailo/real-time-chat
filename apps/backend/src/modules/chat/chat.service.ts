@@ -308,6 +308,32 @@ class Chat implements ChatService {
     }
   }
 
+  public async getChatForAdmin(id: string): Promise<ChatGetResponseDto> {
+    try {
+      const chat = await this.#requireExistingChat(id);
+      const profiles = await this.#profileRepository.getProfilesByIds(
+        chat.members
+      );
+
+      if (profiles.length !== chat.members.length) {
+        throw new HTTPError({
+          message: ExceptionMessage.MEMBER_NOT_FOUND,
+          status: HTTPCode.NOT_FOUND
+        });
+      }
+
+      const lastPinnedMessage = await this.#getLastMessage(chat, true);
+
+      return {
+        members: profiles,
+        ...(chat.adminId && { adminId: chat.adminId }),
+        ...(lastPinnedMessage && { lastPinnedMessage })
+      };
+    } catch (error) {
+      this.#fail('getChatForAdmin', error);
+    }
+  }
+
   public async getMyChats(user: User): Promise<ChatsResponseDto> {
     try {
       const { profileId: userId } = user;
@@ -390,6 +416,41 @@ class Chat implements ChatService {
       };
     } catch (error) {
       this.#fail('leaveChat', error);
+    }
+  }
+
+  public async listAllChatsForAdmin(): Promise<ChatsResponseDto> {
+    try {
+      const chats = await this.#chatRepository.getAll();
+      const items = await Promise.all(
+        chats.map(async chat => await this.#formatChatListItemForAdmin(chat))
+      );
+
+      return [...items].toSorted(compareChatsByLastMessageDesc);
+    } catch (error) {
+      this.#fail('listAllChatsForAdmin', error);
+    }
+  }
+
+  public async purgeUserMembership(profileId: string): Promise<void> {
+    try {
+      for (;;) {
+        const chats = await this.#chatRepository.getByProfileId(profileId);
+
+        if (chats.length === EMPTY_LENGTH) {
+          break;
+        }
+
+        const [firstChat] = chats;
+
+        if (!firstChat) {
+          break;
+        }
+
+        await this.#purgeProfileFromSingleChat(firstChat, profileId);
+      }
+    } catch (error) {
+      this.#fail('purgeUserMembership', error);
     }
   }
 
@@ -777,6 +838,43 @@ class Chat implements ChatService {
     };
   }
 
+  async #formatChatListItemForAdmin(
+    chat: TChat
+  ): Promise<ChatsResponseDto[number]> {
+    const lastMessage = await this.#getLastMessage(chat);
+    let name = '';
+    let chatPicture: string | undefined;
+
+    if (chat.type === ChatType.GROUP) {
+      name = chat.name ?? '';
+      chatPicture = chat.groupPicture;
+    } else {
+      const profiles = await this.#profileRepository.getProfilesByIds(
+        chat.members
+      );
+      name = profiles.map(profileItem => profileItem.username).join(' · ');
+      const firstWithPicture = profiles.find(
+        profileItem => profileItem.profilePicture
+      );
+
+      if (firstWithPicture?.profilePicture) {
+        chatPicture = firstWithPicture.profilePicture;
+      }
+    }
+
+    return {
+      id: chat.id,
+      name,
+      type: chat.type,
+      unreadCount: INITIAL_UNREAD_COUNT,
+      ...(chat.type === ChatType.GROUP && {
+        memberCount: chat.members.length
+      }),
+      ...(lastMessage && { lastMessage }),
+      ...(chatPicture && { chatPicture })
+    };
+  }
+
   #formatChatResponse({
     adminId,
     chat,
@@ -989,6 +1087,48 @@ class Chat implements ChatService {
     }
 
     return memberIds;
+  }
+
+  async #purgeProfileFromSingleChat(
+    chat: TChat,
+    profileId: string
+  ): Promise<void> {
+    const notifyMemberIds = [...chat.members];
+
+    if (!chat.members.includes(profileId)) {
+      return;
+    }
+
+    await this.#deleteChatToUserRecords(chat.id, [profileId]);
+    chat.members = chat.members.filter(memberId => memberId !== profileId);
+
+    if (chat.type === ChatType.PRIVATE) {
+      await this.#messageRepository.deleteByChatId(chat.id);
+      await this.#deleteChatToUserRecords(chat.id);
+      await this.#chatRepository.deleteById(chat.id);
+      this.#emitChatDeleted(chat.id, notifyMemberIds);
+
+      return;
+    }
+
+    if (chat.members.length === EMPTY_LENGTH) {
+      await this.#messageRepository.deleteByChatId(chat.id);
+      await this.#deleteChatToUserRecords(chat.id);
+      await this.#chatRepository.deleteById(chat.id);
+      this.#emitChatDeleted(chat.id, notifyMemberIds);
+
+      return;
+    }
+
+    if (chat.adminId === profileId) {
+      const [nextAdminId] = chat.members;
+
+      if (nextAdminId) {
+        chat.adminId = nextAdminId;
+      }
+    }
+
+    await this.#chatRepository.updateById(chat.id, chat);
   }
 
   async #requireAdminProfile(adminId: string): Promise<Profile> {

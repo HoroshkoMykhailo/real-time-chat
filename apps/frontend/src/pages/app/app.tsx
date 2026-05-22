@@ -1,9 +1,16 @@
 import {
+  AdminRoute,
+  Navigate,
   ProtectedRoute,
   RouterProvider
 } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 
+import { AdminLayout } from '../admin/admin-layout.js';
+import { AdminMonitoringChatPage } from '../admin/admin-monitoring-chat-page.js';
+import { AdminMonitoringPage } from '../admin/admin-monitoring-page.js';
+import { AdminUserDetailPage } from '../admin/admin-user-detail-page.js';
+import { AdminUsersPage } from '../admin/admin-users-page.js';
 import { Auth } from '../auth/auth.js';
 import { Chat } from '../chat/chat.js';
 import { Main } from '../main/main.js';
@@ -17,6 +24,38 @@ const App: React.FC = () => {
       routes={[
         {
           children: [
+            {
+              children: [
+                {
+                  element: <Navigate replace to="users" />,
+                  index: true
+                },
+                {
+                  element: <AdminUsersPage />,
+                  path: 'users'
+                },
+                {
+                  element: <AdminUserDetailPage />,
+                  path: 'users/:userId'
+                },
+                {
+                  element: <AdminMonitoringPage />,
+                  path: 'monitoring'
+                },
+                {
+                  element: <AdminMonitoringChatPage />,
+                  path: 'monitoring/:chatId'
+                }
+              ],
+              element: (
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminLayout />
+                  </AdminRoute>
+                </ProtectedRoute>
+              ),
+              path: 'admin'
+            },
             {
               children: [
                 {

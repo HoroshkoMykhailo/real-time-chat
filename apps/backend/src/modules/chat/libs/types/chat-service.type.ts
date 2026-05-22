@@ -27,9 +27,15 @@ type ChatService = {
   deleteChat(id: string, user: User): Promise<boolean>;
   getChat(id: string, user: User): Promise<ChatGetResponseDto>;
 
+  getChatForAdmin(id: string): Promise<ChatGetResponseDto>;
+
   getMyChats(user: User): Promise<ChatsResponseDto>;
 
   leaveChat(id: string, user: User): Promise<ChatGetResponseDto | null>;
+
+  listAllChatsForAdmin(): Promise<ChatsResponseDto>;
+
+  purgeUserMembership(profileId: string): Promise<void>;
   removeMember(
     id: string,
     user: User,

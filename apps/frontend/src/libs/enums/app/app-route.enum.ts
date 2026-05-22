@@ -1,4 +1,5 @@
 const AppRoute = {
+  ADMIN: '/admin',
   ANY: '*',
   CHAT: '/:id',
   CHATS: '/chats',

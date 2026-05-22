@@ -31,5 +31,5 @@ const messageController = new MessageController({
   messageService
 });
 
-export { messageController };
+export { messageController, messageService };
 export { MessageLanguage } from './libs/enums/enums.js';

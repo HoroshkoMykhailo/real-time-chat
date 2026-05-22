@@ -1,4 +1,5 @@
 const ExceptionMessage = {
+  CANNOT_DELETE_OWN_ACCOUNT: 'You cannot delete your own account.',
   CHAT_IS_PRIVATE: 'Chat is private.',
   CHAT_NOT_FOUND: 'Chat not found.',
   EMAIL_USED: 'Email address is already in use.',
