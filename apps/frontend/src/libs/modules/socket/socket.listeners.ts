@@ -1,7 +1,14 @@
+import {
+  type CallParticipantListPayload,
+  type CallUserJoinedPayload,
+  type CallUserLeftPayload
+} from '@team-link/shared';
+
 import { chatActions } from '~/modules/chat/chat.js';
 import { type ChatCreationResponseDto } from '~/modules/chat/libs/types/types.js';
 import { type MessageCreationResponseDto } from '~/modules/messages/libs/types/types.js';
-import { messageActions } from '~/modules/messages/message.js';
+import { messageActions, MessageType } from '~/modules/messages/message.js';
+import { videoCallActions } from '~/modules/video-call/video-call.js';
 
 import { type store } from '../store/store.js';
 import { SocketEvents } from './libs/enums/enums.js';
@@ -33,7 +40,10 @@ const initializeSocketListeners = (
 
     const profileId = state.profile.profile?.id;
 
-    if (message.sender.id === profileId) {
+    if (
+      message.sender.id === profileId &&
+      message.type !== MessageType.SYSTEM
+    ) {
       return;
     }
 
@@ -60,6 +70,35 @@ const initializeSocketListeners = (
 
   socket.on(SocketEvents.CHAT_DELETED, (payload: ChatDeletedSocketPayload) => {
     dispatch(chatActions.removeChatById(payload.chatId));
+  });
+
+  const mergeCallParticipants = (payload: CallParticipantListPayload): void => {
+    dispatch(videoCallActions.setCallParticipants(payload));
+  };
+
+  socket.on(SocketEvents.CALL_INITIATED, mergeCallParticipants);
+  socket.on(SocketEvents.CALL_STATE, mergeCallParticipants);
+
+  socket.on(SocketEvents.CALL_USER_JOINED, (payload: CallUserJoinedPayload) => {
+    dispatch(
+      videoCallActions.setCallParticipants({
+        chatId: payload.chatId,
+        participantProfileIds: payload.participantProfileIds
+      })
+    );
+  });
+
+  socket.on(SocketEvents.CALL_USER_LEFT, (payload: CallUserLeftPayload) => {
+    dispatch(
+      videoCallActions.setCallParticipants({
+        chatId: payload.chatId,
+        participantProfileIds: payload.participantProfileIds
+      })
+    );
+  });
+
+  socket.on(SocketEvents.CALL_ENDED, (payload: { chatId: string }) => {
+    dispatch(videoCallActions.callEnded({ chatId: payload.chatId }));
   });
 };
 

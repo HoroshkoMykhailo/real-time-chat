@@ -18,6 +18,7 @@ import {
 } from '~/modules/profile/profile.js';
 import { type storageApi } from '~/modules/storage/storage.js';
 import { type userApi, type userReducer } from '~/modules/user/user.js';
+import { type videoCallReducer } from '~/modules/video-call/video-call.js';
 
 type ExtraArguments = {
   authApi: typeof authApi;
@@ -35,6 +36,7 @@ type RootReducer = {
   message: ReturnType<typeof messageReducer>;
   profile: ReturnType<typeof profileReducer>;
   user: ReturnType<typeof userReducer>;
+  videoCall: ReturnType<typeof videoCallReducer>;
 };
 
 type StoreInstance = ReturnType<

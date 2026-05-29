@@ -67,3 +67,36 @@
 .summary-action-text {
   white-space: nowrap;
 }
+
+.video-action {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.35rem 0 0.35rem 0.35rem;
+  padding: 0.5rem;
+  border: 1px solid var(--border-layout);
+  border-radius: 0.65rem;
+  cursor: pointer;
+  color: inherit;
+  background-color: transparent;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.video-action:hover {
+  background-color: var(--input-bg);
+  border-color: var(--teal);
+}
+
+.video-action:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.video-action-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

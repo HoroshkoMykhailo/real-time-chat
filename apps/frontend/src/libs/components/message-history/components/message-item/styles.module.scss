@@ -6,6 +6,26 @@
   position: relative;
 }
 
+.system-message {
+  margin: 0.35rem 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.65rem;
+  text-align: center;
+  background: rgb(0 128 128 / 12%);
+}
+
+.system-message-text {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: var(--text-dark, #1a1a1a);
+}
+
+.system-message-sender {
+  font-weight: 600;
+  color: var(--teal, #008080);
+}
+
 .active {
   background-color: var(--input-bg);
 }

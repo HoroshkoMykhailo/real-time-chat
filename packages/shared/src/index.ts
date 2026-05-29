@@ -7,7 +7,14 @@ export {
 export { HTTPError, ValidationError } from './libs/exceptions/exceptions.js';
 export { type Configurable } from './libs/modules/config/config.js';
 export { HTTPCode, HttpHeader, HTTPMethod } from './libs/modules/http/http.js';
-export { SocketEvents } from './libs/modules/socket/socket.js';
+export {
+  type CallParticipantListPayload,
+  type CallUserJoinedPayload,
+  type CallUserLeftPayload,
+  SocketEvents,
+  type WebRtcSignalClientPayload,
+  type WebRtcSignalRelayPayload
+} from './libs/modules/socket/socket.js';
 export {
   type ServerErrorDetail,
   type ServerErrorResponse,

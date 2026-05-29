@@ -1,0 +1,60 @@
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border-layout);
+  background: linear-gradient(
+    90deg,
+    rgb(0 128 128 / 18%),
+    rgb(0 80 120 / 12%)
+  );
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.title {
+  font-size: 0.95rem;
+}
+
+.meta {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6b7a86);
+}
+
+.join {
+  flex-shrink: 0;
+  padding: 0.45rem 1.1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  background-color: var(--teal);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 14%);
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.join:hover {
+  background-color: var(--button-hover);
+}
+
+.join:active {
+  transform: scale(0.98);
+}
+
+.join:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}

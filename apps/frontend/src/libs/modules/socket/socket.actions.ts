@@ -4,6 +4,22 @@ import { storageApi } from '~/modules/storage/storage.js';
 import { SocketEvents } from './libs/enums/enums.js';
 import { socket } from './socket.js';
 
+const emitCallJoin = (chatId: string): void => {
+  socket.emit(SocketEvents.CALL_JOIN, { chatId });
+};
+
+const emitCallLeave = (chatId: string): void => {
+  socket.emit(SocketEvents.CALL_LEAVE, { chatId });
+};
+
+const emitWebRtcSignal = (payload: {
+  chatId: string;
+  payload: unknown;
+  toProfileId: string;
+}): void => {
+  socket.emit(SocketEvents.WEBRTC_SIGNAL, payload);
+};
+
 const joinChat = (chatId: string): void => {
   socket.emit(SocketEvents.JOIN_CHAT, chatId);
 };
@@ -20,4 +36,11 @@ const registerSocketUserSession = (): void => {
   }
 };
 
-export { joinChat, leaveChatRoom, registerSocketUserSession };
+export {
+  emitCallJoin,
+  emitCallLeave,
+  emitWebRtcSignal,
+  joinChat,
+  leaveChatRoom,
+  registerSocketUserSession
+};

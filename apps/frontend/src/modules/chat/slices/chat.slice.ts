@@ -260,7 +260,10 @@ const { actions, reducer } = createSlice({
         const updatedChat = {
           ...oldChat,
           lastMessage: {
-            content: message.content,
+            content:
+              message.type === 'system'
+                ? 'Video call started'
+                : message.content,
             createdAt: message.createdAt,
             fileUrl: message.fileUrl,
             id: message.id,

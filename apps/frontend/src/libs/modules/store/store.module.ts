@@ -9,6 +9,7 @@ import { messageApi, messageReducer } from '~/modules/messages/message.js';
 import { profileApi, profileReducer } from '~/modules/profile/profile.js';
 import { storageApi } from '~/modules/storage/storage.js';
 import { userApi, userReducer } from '~/modules/user/user.js';
+import { videoCallReducer } from '~/modules/video-call/video-call.js';
 
 import {
   handleErrorMiddleware,
@@ -61,7 +62,8 @@ class Store implements StoreModule {
         chat: chatReducer,
         message: messageReducer,
         profile: profileReducer,
-        user: userReducer
+        user: userReducer,
+        videoCall: videoCallReducer
       }
     });
   }

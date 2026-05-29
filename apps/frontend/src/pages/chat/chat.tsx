@@ -7,13 +7,14 @@ import {
   useAppSelector,
   useCallback,
   useEffect,
+  useMemo,
   useParams,
   useRef,
   useState
 } from '~/libs/hooks/hooks.js';
 import { translate } from '~/libs/modules/localization/translate.js';
 import { type ValueOf } from '~/libs/types/types.js';
-import { chatActions } from '~/modules/chat/chat.js';
+import { chatActions, ChatType } from '~/modules/chat/chat.js';
 import { messageActions } from '~/modules/messages/message.js';
 
 import { AddMembers } from './libs/components/add-members/add-members.js';
@@ -22,11 +23,15 @@ import chatHeaderstyles from './libs/components/chat-header/styles.module.scss';
 import { ChatInfo } from './libs/components/chat-info/chat-info.js';
 import { ChatSummaryPanel } from './libs/components/chat-summary-panel/chat-summary-panel.js';
 import { GroupEdit } from './libs/components/group-edit/group-edit.js';
+import { JoinCallBanner } from './libs/components/join-call-banner/join-call-banner.js';
 import { MessageInput } from './libs/components/message-input/message-input.js';
 import { PinnedHeader } from './libs/components/pinned-header/pinned-header.js';
+import { VideoCallOverlay } from './libs/components/video-call-overlay/video-call-overlay.js';
 import { ActiveChatView } from './libs/enums/active-chat-view.js';
+import { useChatRoomVideoCall } from './libs/hooks/use-chat-room-video-call.js';
 import styles from './styles.module.scss';
 
+/* eslint-disable sonarjs/cognitive-complexity -- chat shell composes messages, summary, video, and pinned views */
 const Chat: React.FC = () => {
   const dispatch = useAppDispatch();
   const { id: chatId } = useParams<{ id: string }>();
@@ -37,6 +42,39 @@ const Chat: React.FC = () => {
     selectedChat: chat
   } = useAppSelector(state => state.chat);
   const { profile } = useAppSelector(state => state.profile);
+  const localCallChatId = useAppSelector(
+    state => state.videoCall.localCallChatId
+  );
+  const callParticipantIds = useAppSelector(state =>
+    chatId
+      ? (state.videoCall.callsByChatId[chatId]?.participantProfileIds ?? [])
+      : []
+  );
+  const memberLabels = useMemo(() => {
+    if (!chat?.members) {
+      return [];
+    }
+
+    return chat.members.map(member => {
+      const typedMember = member as { id: string; username: string };
+
+      return { id: typedMember.id, name: typedMember.username };
+    });
+  }, [chat?.members]);
+  const {
+    handleJoinCallFromBanner,
+    handleLeaveVideoCall,
+    handleOpenVideoCall,
+    isVideoCallOpen,
+    showJoinCallBanner
+  } = useChatRoomVideoCall({
+    callParticipantIds,
+    chatId,
+    dispatch,
+    isGroupChat: chat?.type === ChatType.GROUP,
+    localCallChatId,
+    profileId: profile?.id
+  });
   const [activeChatView, setActiveChatView] = useState<
     ValueOf<typeof ActiveChatView>
   >(ActiveChatView.ChatInfo);
@@ -207,6 +245,24 @@ const Chat: React.FC = () => {
               </div>
               {profile && chatId ? (
                 <button
+                  aria-label={translate.translate(
+                    'videoCall',
+                    profile.language
+                  )}
+                  className={styles['video-action']}
+                  onClick={handleOpenVideoCall}
+                  type="button"
+                >
+                  <span
+                    aria-hidden
+                    className={styles['video-action-icon-wrap']}
+                  >
+                    <Icon height={20} name="camera" width={20} />
+                  </span>
+                </button>
+              ) : null}
+              {profile && chatId ? (
+                <button
                   className={styles['summary-action']}
                   onClick={handleOpenSummaryPanel}
                   type="button"
@@ -223,6 +279,24 @@ const Chat: React.FC = () => {
                 </button>
               ) : null}
             </div>
+            {showJoinCallBanner && profile ? (
+              <JoinCallBanner
+                buttonLabel={translate.translate(
+                  'joinVideoCall',
+                  profile.language
+                )}
+                headline={translate.translate(
+                  'videoCallInProgress',
+                  profile.language
+                )}
+                onJoin={handleJoinCallFromBanner}
+                participantCount={callParticipantIds.length}
+                subline={translate.translate(
+                  'videoOnCallLabel',
+                  profile.language
+                )}
+              />
+            ) : null}
             <MessageHistory setEditingMessageId={setEditingMessageId} />
             <MessageInput
               editingMessageId={editingMessageId}
@@ -239,8 +313,20 @@ const Chat: React.FC = () => {
         />
       ) : null}
       {renderContent()}
+      {isVideoCallOpen && chatId && profile ? (
+        <VideoCallOverlay
+          chatId={chatId}
+          isOpen
+          language={profile.language}
+          localProfileId={profile.id}
+          memberLabels={memberLabels}
+          onLeave={handleLeaveVideoCall}
+          participantProfileIds={callParticipantIds}
+        />
+      ) : null}
     </div>
   );
 };
+/* eslint-enable sonarjs/cognitive-complexity */
 
 export { Chat };

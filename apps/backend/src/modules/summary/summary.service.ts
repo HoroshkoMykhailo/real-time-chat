@@ -107,6 +107,10 @@ class Summary implements SummaryService {
   }
 
   #messageBodyForSummary(message: Message): string {
+    if (message.type === MessageType.SYSTEM) {
+      return '[video call started]';
+    }
+
     const trimmed = message.content.trim();
 
     if (trimmed.length > EMPTY_LENGTH) {

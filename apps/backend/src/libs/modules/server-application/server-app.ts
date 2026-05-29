@@ -16,6 +16,7 @@ import { joinPath } from '~/libs/modules/path/path.js';
 import { authorization } from '~/libs/modules/plugins/authorization/authorization.plugin.js';
 import { type Token } from '~/libs/modules/token/token.js';
 import { type ValidationSchema, type WhiteRoute } from '~/libs/types/types.js';
+import { type MessageService } from '~/modules/message/libs/types/types.js';
 import { type UserService } from '~/modules/user/user.js';
 
 import { type DatabaseModule } from '../database/database.js';
@@ -33,6 +34,7 @@ type Constructor = {
   maximumFileSize: number;
   options: FastifyServerOptions;
   services: {
+    messageService: MessageService;
     userService: UserService;
   };
   token: Token;
@@ -65,6 +67,7 @@ class ServerApp {
   #maximumFileSize: number;
 
   #services: {
+    messageService: MessageService;
     userService: UserService;
   };
 
@@ -159,7 +162,7 @@ class ServerApp {
   }
 
   #initPlugins = async (): Promise<void> => {
-    const { userService } = this.#services;
+    const { messageService, userService } = this.#services;
 
     await this.#app.register(fastifyMultipart, {
       attachFieldsToBody: true,
@@ -191,6 +194,7 @@ class ServerApp {
     new SocketModule({
       io,
       logger: this.#logger,
+      messageService,
       token: this.#token,
       userService
     });

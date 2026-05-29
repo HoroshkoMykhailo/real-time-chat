@@ -7,6 +7,7 @@ import {
   useEffect,
   useNavigate
 } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { chatActions } from '~/modules/chat/chat.js';
 import { type MessageCreationResponseDto } from '~/modules/messages/libs/types/types.js';
@@ -99,6 +100,24 @@ const MessageItem = ({
       dispatch(chatActions.setSelectedChat(createdChat));
     }
   }, [navigate, dispatch, createdChat]);
+
+  if (message.type === MessageType.SYSTEM) {
+    if (!profile) {
+      return <></>;
+    }
+
+    return (
+      <div className={styles['system-message']} role="note">
+        <p className={styles['system-message-text']}>
+          {translate.translate('videoCallStartedChat', profile.language)}
+          <span className={styles['system-message-sender']}>
+            {' — '}
+            {message.sender.username}
+          </span>
+        </p>
+      </div>
+    );
+  }
 
   const messageRenderers = new Map<
     ValueOf<typeof MessageType>,

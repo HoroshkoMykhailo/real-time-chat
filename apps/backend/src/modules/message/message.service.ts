@@ -15,6 +15,7 @@ import { type ValueOf } from '~/libs/types/types.js';
 
 import { type ChatToUser as ChatToUserRepository } from '../chat-to-user/chat-to-user.repository.js';
 import { type Chat as ChatRepository } from '../chat/chat.repository.js';
+import { ChatType } from '../chat/libs/enums/enums.js';
 import { ProfileLanguage } from '../profile/libs/enums/enums.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
 import { type TranscriptionService } from '../transcription/transcription.js';
@@ -553,6 +554,49 @@ class Message implements MessageService {
         })
       )
     };
+  }
+
+  public async recordGroupVideoCallStarted(payload: {
+    chatId: string;
+    starterProfileId: string;
+  }): Promise<void> {
+    const { chatId, starterProfileId } = payload;
+
+    const chat = await this.#chatRepository.getById(chatId);
+
+    if (!chat || chat.type !== ChatType.GROUP) {
+      return;
+    }
+
+    if (!chat.members.includes(starterProfileId)) {
+      return;
+    }
+
+    const senderProfile =
+      await this.#profileRepository.getById(starterProfileId);
+
+    if (!senderProfile) {
+      return;
+    }
+
+    const message = await this.#messageRepository.create({
+      chatId,
+      content: '__VIDEO_CALL_STARTED__',
+      isContentEdited: false,
+      isPinned: false,
+      senderId: starterProfileId,
+      status: MessageStatus.SENT,
+      type: MessageType.SYSTEM
+    });
+
+    await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    const io = this.#getIo();
+
+    io.to(chatId).emit(SocketEvents.MESSAGE, {
+      ...message,
+      sender: senderProfile
+    });
   }
 
   public async transcribeMessage(

@@ -5,7 +5,10 @@ import { database } from '~/libs/modules/database/database.js';
 import { adminController } from '~/modules/admin/admin.js';
 import { authController } from '~/modules/auth/auth.js';
 import { chatController } from '~/modules/chat/chat.js';
-import { messageController } from '~/modules/message/message.js';
+import {
+  messageController,
+  messageService
+} from '~/modules/message/message.js';
 import { userController, userService } from '~/modules/user/user.js';
 
 import { logger } from '../logger/logger.js';
@@ -44,7 +47,7 @@ const serverApp = new ServerApp({
       }
     }
   },
-  services: { userService },
+  services: { messageService, userService },
   token,
   whiteRoutes: WHITE_ROUTES
 });
