@@ -12,5 +12,6 @@ export {
   AdminApiPath,
   APIPath,
   AppEnvironment,
+  AuthApiPath,
   UserRole
 } from '@team-link/shared';

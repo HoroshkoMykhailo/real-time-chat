@@ -11,6 +11,17 @@ import {
 } from './types.js';
 
 type AuthController = {
+  googleOAuthCallback: (
+    options: ControllerAPIHandlerOptions<{
+      query: {
+        code?: string;
+        error?: string;
+        error_description?: string;
+        state?: string;
+      };
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<undefined>>;
+  googleOAuthInit: () => Promise<ControllerAPIHandlerResponse<undefined>>;
   register: (
     options: ControllerAPIHandlerOptions<{
       body: UserSignUpRequestDto;

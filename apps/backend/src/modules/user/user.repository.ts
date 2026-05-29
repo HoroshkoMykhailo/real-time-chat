@@ -22,6 +22,25 @@ class User
     return user ?? null;
   }
 
+  public async getByGoogleSub(googleSub: string): Promise<null | UserDocument> {
+    const user = await this.model.findOne({ googleSub }).exec();
+
+    return user ?? null;
+  }
+
+  public async linkGoogleAccount(
+    userId: string,
+    googleSub: string
+  ): Promise<null | UserDocument> {
+    const document = await this.model.findByIdAndUpdate(
+      userId,
+      { $set: { googleSub } },
+      { new: true }
+    );
+
+    return document ?? null;
+  }
+
   public async updatePartialById(
     id: string,
     patch: Partial<Pick<TUser, 'email' | 'role'>>

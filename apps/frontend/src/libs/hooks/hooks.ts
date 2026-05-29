@@ -16,4 +16,9 @@ export {
   useState
 } from 'react';
 export { useController } from 'react-hook-form';
-export { useLocation, useNavigate, useParams } from 'react-router-dom';
+export {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams
+} from 'react-router-dom';

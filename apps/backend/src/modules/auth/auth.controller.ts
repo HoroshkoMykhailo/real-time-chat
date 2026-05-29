@@ -53,7 +53,54 @@ class Auth extends Controller implements AuthController {
       },
       url: AuthApiPath.SIGN_IN
     });
+
+    this.addRoute({
+      handler: this.googleOAuthInit,
+      method: HTTPMethod.GET,
+      url: AuthApiPath.GOOGLE
+    });
+
+    this.addRoute({
+      handler: this.googleOAuthCallback as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: AuthApiPath.GOOGLE_CALLBACK
+    });
   }
+
+  public googleOAuthCallback = async (
+    options: ControllerAPIHandlerOptions<{
+      query: {
+        code?: string;
+        error?: string;
+        error_description?: string;
+        state?: string;
+      };
+    }>
+  ): Promise<ControllerAPIHandlerResponse<undefined>> => {
+    const redirectTo = await this.#authService.handleGoogleOAuthCallback(
+      options.query
+    );
+
+    return { redirectTo, status: HTTPCode.FOUND };
+  };
+
+  public googleOAuthInit = async (): Promise<
+    ControllerAPIHandlerResponse<undefined>
+  > => {
+    if (!this.#authService.isGoogleOAuthConfigured()) {
+      return {
+        redirectTo: this.#authService.getGoogleMisconfigurationRedirect(),
+        status: HTTPCode.FOUND
+      };
+    }
+
+    const state = await this.#authService.createGoogleOAuthState();
+
+    return {
+      redirectTo: this.#authService.buildGoogleAuthorizationUrl(state),
+      status: HTTPCode.FOUND
+    };
+  };
 
   public register = async (
     options: ControllerAPIHandlerOptions<{

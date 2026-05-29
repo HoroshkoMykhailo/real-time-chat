@@ -13,6 +13,7 @@ export {
 } from './create-group/create-group.js';
 export { DatePicker } from './date-picker/date-picker.js';
 export { FileIcon } from './file-icon/file-icon.js';
+export { GoogleSignInButton } from './google-sign-in-button/google-sign-in-button.js';
 export { Header } from './header/header.js';
 export { IconButton } from './icon-button/icon-button.js';
 export { Icon } from './icon/icon.js';

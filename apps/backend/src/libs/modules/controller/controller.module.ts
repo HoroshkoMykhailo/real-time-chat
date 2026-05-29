@@ -47,7 +47,11 @@ class Controller implements ControllerModule {
     this.#logger.info(`${request.method.toUpperCase()} on ${request.url}`);
 
     const handlerOptions = this.mapRequest(request);
-    const { payload, status } = await handler(handlerOptions);
+    const { payload, redirectTo, status } = await handler(handlerOptions);
+
+    if (redirectTo) {
+      return await reply.redirect(redirectTo);
+    }
 
     return await (payload instanceof Blob
       ? reply

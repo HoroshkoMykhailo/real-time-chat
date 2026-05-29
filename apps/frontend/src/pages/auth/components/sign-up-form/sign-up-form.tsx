@@ -1,5 +1,6 @@
 import {
   Button,
+  GoogleSignInButton,
   IconButton,
   Input,
   NavLink
@@ -12,9 +13,11 @@ import {
   useCallback,
   useEffect,
   useNavigate,
+  useSearchParams,
   useState
 } from '~/libs/hooks/hooks.js';
 import { type UserSignUpRequestDto } from '~/modules/auth/auth.js';
+import { getGoogleOAuthStartUrl } from '~/modules/auth/libs/helpers/get-google-oauth-start-url.helper.js';
 import { signUp as signUpValidationSchema } from '~/modules/auth/libs/validation-schemas/validation-schemas.js';
 import { UserPayloadKey } from '~/modules/profile/profile.js';
 
@@ -43,6 +46,8 @@ const SignUpForm: React.FC<Properties> = ({ onSubmit }) => {
   const isLoading = authDataStatus === DataStatus.PENDING;
 
   const navigate = useNavigate();
+  const [searchParameters] = useSearchParams();
+  const oauthError = searchParameters.get('oauthError');
 
   useEffect(() => {
     if (authenticatedUser) {
@@ -59,9 +64,19 @@ const SignUpForm: React.FC<Properties> = ({ onSubmit }) => {
     setIsPasswordVisible(previousState => !previousState);
   }, []);
 
+  const handleGoogleClick = useCallback((): void => {
+    globalThis.location.href = getGoogleOAuthStartUrl();
+  }, []);
+
   return (
     <>
       <h2 className={styles['title']}>Register for free account</h2>
+      {oauthError ? (
+        <p className={styles['oauthError']} role="alert">
+          {oauthError}
+        </p>
+      ) : null}
+      <GoogleSignInButton disabled={isLoading} onClick={handleGoogleClick} />
       <form name="registrationForm" onSubmit={handleSubmit(handleFormSubmit)}>
         <fieldset className={styles['fieldset']} disabled={isLoading}>
           <Input

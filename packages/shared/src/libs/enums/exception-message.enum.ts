@@ -7,6 +7,8 @@ const ExceptionMessage = {
   ERROR_UPDATING_PROFILE: 'Error updating profile.',
   FILE_NOT_FOUND: 'File not found.',
   FORBIDDEN: 'This action is forbidden.',
+  GOOGLE_ACCOUNT_LINKED_TO_ANOTHER_USER:
+    'This Google account is already linked to a different user.',
   GROUP_NAME_REQUIRED: 'Group name is required.',
   GROUP_NOT_FOUND: 'Group not found.',
   INVALID_CHAT_ID: 'Invalid chat id.',

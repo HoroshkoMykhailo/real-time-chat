@@ -102,6 +102,32 @@ class Config implements ConfigModule {
           format: String
         }
       },
+      GOOGLE_OAUTH: {
+        CLIENT_ID: {
+          default: '',
+          doc: 'Google OAuth 2.0 Web client ID (empty disables Google sign-in redirect flow)',
+          env: 'GOOGLE_OAUTH_CLIENT_ID',
+          format: String
+        },
+        CLIENT_SECRET: {
+          default: '',
+          doc: 'Google OAuth 2.0 client secret (keep server-side only)',
+          env: 'GOOGLE_OAUTH_CLIENT_SECRET',
+          format: String
+        },
+        FRONTEND_URL: {
+          default: '',
+          doc: 'Public SPA origin for post-login redirect (e.g. http://localhost:3000)',
+          env: 'GOOGLE_OAUTH_FRONTEND_URL',
+          format: String
+        },
+        REDIRECT_URI: {
+          default: '',
+          doc: 'Backend OAuth callback URL registered in Google Cloud (e.g. http://localhost:3001/api/v1/auth/google/callback)',
+          env: 'GOOGLE_OAUTH_REDIRECT_URI',
+          format: String
+        }
+      },
       JWT: {
         ALGORITHM: {
           default: null,

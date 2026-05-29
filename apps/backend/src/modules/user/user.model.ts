@@ -11,6 +11,7 @@ import { UserRole } from './libs/enums/enums.js';
 
 interface UserDocument extends AbstractDocument {
   email: string;
+  googleSub?: string;
   password: string;
   profileId: Types.ObjectId;
   role: ValueOf<typeof UserRole>;
@@ -18,6 +19,7 @@ interface UserDocument extends AbstractDocument {
 
 const UserSchema = new Schema<UserDocument>({
   email: { required: true, type: String, unique: true },
+  googleSub: { sparse: true, type: String, unique: true },
   password: { required: true, type: String },
   profileId: { ref: 'Profile', required: true, type: Schema.Types.ObjectId },
   role: { enum: Object.values(UserRole), required: true, type: String }

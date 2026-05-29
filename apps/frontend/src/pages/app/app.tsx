@@ -13,6 +13,7 @@ import { AdminUserDetailPage } from '../admin/admin-user-detail-page.js';
 import { AdminUsersPage } from '../admin/admin-users-page.js';
 import { Auth } from '../auth/auth.js';
 import { Chat } from '../chat/chat.js';
+import { GoogleOAuthCallbackPage } from '../google-oauth-callback/google-oauth-callback-page.js';
 import { Main } from '../main/main.js';
 import { NotFound } from '../not-found/not-found.js';
 import { Profile } from '../profile/profile.js';
@@ -22,6 +23,10 @@ const App: React.FC = () => {
   return (
     <RouterProvider
       routes={[
+        {
+          element: <GoogleOAuthCallbackPage />,
+          path: AppRoute.GOOGLE_OAUTH_CALLBACK
+        },
         {
           children: [
             {

@@ -23,6 +23,12 @@ type EnvironmentSchema = {
     SUMMARY_MODEL: string;
     VERTEX_LOCATION: string;
   };
+  GOOGLE_OAUTH: {
+    CLIENT_ID: string;
+    CLIENT_SECRET: string;
+    FRONTEND_URL: string;
+    REDIRECT_URI: string;
+  };
   JWT: {
     ALGORITHM: string;
     EXPIRATION_TIME: string;
