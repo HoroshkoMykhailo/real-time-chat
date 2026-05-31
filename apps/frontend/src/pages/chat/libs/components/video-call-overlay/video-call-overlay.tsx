@@ -156,7 +156,7 @@ const VideoCallOverlay = ({
             onClick={toggleAudio}
             type="button"
           >
-            <Icon height={22} name="microphone" width={22} />
+            <Icon height={26} name="microphone" width={26} />
           </button>
           <button
             aria-label={translate.translate('videoToggleCamera', language)}
@@ -165,7 +165,7 @@ const VideoCallOverlay = ({
             onClick={toggleVideo}
             type="button"
           >
-            <Icon height={22} name="camera" width={22} />
+            <Icon height={26} name="camera" width={26} />
           </button>
           <button
             className={`${styles['control']} ${styles['leave']}`}

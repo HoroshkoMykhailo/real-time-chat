@@ -257,7 +257,7 @@ const Chat: React.FC = () => {
                     aria-hidden
                     className={styles['video-action-icon-wrap']}
                   >
-                    <Icon height={20} name="camera" width={20} />
+                    <Icon height={24} name="camera" width={24} />
                   </span>
                 </button>
               ) : null}

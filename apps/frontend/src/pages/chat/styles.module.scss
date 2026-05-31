@@ -75,18 +75,20 @@
   justify-content: center;
   margin: 0.35rem 0 0.35rem 0.35rem;
   padding: 0.5rem;
-  border: 1px solid var(--border-layout);
+  border: 1px solid rgb(0 181 173 / 45%);
   border-radius: 0.65rem;
   cursor: pointer;
-  color: inherit;
-  background-color: transparent;
+  color: var(--teal);
+  background-color: rgb(0 181 173 / 12%);
   transition:
     background-color 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .video-action:hover {
-  background-color: var(--input-bg);
+  color: #008f89;
+  background-color: rgb(0 181 173 / 22%);
   border-color: var(--teal);
 }
 
