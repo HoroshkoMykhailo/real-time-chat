@@ -10,6 +10,7 @@ import {
 import { translate } from '~/libs/modules/localization/translate.js';
 import { chatActions } from '~/modules/chat/chat.js';
 
+import { ChatSummaryMarkdownBody } from './chat-summary-markdown-body.js';
 import styles from './styles.module.scss';
 
 type Properties = {
@@ -226,7 +227,7 @@ const ChatSummaryPanel = ({
             <h3 className={styles['summary-heading']}>
               {translate.translate('summaryResult', profile.language)}
             </h3>
-            <pre className={styles['summary-body']}>{summaryText}</pre>
+            <ChatSummaryMarkdownBody text={summaryText} />
           </div>
         ) : null}
       </div>

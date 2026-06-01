@@ -8,7 +8,6 @@ import {
 } from './libs/types/types.js';
 
 const DEFAULT_VALUE = 0;
-const RATE_HERTZ = 48_000;
 
 type Constructor = {
   transcriptionClient: TranscriptionServiceClient;
@@ -32,9 +31,7 @@ class Transcription implements TranscriptionService {
         },
         config: {
           alternativeLanguageCodes: ['uk-UA'],
-          encoding: 9,
-          languageCode: 'en-US',
-          rateHertz: RATE_HERTZ
+          languageCode: 'en-US'
         }
       };
 

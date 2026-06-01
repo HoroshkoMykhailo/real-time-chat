@@ -31,10 +31,10 @@ const MessageInput = ({
   const { messages, writeDataStatus } = useAppSelector(state => state.message);
   const { selectedChat: chat } = useAppSelector(state => state.chat);
   const { profile } = useAppSelector(state => state.profile);
-  const [currentChatId, setCurrentChatId] = useState<null | string>(null);
   const [message, setMessage] = useState<string>('');
   const inputReference = useRef<HTMLInputElement>(null);
   const messageReference = useRef(message);
+  const draftInputDirtyReference = useRef(false);
 
   const handleSend = useCallback(() => {
     if (message.trim() && chat) {
@@ -90,6 +90,7 @@ const MessageInput = ({
 
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
+      draftInputDirtyReference.current = true;
       setMessage(event.target.value);
     },
     []
@@ -134,46 +135,52 @@ const MessageInput = ({
     }
   }, [editingMessageId, messages]);
 
+  /* eslint-disable react-hooks/exhaustive-deps -- `chat.draft` is intentionally omitted: `selectedChat` updates for reasons other than draft changes would re-run this effect and overwrite the in-progress message. */
   useEffect(() => {
-    if (currentChatId) {
-      const message = messageReference.current;
-      const chatId = currentChatId;
+    const subscribedChatId = chat?.id ?? null;
 
-      if (message.trim()) {
-        dispatch(
-          chatActions.saveDraft({
-            chatId,
-            draft: {
-              content: messageReference.current,
-              createdAt: new Date().toISOString()
-            }
-          })
-        );
-      } else {
-        dispatch(
-          chatActions.deleteDraft({
-            chatId
-          })
-        );
+    draftInputDirtyReference.current = false;
+
+    if (subscribedChatId) {
+      if (inputReference.current) {
+        inputReference.current.focus();
       }
-    }
 
-    if (inputReference.current) {
-      inputReference.current.focus();
-    }
-
-    if (chat?.draft) {
-      setMessage(chat.draft.content);
+      if (chat?.draft) {
+        setMessage(chat.draft.content);
+      } else {
+        setMessage('');
+      }
     } else {
       setMessage('');
     }
 
-    if (chat?.id) {
-      setCurrentChatId(chat.id);
-    }
-
     setEditingMessageId(null);
-  }, [chat, currentChatId, dispatch, setEditingMessageId]);
+
+    return (): void => {
+      if (!subscribedChatId) {
+        return;
+      }
+
+      const draftText = messageReference.current;
+      const inputWasEdited = draftInputDirtyReference.current;
+
+      if (draftText.trim()) {
+        dispatch(
+          chatActions.saveDraft({
+            chatId: subscribedChatId,
+            draft: {
+              content: draftText,
+              createdAt: new Date().toISOString()
+            }
+          })
+        );
+      } else if (inputWasEdited) {
+        dispatch(chatActions.deleteDraft({ chatId: subscribedChatId }));
+      }
+    };
+  }, [chat?.id, dispatch, setEditingMessageId]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent): void => {

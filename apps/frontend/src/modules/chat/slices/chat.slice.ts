@@ -326,6 +326,10 @@ const { actions, reducer } = createSlice({
           }
         }
       }
+
+      if (state.selectedChat?.id === chatId && state.selectedChat.draft) {
+        delete state.selectedChat.draft;
+      }
     },
     mergeRealtimeChat: (
       state,

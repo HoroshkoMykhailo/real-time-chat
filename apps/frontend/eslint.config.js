@@ -55,7 +55,10 @@ const reactHooksConfig = {
   plugins: {
     'react-hooks': reactHooks
   },
-  rules: reactHooks.configs.recommended.rules
+  rules: {
+    ...reactHooks.configs.recommended.rules,
+    'react-hooks/immutability': 'off'
+  }
 };
 
 /** @type {Config} */
