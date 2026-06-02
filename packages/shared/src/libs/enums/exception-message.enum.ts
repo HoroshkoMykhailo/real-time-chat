@@ -1,4 +1,5 @@
 const ExceptionMessage = {
+  CANNOT_DELETE_OWN_ACCOUNT: 'You cannot delete your own account.',
   CHAT_IS_PRIVATE: 'Chat is private.',
   CHAT_NOT_FOUND: 'Chat not found.',
   EMAIL_USED: 'Email address is already in use.',
@@ -6,12 +7,16 @@ const ExceptionMessage = {
   ERROR_UPDATING_PROFILE: 'Error updating profile.',
   FILE_NOT_FOUND: 'File not found.',
   FORBIDDEN: 'This action is forbidden.',
+  GOOGLE_ACCOUNT_LINKED_TO_ANOTHER_USER:
+    'This Google account is already linked to a different user.',
   GROUP_NAME_REQUIRED: 'Group name is required.',
   GROUP_NOT_FOUND: 'Group not found.',
   INVALID_CHAT_ID: 'Invalid chat id.',
   INVALID_CREDENTIALS: 'Invalid credentials.',
   INVALID_DATE_OF_BIRTH: 'Invalid date of birth.',
   INVALID_IMAGE_TYPE: 'Invalid image type.',
+  INVALID_LAST_VIEWED_AT: 'Invalid last viewed time.',
+  INVALID_MEMBERS_JSON: 'Members payload must be valid JSON.',
   INVALID_MESSAGE_TYPE: 'Invalid message type.',
   INVALID_TOKEN: 'Invalid token.',
   INVALID_TOKEN_NO_USER_ID: 'Token is invalid: userId missing.',
@@ -24,6 +29,13 @@ const ExceptionMessage = {
   NOTIFICATION_NOT_FOUND: 'Notification not found.',
   PRIVATE_CHAT_EXISTS: 'Private chat already exists.',
   PROFILE_NOT_FOUND: 'Profile not found.',
+  SUMMARY_GENERATION_FAILED: 'Unable to generate chat summary.',
+  SUMMARY_INVALID_TIME_RANGE:
+    'Summary end time must be on or after start time.',
+  SUMMARY_NO_MESSAGES_IN_RANGE:
+    'No messages found for the selected time range.',
+  SUMMARY_TOO_MANY_MESSAGES:
+    'Too many messages in the selected range. Choose a shorter period.',
   TOKEN_EXPIRED: 'Token is expired.',
   TRANSCRIPTION_ERROR: 'Transcription error.',
   TRANSLATION_ERROR: 'Translation error.',

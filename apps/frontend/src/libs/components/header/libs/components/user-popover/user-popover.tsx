@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 
 import { Popover } from '~/libs/components/components.js';
-import { AppRoute } from '~/libs/enums/enums.js';
+import { AppRoute, UserRole } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
   useAppSelector,
@@ -34,6 +34,10 @@ const UserPopover = ({
 }: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
 
+  const authenticatedUser = useAppSelector(state => state.auth.user);
+
+  const isAdmin = authenticatedUser?.role === UserRole.ADMIN;
+
   const { chats } = useAppSelector(state => state.chat);
 
   const handleLogout = useCallback((): void => {
@@ -53,6 +57,14 @@ const UserPopover = ({
             <p className={styles['user-email']}>{email}</p>
           </div>
           <div className={styles['buttons']}>
+            {isAdmin ? (
+              <NavLink
+                className={styles['button'] as string}
+                to={`${AppRoute.ADMIN}/users`}
+              >
+                Адмін-панель
+              </NavLink>
+            ) : null}
             <NavLink
               className={styles['button'] as string}
               to={AppRoute.PROFILE}

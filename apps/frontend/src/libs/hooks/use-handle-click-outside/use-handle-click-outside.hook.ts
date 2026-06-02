@@ -1,30 +1,87 @@
-import { useEffect } from '~/libs/hooks/hooks.js';
+import { type RefObject } from 'react';
 
-const useHandleClickOutside = <T extends HTMLElement>(
-  reference: React.RefObject<T>,
-  onOutsideClick: () => void,
-  contentReference?: React.RefObject<T>
-): void => {
+import { useEffect, useRef } from '~/libs/hooks/hooks.js';
+
+type Properties<T extends HTMLElement> = {
+  contentReference?: RefObject<null | T>;
+  enabled?: boolean;
+  onOutsideClick: () => void;
+  reference: RefObject<null | T>;
+};
+
+const useHandleClickOutside = <T extends HTMLElement>({
+  contentReference,
+  enabled = true,
+  onOutsideClick,
+  reference
+}: Properties<T>): void => {
+  const pointerStartedInsideReference = useRef<boolean>(false);
+
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent): void => {
-      if (contentReference && !contentReference.current) {
+    if (!enabled) {
+      pointerStartedInsideReference.current = false;
+
+      return;
+    }
+
+    const markPointerSequenceStart = (event: PointerEvent): void => {
+      const target = event.target as Node;
+
+      if (!reference.current) {
+        pointerStartedInsideReference.current = false;
+
         return;
       }
 
-      if (
-        reference.current &&
-        !reference.current.contains(event.target as Node)
-      ) {
-        onOutsideClick();
-      }
+      const isInside =
+        reference.current.contains(target) ||
+        Boolean(contentReference?.current?.contains(target));
+
+      pointerStartedInsideReference.current = isInside;
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    const handleClickOutside = (mouseEvent: MouseEvent): void => {
+      const startedInside = pointerStartedInsideReference.current;
+
+      pointerStartedInsideReference.current = false;
+
+      const target = mouseEvent.target as Node;
+
+      if (!reference.current) {
+        return;
+      }
+
+      if (reference.current.contains(target)) {
+        return;
+      }
+
+      if (contentReference?.current?.contains(target)) {
+        return;
+      }
+
+      // Same pointer gesture: `click.target` can be detached (DOM swap) or sit under a
+      // layer that is not a descendant in the tree react-select uses; `contains` then
+      // fails even though the user interacted inside the popover.
+      if (startedInside) {
+        return;
+      }
+
+      onOutsideClick();
+    };
+
+    document.addEventListener('pointerdown', markPointerSequenceStart, true);
+    document.addEventListener('click', handleClickOutside);
 
     return (): void => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener(
+        'pointerdown',
+        markPointerSequenceStart,
+        true
+      );
+      document.removeEventListener('click', handleClickOutside);
+      pointerStartedInsideReference.current = false;
     };
-  }, [reference, onOutsideClick]);
+  }, [contentReference, enabled, onOutsideClick, reference]);
 };
 
 export { useHandleClickOutside };

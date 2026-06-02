@@ -1,4 +1,5 @@
-import { type JWTPayload, SignJWT, jwtVerify } from 'jose';
+import { type JWTPayload, jwtVerify, SignJWT } from 'jose';
+import { createSecretKey, type KeyObject } from 'node:crypto';
 
 import { type Token } from './libs/types/types.js';
 
@@ -11,10 +12,10 @@ type Constructor = {
 class BaseToken implements Token {
   private algorithm: string;
   private expirationTime: string | undefined;
-  private secret: Uint8Array;
+  private secret: KeyObject;
 
   public constructor({ algorithm, expirationTime, secret }: Constructor) {
-    this.secret = new TextEncoder().encode(secret);
+    this.secret = createSecretKey(secret, 'utf8');
     this.expirationTime = expirationTime;
     this.algorithm = algorithm;
   }

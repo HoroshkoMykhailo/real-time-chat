@@ -15,6 +15,10 @@ type Constructor = {
 };
 
 class Controller implements ControllerModule {
+  public get routes(): ServerApplicationRouteParameters[] {
+    return this.#routes;
+  }
+
   #apiPath: string;
 
   #logger: LoggerModule;
@@ -26,6 +30,15 @@ class Controller implements ControllerModule {
     this.#apiPath = apiPath;
   }
 
+  public addRoute(options: ControllerRouteParameters): void {
+    const { handler, url } = options;
+    this.#routes.push({
+      ...options,
+      handler: (request, reply) => this.mapHandler(handler, request, reply),
+      url: joinPath([this.#apiPath, url])
+    });
+  }
+
   private async mapHandler(
     handler: ControllerAPIHandler,
     request: Parameters<ServerApplicationRouteParameters['handler']>[0],
@@ -34,7 +47,11 @@ class Controller implements ControllerModule {
     this.#logger.info(`${request.method.toUpperCase()} on ${request.url}`);
 
     const handlerOptions = this.mapRequest(request);
-    const { payload, status } = await handler(handlerOptions);
+    const { payload, redirectTo, status } = await handler(handlerOptions);
+
+    if (redirectTo) {
+      return await reply.redirect(redirectTo);
+    }
 
     return await (payload instanceof Blob
       ? reply
@@ -58,19 +75,6 @@ class Controller implements ControllerModule {
       query,
       user
     };
-  }
-
-  public addRoute(options: ControllerRouteParameters): void {
-    const { handler, url } = options;
-    this.#routes.push({
-      ...options,
-      handler: (request, reply) => this.mapHandler(handler, request, reply),
-      url: joinPath([this.#apiPath, url])
-    });
-  }
-
-  public get routes(): ServerApplicationRouteParameters[] {
-    return this.#routes;
   }
 }
 

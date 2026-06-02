@@ -22,11 +22,8 @@ const groupMessagesByDate = (
   for (const message of messages) {
     const dateKey = format(new Date(message.createdAt), 'yyyy-MM-dd');
 
-    if (!groupedMessages[dateKey]) {
-      groupedMessages[dateKey] = [];
-    }
-
-    groupedMessages[dateKey]?.push(message);
+    groupedMessages[dateKey] ??= [];
+    groupedMessages[dateKey].push(message);
   }
 
   return groupedMessages;

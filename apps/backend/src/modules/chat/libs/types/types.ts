@@ -5,7 +5,9 @@ export {
   type Chat,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
-  type ChatUpdateResponseDto,
   type ChatsResponseDto,
+  type ChatSummaryRequestDto,
+  type ChatSummaryResponseDto,
+  type ChatUpdateResponseDto,
   type UpdateLastViewedTimeResponseDto
 } from '@team-link/shared';

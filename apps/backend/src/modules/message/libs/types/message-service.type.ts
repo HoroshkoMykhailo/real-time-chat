@@ -55,10 +55,24 @@ type MessageService = {
     }
   ): Promise<GetMessagesResponseDto>;
 
+  getMessagesByChatIdForAdmin(
+    chatId: string,
+    query: {
+      after?: string;
+      before?: string;
+      limit?: number;
+    }
+  ): Promise<GetMessagesResponseDto>;
+
   getPinMessagesByChatId(
     user: User,
     chatId: string
   ): Promise<GetMessagesResponseDto>;
+
+  recordGroupVideoCallStarted(payload: {
+    chatId: string;
+    starterProfileId: string;
+  }): Promise<void>;
 
   transcribeMessage(
     user: User,

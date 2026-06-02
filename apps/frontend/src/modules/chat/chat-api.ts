@@ -9,9 +9,11 @@ import {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatsResponseDto,
+  type ChatSummaryRequestDto,
+  type ChatSummaryResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto,
   type UpdateLastViewedTimeResponseDto
 } from './libs/types/types.js';
 
@@ -121,6 +123,24 @@ class Chat implements ChatApi {
       {
         hasAuth: true,
         method: HTTPMethod.DELETE
+      }
+    );
+  }
+
+  public summarizeChat(
+    chatId: string,
+    payload: ChatSummaryRequestDto
+  ): Promise<ChatSummaryResponseDto> {
+    return this.#httpApi.load(
+      `${this.#apiPath}${APIPath.CHAT}${ChatApiPath.$CHAT_ID.replace(
+        ':id',
+        chatId
+      )}${ChatApiPath.SUMMARY}`,
+      {
+        contentType: ContentType.JSON,
+        hasAuth: true,
+        method: HTTPMethod.POST,
+        payload: JSON.stringify(payload)
       }
     );
   }

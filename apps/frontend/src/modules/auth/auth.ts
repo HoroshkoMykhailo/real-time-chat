@@ -12,9 +12,7 @@ export { authApi };
 export {
   type User,
   type UserSignInRequestDto,
-  type UserSignInResponseDto,
-  type UserSignUpRequestDto,
-  type UserSignUpResponseDto
+  type UserSignUpRequestDto
 } from './libs/types/types.js';
 export {
   actions as authActions,

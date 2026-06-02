@@ -1,4 +1,5 @@
-import { type PayloadAction, createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { createSlice, isAnyOf, type PayloadAction } from '@reduxjs/toolkit';
+import { MessageStatus, MessageType } from '@team-link/shared';
 
 import {
   MINUS_ONE_VALUE,
@@ -30,22 +31,75 @@ import {
   writeVideoMessage
 } from './actions.js';
 
+const optimisticMessageId = (clientMessageId: string): string =>
+  `optimistic:${clientMessageId}`;
+
+type WritableMessageState = {
+  messages: MessageHistoryItem[];
+  writeDataStatus: ValueOf<typeof DataStatus>;
+};
+
+const replaceOptimisticWithPayload = (
+  state: WritableMessageState,
+  clientMessageId: string,
+  payload: MessageCreationResponseDto
+): void => {
+  const optimisticId = optimisticMessageId(clientMessageId);
+  const index = state.messages.findIndex(
+    message => message.id === optimisticId
+  );
+  const previous = index >= ZERO_VALUE ? state.messages[index] : undefined;
+
+  if (previous?.fileUrl?.startsWith('blob:')) {
+    URL.revokeObjectURL(previous.fileUrl);
+  }
+
+  if (index >= ZERO_VALUE) {
+    state.messages[index] = payload;
+  } else {
+    state.messages.push(payload);
+  }
+
+  state.writeDataStatus = DataStatus.FULFILLED;
+};
+
+const removeOptimisticMessage = (
+  state: WritableMessageState,
+  clientMessageId: string
+): void => {
+  const optimisticId = optimisticMessageId(clientMessageId);
+  const previous = state.messages.find(message => message.id === optimisticId);
+
+  if (previous?.fileUrl?.startsWith('blob:')) {
+    URL.revokeObjectURL(previous.fileUrl);
+  }
+
+  state.messages = state.messages.filter(
+    message => message.id !== optimisticId
+  );
+
+  state.writeDataStatus = DataStatus.REJECTED;
+};
+
 type State = {
+  activeHistoryChatId: null | string;
   addDataStatus: ValueOf<typeof DataStatus>;
   dataStatus: ValueOf<typeof DataStatus>;
   editDataStatus: ValueOf<typeof DataStatus>;
-  fileBlob: { blob: Blob; id: string } | null;
+  fileBlob: null | { blob: Blob; id: string };
   isAfter: boolean;
   isBefore: boolean;
   isTranscribedFirst: boolean;
   lastViewedTime: null | string;
   loadDataStatus: ValueOf<typeof DataStatus>;
   messages: MessageHistoryItem[];
+  pinnedDataStatus: ValueOf<typeof DataStatus>;
   pinnedMessages: MessageHistoryItem[];
   writeDataStatus: ValueOf<typeof DataStatus>;
 };
 
 const initialState: State = {
+  activeHistoryChatId: null,
   addDataStatus: DataStatus.IDLE,
   dataStatus: DataStatus.IDLE,
   editDataStatus: DataStatus.IDLE,
@@ -56,6 +110,7 @@ const initialState: State = {
   lastViewedTime: null,
   loadDataStatus: DataStatus.IDLE,
   messages: [],
+  pinnedDataStatus: DataStatus.IDLE,
   pinnedMessages: [],
   writeDataStatus: DataStatus.IDLE
 };
@@ -63,10 +118,22 @@ const initialState: State = {
 const { actions, reducer } = createSlice({
   extraReducers(builder) {
     builder
-      .addMatcher(isAnyOf(getMessages.pending), state => {
+      .addMatcher(isAnyOf(getMessages.pending), (state, action) => {
+        state.activeHistoryChatId = action.meta.arg.chatId;
+        state.messages = [];
+        state.lastViewedTime = null;
+        state.isAfter = true;
+        state.isBefore = true;
         state.dataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(getMessages.fulfilled), (state, action) => {
+        if (
+          state.activeHistoryChatId !== null &&
+          action.meta.arg.chatId !== state.activeHistoryChatId
+        ) {
+          return;
+        }
+
         state.messages = action.payload.messages;
 
         if (action.payload.lastViewedTime) {
@@ -75,11 +142,25 @@ const { actions, reducer } = createSlice({
 
         state.dataStatus = DataStatus.FULFILLED;
       })
-      .addMatcher(isAnyOf(getMessages.rejected), state => {
+      .addMatcher(isAnyOf(getMessages.rejected), (state, action) => {
+        if (
+          state.activeHistoryChatId !== null &&
+          action.meta.arg.chatId !== state.activeHistoryChatId
+        ) {
+          return;
+        }
+
         state.messages = [];
         state.dataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(loadAfterMessages.fulfilled), (state, action) => {
+        if (
+          state.activeHistoryChatId !== null &&
+          action.meta.arg.chatId !== state.activeHistoryChatId
+        ) {
+          return;
+        }
+
         if (action.payload.messages.length === ZERO_VALUE) {
           state.isAfter = false;
         }
@@ -94,6 +175,13 @@ const { actions, reducer } = createSlice({
         state.loadDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(loadBeforeMessages.fulfilled), (state, action) => {
+        if (
+          state.activeHistoryChatId !== null &&
+          action.meta.arg.chatId !== state.activeHistoryChatId
+        ) {
+          return;
+        }
+
         if (action.payload.messages.length === ZERO_VALUE) {
           state.isBefore = false;
         }
@@ -108,66 +196,176 @@ const { actions, reducer } = createSlice({
         state.loadDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(getPinnedMessages.fulfilled), (state, action) => {
+        if (
+          state.activeHistoryChatId !== null &&
+          action.meta.arg.chatId !== state.activeHistoryChatId
+        ) {
+          state.pinnedDataStatus = DataStatus.IDLE;
+
+          return;
+        }
+
         state.pinnedMessages = action.payload.messages;
-        state.dataStatus = DataStatus.FULFILLED;
+        state.pinnedDataStatus = DataStatus.FULFILLED;
       })
-      .addMatcher(isAnyOf(getPinnedMessages.rejected), state => {
+      .addMatcher(isAnyOf(getPinnedMessages.rejected), (state, action) => {
+        if (
+          state.activeHistoryChatId !== null &&
+          action.meta.arg.chatId !== state.activeHistoryChatId
+        ) {
+          state.pinnedDataStatus = DataStatus.IDLE;
+
+          return;
+        }
+
         state.pinnedMessages = [];
-        state.dataStatus = DataStatus.REJECTED;
+        state.pinnedDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(getPinnedMessages.pending), state => {
-        state.dataStatus = DataStatus.PENDING;
+        state.pinnedMessages = [];
+        state.pinnedDataStatus = DataStatus.PENDING;
       })
       .addMatcher(isAnyOf(writeTextMessage.fulfilled), (state, action) => {
-        state.messages.push(action.payload);
-
-        state.writeDataStatus = DataStatus.FULFILLED;
+        replaceOptimisticWithPayload(
+          state,
+          action.meta.arg.clientMessageId,
+          action.payload
+        );
       })
-      .addMatcher(isAnyOf(writeTextMessage.pending), state => {
+      .addMatcher(isAnyOf(writeTextMessage.pending), (state, action) => {
+        const now = new Date().toISOString();
+
+        state.messages.push({
+          chatId: action.meta.arg.chatId,
+          content: action.meta.arg.content.content,
+          createdAt: now,
+          id: optimisticMessageId(action.meta.arg.clientMessageId),
+          isContentEdited: false,
+          isPinned: false,
+          sender: action.meta.arg.sender,
+          status: MessageStatus.SENT,
+          type: MessageType.TEXT,
+          updatedAt: now
+        });
         state.writeDataStatus = DataStatus.PENDING;
       })
-      .addMatcher(isAnyOf(writeTextMessage.rejected), state => {
-        state.writeDataStatus = DataStatus.REJECTED;
+      .addMatcher(isAnyOf(writeTextMessage.rejected), (state, action) => {
+        removeOptimisticMessage(state, action.meta.arg.clientMessageId);
       })
       .addMatcher(isAnyOf(writeImageMessage.fulfilled), (state, action) => {
-        state.messages.push(action.payload);
-        state.writeDataStatus = DataStatus.FULFILLED;
+        replaceOptimisticWithPayload(
+          state,
+          action.meta.arg.clientMessageId,
+          action.payload
+        );
       })
-      .addMatcher(isAnyOf(writeImageMessage.pending), state => {
+      .addMatcher(isAnyOf(writeImageMessage.pending), (state, action) => {
+        const now = new Date().toISOString();
+        const fileUrl = URL.createObjectURL(action.meta.arg.payload.file);
+
+        state.messages.push({
+          chatId: action.meta.arg.chatId,
+          content: '',
+          createdAt: now,
+          fileUrl,
+          id: optimisticMessageId(action.meta.arg.clientMessageId),
+          isContentEdited: false,
+          isPinned: false,
+          sender: action.meta.arg.sender,
+          status: MessageStatus.SENT,
+          type: MessageType.IMAGE,
+          updatedAt: now
+        });
         state.writeDataStatus = DataStatus.PENDING;
       })
-      .addMatcher(isAnyOf(writeImageMessage.rejected), state => {
-        state.writeDataStatus = DataStatus.REJECTED;
+      .addMatcher(isAnyOf(writeImageMessage.rejected), (state, action) => {
+        removeOptimisticMessage(state, action.meta.arg.clientMessageId);
       })
       .addMatcher(isAnyOf(writeVideoMessage.fulfilled), (state, action) => {
-        state.messages.push(action.payload);
-        state.writeDataStatus = DataStatus.FULFILLED;
+        replaceOptimisticWithPayload(
+          state,
+          action.meta.arg.clientMessageId,
+          action.payload
+        );
       })
-      .addMatcher(isAnyOf(writeVideoMessage.pending), state => {
+      .addMatcher(isAnyOf(writeVideoMessage.pending), (state, action) => {
+        const now = new Date().toISOString();
+        const fileUrl = URL.createObjectURL(action.meta.arg.payload.file);
+
+        state.messages.push({
+          chatId: action.meta.arg.chatId,
+          content: '',
+          createdAt: now,
+          fileUrl,
+          id: optimisticMessageId(action.meta.arg.clientMessageId),
+          isContentEdited: false,
+          isPinned: false,
+          sender: action.meta.arg.sender,
+          status: MessageStatus.SENT,
+          type: MessageType.VIDEO,
+          updatedAt: now
+        });
         state.writeDataStatus = DataStatus.PENDING;
       })
-      .addMatcher(isAnyOf(writeVideoMessage.rejected), state => {
-        state.writeDataStatus = DataStatus.REJECTED;
+      .addMatcher(isAnyOf(writeVideoMessage.rejected), (state, action) => {
+        removeOptimisticMessage(state, action.meta.arg.clientMessageId);
       })
       .addMatcher(isAnyOf(writeFileMessage.fulfilled), (state, action) => {
-        state.messages.push(action.payload);
-        state.writeDataStatus = DataStatus.FULFILLED;
+        replaceOptimisticWithPayload(
+          state,
+          action.meta.arg.clientMessageId,
+          action.payload
+        );
       })
-      .addMatcher(isAnyOf(writeFileMessage.pending), state => {
+      .addMatcher(isAnyOf(writeFileMessage.pending), (state, action) => {
+        const now = new Date().toISOString();
+        const { file } = action.meta.arg.payload;
+
+        state.messages.push({
+          chatId: action.meta.arg.chatId,
+          content: file.name,
+          createdAt: now,
+          id: optimisticMessageId(action.meta.arg.clientMessageId),
+          isContentEdited: false,
+          isPinned: false,
+          sender: action.meta.arg.sender,
+          status: MessageStatus.SENT,
+          type: MessageType.FILE,
+          updatedAt: now
+        });
         state.writeDataStatus = DataStatus.PENDING;
       })
-      .addMatcher(isAnyOf(writeFileMessage.rejected), state => {
-        state.writeDataStatus = DataStatus.REJECTED;
+      .addMatcher(isAnyOf(writeFileMessage.rejected), (state, action) => {
+        removeOptimisticMessage(state, action.meta.arg.clientMessageId);
       })
       .addMatcher(isAnyOf(writeAudioMessage.fulfilled), (state, action) => {
-        state.messages.push(action.payload);
-        state.writeDataStatus = DataStatus.FULFILLED;
+        replaceOptimisticWithPayload(
+          state,
+          action.meta.arg.clientMessageId,
+          action.payload
+        );
       })
-      .addMatcher(isAnyOf(writeAudioMessage.pending), state => {
+      .addMatcher(isAnyOf(writeAudioMessage.pending), (state, action) => {
+        const now = new Date().toISOString();
+        const fileUrl = URL.createObjectURL(action.meta.arg.payload.file);
+
+        state.messages.push({
+          chatId: action.meta.arg.chatId,
+          content: '',
+          createdAt: now,
+          fileUrl,
+          id: optimisticMessageId(action.meta.arg.clientMessageId),
+          isContentEdited: false,
+          isPinned: false,
+          sender: action.meta.arg.sender,
+          status: MessageStatus.SENT,
+          type: MessageType.AUDIO,
+          updatedAt: now
+        });
         state.writeDataStatus = DataStatus.PENDING;
       })
-      .addMatcher(isAnyOf(writeAudioMessage.rejected), state => {
-        state.writeDataStatus = DataStatus.REJECTED;
+      .addMatcher(isAnyOf(writeAudioMessage.rejected), (state, action) => {
+        removeOptimisticMessage(state, action.meta.arg.clientMessageId);
       })
       .addMatcher(isAnyOf(deleteMessage.fulfilled), (state, action) => {
         if (action.payload) {
@@ -194,37 +392,57 @@ const { actions, reducer } = createSlice({
         state.editDataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(updatePinMessage.fulfilled), (state, action) => {
-        const index = state.messages.findIndex(
-          message => message.id === action.payload
-        );
-        const message = state.messages[index];
-
-        if (index !== MINUS_ONE_VALUE && message) {
-          const isPinned = !message.isPinned;
-          state.messages[index] = {
-            ...message,
-            isPinned
-          };
-
-          if (isPinned) {
-            const insertIndex = state.pinnedMessages.findIndex(
-              pinnedMessage =>
-                new Date(pinnedMessage.createdAt) > new Date(message.createdAt)
-            );
-
-            if (insertIndex === MINUS_ONE_VALUE) {
-              state.pinnedMessages.push(message);
-            } else {
-              state.pinnedMessages.splice(insertIndex, ZERO_VALUE, message);
-            }
-          } else {
-            state.pinnedMessages = state.pinnedMessages.filter(
-              pinnedMessage => pinnedMessage.id !== action.payload
-            );
-          }
-
-          state.editDataStatus = DataStatus.FULFILLED;
+        if (!action.payload) {
+          return;
         }
+
+        const messageId = action.payload;
+        const messageIndex = state.messages.findIndex(
+          message => message.id === messageId
+        );
+        const sourceMessage =
+          messageIndex === MINUS_ONE_VALUE
+            ? state.pinnedMessages.find(message => message.id === messageId)
+            : state.messages[messageIndex];
+
+        if (!sourceMessage) {
+          return;
+        }
+
+        const isPinned = !sourceMessage.isPinned;
+        const updated = {
+          ...sourceMessage,
+          isPinned
+        };
+
+        if (messageIndex !== MINUS_ONE_VALUE && state.messages[messageIndex]) {
+          state.messages[messageIndex] = updated;
+        }
+
+        if (isPinned) {
+          const withoutDuplicate = state.pinnedMessages.filter(
+            pinnedMessage => pinnedMessage.id !== messageId
+          );
+          const insertIndex = withoutDuplicate.findIndex(
+            pinnedMessage =>
+              new Date(pinnedMessage.createdAt) > new Date(updated.createdAt)
+          );
+
+          state.pinnedMessages =
+            insertIndex === MINUS_ONE_VALUE
+              ? [...withoutDuplicate, updated]
+              : [
+                  ...withoutDuplicate.slice(ZERO_VALUE, insertIndex),
+                  updated,
+                  ...withoutDuplicate.slice(insertIndex)
+                ];
+        } else {
+          state.pinnedMessages = state.pinnedMessages.filter(
+            pinnedMessage => pinnedMessage.id !== messageId
+          );
+        }
+
+        state.editDataStatus = DataStatus.FULFILLED;
       })
       .addMatcher(isAnyOf(updatePinMessage.rejected), state => {
         state.editDataStatus = DataStatus.REJECTED;

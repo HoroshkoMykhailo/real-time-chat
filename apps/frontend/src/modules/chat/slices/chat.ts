@@ -7,6 +7,7 @@ import {
   getMyChats,
   leaveChat,
   removeMember,
+  summarizeChat,
   updateGroup,
   updateLastViewedTime
 } from './actions.js';
@@ -22,6 +23,7 @@ const allActions = {
   getMyChats,
   leaveChat,
   removeMember,
+  summarizeChat,
   updateGroup,
   updateLastViewedTime
 };

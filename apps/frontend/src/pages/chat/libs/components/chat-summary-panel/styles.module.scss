@@ -1,0 +1,154 @@
+.backdrop {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+  background-color: rgb(0 0 0 / 45%);
+  inset: 0;
+}
+
+.panel {
+  width: min(100%, 32rem);
+  max-height: calc(100vh - 4rem);
+  overflow: auto;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  background-color: var(--main-bg, #fff);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 18%);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.close {
+  cursor: pointer;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--border-layout);
+  border-radius: 0.35rem;
+  background: transparent;
+  font-size: 0.9rem;
+}
+
+.hint {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  color: var(--button-hover, #555);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.input {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border-layout);
+  border-radius: 0.35rem;
+  font: inherit;
+}
+
+.actions {
+  margin-top: 1rem;
+}
+
+.generate {
+  cursor: pointer;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border: none;
+  border-radius: 0.4rem;
+  background-color: var(--blue, #2563eb);
+  color: #fff;
+  font-weight: 600;
+}
+
+.generate:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.loader-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.error {
+  margin: 1rem 0 0;
+  color: #b91c1c;
+  font-size: 0.9rem;
+}
+
+.summary-box {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--border-layout);
+  border-radius: 0.5rem;
+  background-color: var(--input-bg, #f8fafc);
+}
+
+.summary-heading {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.summary-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text-primary, inherit);
+}
+
+.summary-paragraph {
+  margin: 0;
+  word-break: break-word;
+}
+
+.summary-subheading {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary, inherit);
+}
+
+.summary-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  word-break: break-word;
+}
+
+.summary-list-item {
+  margin: 0.35rem 0 0;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.summary-list-item strong {
+  font-weight: 700;
+  color: var(--text-primary, inherit);
+}

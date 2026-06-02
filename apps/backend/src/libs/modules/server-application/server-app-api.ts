@@ -8,6 +8,10 @@ type Constructor = {
 };
 
 class ServerAppApi implements ServerApi {
+  public get routes(): Controller['routes'] {
+    return this.#routes;
+  }
+
   #routes: Controller['routes'];
 
   #version: string;
@@ -18,10 +22,6 @@ class ServerAppApi implements ServerApi {
       ...handler,
       url: joinPath([`/${this.#version}`, handler.url])
     }));
-  }
-
-  public get routes(): Controller['routes'] {
-    return this.#routes;
   }
 }
 

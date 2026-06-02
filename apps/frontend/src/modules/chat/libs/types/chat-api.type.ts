@@ -2,9 +2,11 @@ import {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatsResponseDto,
+  type ChatSummaryRequestDto,
+  type ChatSummaryResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto,
   type UpdateLastViewedTimeResponseDto
 } from './types.js';
 
@@ -16,6 +18,10 @@ type ChatApi = {
   getMyChats(): Promise<ChatsResponseDto>;
   leaveChat(chatId: string): Promise<ChatGetResponseDto | null>;
   removeMember(chatId: string, memberId: string): Promise<ChatGetResponseDto>;
+  summarizeChat(
+    chatId: string,
+    payload: ChatSummaryRequestDto
+  ): Promise<ChatSummaryResponseDto>;
   updateGroup(
     chatId: string,
     payload: ChatUpdateRequestDto

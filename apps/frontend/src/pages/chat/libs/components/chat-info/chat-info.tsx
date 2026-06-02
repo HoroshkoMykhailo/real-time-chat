@@ -8,7 +8,7 @@ import {
   useNavigate
 } from '~/libs/hooks/hooks.js';
 import { translate } from '~/libs/modules/localization/translate.js';
-import { ChatType, chatActions } from '~/modules/chat/chat.js';
+import { chatActions, ChatType } from '~/modules/chat/chat.js';
 
 import { ChatInfoHeader } from './components/chat-info-header/chat-info-header.js';
 import { MembersList } from './components/members-list/member-list.js';
@@ -35,7 +35,7 @@ const ChatInfo = ({
   const handleDelete = useCallback((): void => {
     if (chat) {
       void dispatch(chatActions.deleteGroup({ id: chat.id }));
-      navigate(AppRoute.ROOT);
+      void navigate(AppRoute.ROOT);
     }
   }, [chat, dispatch, navigate]);
 
@@ -106,19 +106,19 @@ const ChatInfo = ({
             </div>
 
             <div className={styles['detailsColumn']}>
-              <div className={styles['detailsBox']}>{profile.username}</div>
+              <div className={styles['detailsBox']}>{otherMember.username}</div>
               {otherMember.description && (
                 <div className={styles['detailsBox']}>
-                  {profile.description}
+                  {otherMember.description}
                 </div>
               )}
               {otherMember.dateOfBirth && (
                 <div className={styles['detailsBox']}>
-                  {profile.dateOfBirth}
+                  {otherMember.dateOfBirth}
                 </div>
               )}
               <div className={styles['detailsBox']}>
-                {profile.language === 'en'
+                {otherMember.language === 'en'
                   ? translate.translate('english', profile.language)
                   : translate.translate('ukrainian', profile.language)}
               </div>

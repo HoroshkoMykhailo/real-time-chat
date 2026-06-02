@@ -4,9 +4,11 @@ import {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatsResponseDto,
+  type ChatSummaryRequestDto,
+  type ChatSummaryResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto,
   type UpdateLastViewedTimeResponseDto
 } from './types.js';
 
@@ -25,14 +27,27 @@ type ChatService = {
   deleteChat(id: string, user: User): Promise<boolean>;
   getChat(id: string, user: User): Promise<ChatGetResponseDto>;
 
+  getChatForAdmin(id: string): Promise<ChatGetResponseDto>;
+
   getMyChats(user: User): Promise<ChatsResponseDto>;
 
   leaveChat(id: string, user: User): Promise<ChatGetResponseDto | null>;
+
+  listAllChatsForAdmin(): Promise<ChatsResponseDto>;
+
+  purgeUserMembership(profileId: string): Promise<void>;
   removeMember(
     id: string,
     user: User,
     member: string
   ): Promise<ChatGetResponseDto>;
+
+  summarizeChatHistory(
+    id: string,
+    user: User,
+    payload: ChatSummaryRequestDto
+  ): Promise<ChatSummaryResponseDto>;
+
   updateChat(
     id: string,
     user: User,

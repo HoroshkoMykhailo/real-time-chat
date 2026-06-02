@@ -8,6 +8,8 @@ import { type Chat as TChat } from './libs/types/types.js';
 
 type Constructor = Record<'chatModel', typeof ChatModel>;
 
+const EMPTY_LENGTH = 0;
+
 class Chat extends AbstractRepository<ChatDocument, TChat> {
   public constructor({ chatModel }: Constructor) {
     super(chatModel);
@@ -15,14 +17,25 @@ class Chat extends AbstractRepository<ChatDocument, TChat> {
 
   public async findPrivateChatByMembers(
     memberIds: string[]
-  ): Promise<TChat | null> {
-    return await this.model.findOne({
-      members: { $all: memberIds },
+  ): Promise<null | TChat> {
+    if (memberIds.length === EMPTY_LENGTH) {
+      return null;
+    }
+
+    // $all alone matches any superset; require exact member count for private chats.
+    const document = await this.model.findOne({
+      members: { $all: memberIds, $size: memberIds.length },
       type: ChatType.PRIVATE
     });
+
+    return document ? this.mapToBusinessLogic(document) : null;
   }
 
   public async getByIds(chatIds: string[]): Promise<TChat[]> {
+    if (chatIds.length === EMPTY_LENGTH) {
+      return [];
+    }
+
     const chats = await this.model.find({
       _id: { $in: chatIds }
     });
@@ -34,6 +47,21 @@ class Chat extends AbstractRepository<ChatDocument, TChat> {
     const chats = await this.model.find({ members: profileId });
 
     return chats.map(chat => this.mapToBusinessLogic(chat));
+  }
+
+  public async setLastMessage(
+    chatId: string,
+    messageId: null | string
+  ): Promise<void> {
+    await (messageId
+      ? this.model.updateOne(
+          { _id: chatId },
+          { $set: { lastMessageId: messageId } }
+        )
+      : this.model.updateOne(
+          { _id: chatId },
+          { $unset: { lastMessageId: '' } }
+        ));
   }
 
   protected mapAdditionalBusinessLogic(document: ChatDocument): Partial<TChat> {
@@ -89,21 +117,6 @@ class Chat extends AbstractRepository<ChatDocument, TChat> {
     }
 
     return result;
-  }
-
-  public async setLastMessage(
-    chatId: string,
-    messageId: null | string
-  ): Promise<void> {
-    await (messageId
-      ? this.model.updateOne(
-          { _id: chatId },
-          { $set: { lastMessageId: messageId } }
-        )
-      : this.model.updateOne(
-          { _id: chatId },
-          { $unset: { lastMessageId: '' } }
-        ));
   }
 }
 

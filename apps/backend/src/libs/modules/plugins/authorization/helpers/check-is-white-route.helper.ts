@@ -12,8 +12,9 @@ const checkIsWhiteRoute = ({
   url,
   whiteRoutes
 }: WhiteRouteOptions): boolean => {
+  const [pathOnly = url] = url.split('?');
   const apiUrlRegex = /^\/api\/v\d+(\/.+)$/;
-  const match = apiUrlRegex.exec(url);
+  const match = apiUrlRegex.exec(pathOnly);
   const [, route] = match ?? [];
 
   if (!route) {

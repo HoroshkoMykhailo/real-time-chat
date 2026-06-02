@@ -21,7 +21,7 @@ const signUp = createAsyncThunk<User, UserSignUpRequestDto, AsyncThunkConfig>(
 );
 
 const getAuthenticatedUser = createAsyncThunk<
-  User | null,
+  null | User,
   undefined,
   AsyncThunkConfig
 >(ActionType.GET_USER, async (_payload, { extra: { authApi, storageApi } }) => {

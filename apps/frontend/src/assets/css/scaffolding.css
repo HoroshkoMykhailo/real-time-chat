@@ -11,7 +11,7 @@ body {
   font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;
   font-size: 14px;
   line-height: 1.5;
-  color: rgba(0 0 0 / 87%);
+  color: rgb(0 0 0 / 87%);
   background-color: var(--main-white);
 }
 
@@ -22,10 +22,9 @@ body {
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(100%);
   white-space: nowrap;
   border: 0;
+  clip-path: inset(100%);
 }
 
 html,

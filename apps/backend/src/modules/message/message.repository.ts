@@ -22,7 +22,21 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     await this.model.deleteMany({ chatId });
   }
 
-  public async getLastMessage(chatId: string): Promise<TMessage | null> {
+  public async deleteManyBySenderId(senderId: string): Promise<void> {
+    await this.model.deleteMany({ senderId: new Types.ObjectId(senderId) });
+  }
+
+  public async getDistinctChatIdsBySenderId(
+    senderId: string
+  ): Promise<string[]> {
+    const ids = await this.model.distinct('chatId', {
+      senderId: new Types.ObjectId(senderId)
+    });
+
+    return ids.map(String);
+  }
+
+  public async getLastMessage(chatId: string): Promise<null | TMessage> {
     const lastMessage = await this.model
       .findOne({ chatId })
       .sort({ createdAt: -1 })
@@ -33,7 +47,7 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
 
   public async getLastPinnedMessageByChatId(
     chatId: string
-  ): Promise<TMessage | null> {
+  ): Promise<null | TMessage> {
     const lastMessage = await this.model
       .findOne({ chatId, isPinned: true })
       .sort({ createdAt: -1 })
@@ -100,7 +114,30 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
       .sort({ createdAt: -1 })
       .limit(limit ?? DEFAULT_LIMIT);
 
-    return messages.map(message => this.mapToBusinessLogic(message)).reverse();
+    return messages
+      .map(message => this.mapToBusinessLogic(message))
+      .toReversed();
+  }
+
+  public async getMessagesByChatIdInTimeRange({
+    chatId,
+    endTime,
+    startTime
+  }: {
+    chatId: string;
+    endTime: Date;
+    startTime: Date;
+  }): Promise<TMessage[]> {
+    const chatObjectId = new Types.ObjectId(chatId);
+
+    const messages = await this.model
+      .find({
+        chatId: chatObjectId,
+        createdAt: { $gte: startTime, $lte: endTime }
+      })
+      .sort({ createdAt: 1 });
+
+    return messages.map(message => this.mapToBusinessLogic(message));
   }
 
   public async getPinnedMessagesByChatId(chatId: string): Promise<TMessage[]> {
@@ -127,6 +164,7 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     const result: Partial<TMessage> = {
       chatId: document.chatId.toString(),
       content: document.content,
+      isContentEdited: document.isContentEdited,
       isPinned: document.isPinned,
       senderId: document.senderId.toString(),
       status: document.status,
@@ -149,6 +187,10 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
 
     if (data.isPinned !== undefined) {
       result.isPinned = data.isPinned;
+    }
+
+    if (data.isContentEdited !== undefined) {
+      result.isContentEdited = data.isContentEdited;
     }
 
     if (data.status) {

@@ -1,4 +1,4 @@
-import { Schema, type Types, model } from 'mongoose';
+import { model, Schema, type Types } from 'mongoose';
 
 import {
   type AbstractDocument,
@@ -13,6 +13,7 @@ interface MessageDocument extends AbstractDocument {
   chatId: Types.ObjectId;
   content: string;
   fileUrl?: string;
+  isContentEdited: boolean;
   isPinned: boolean;
   senderId: Types.ObjectId;
   status: ValueOf<typeof MessageStatus>;
@@ -23,6 +24,7 @@ const MessageSchema = new Schema<MessageDocument>({
   chatId: { ref: 'Chat', required: true, type: Schema.Types.ObjectId },
   content: { type: String },
   fileUrl: { type: String },
+  isContentEdited: { default: false, type: Boolean },
   isPinned: { required: true, type: Boolean },
   senderId: { ref: 'Profile', required: true, type: Schema.Types.ObjectId },
   status: { enum: Object.values(MessageStatus), required: true, type: String },

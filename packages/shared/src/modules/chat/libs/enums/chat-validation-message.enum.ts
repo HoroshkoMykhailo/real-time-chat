@@ -7,6 +7,7 @@ const ChatValidationMessage = {
   MEMBERS_REQUIRED: `You must select at least ${ChatValidationRule.MEMBERS_MIN_COUNT} member(s).`,
   NAME_EMPTY: 'The group name cannot be empty.',
   NAME_MAX_LENGTH: `The group name cannot exceed ${ChatValidationRule.NAME_MAX_LENGTH} characters.`,
+  SUMMARY_END_BEFORE_START: 'Summary end time must be on or after start time.',
   TYPE_EMPTY: 'The chat type cannot be empty.',
   TYPE_INVALID: 'The selected chat type is invalid.'
 } as const;

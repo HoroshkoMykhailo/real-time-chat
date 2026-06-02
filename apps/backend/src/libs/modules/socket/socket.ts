@@ -4,4 +4,4 @@ const socketManager = SocketManager.getInstance();
 
 export { socketManager };
 export { SocketEvents } from './libs/enums/enums.js';
-export { SocketModule } from './socket.module.js';
+export { SocketModule, userRoomId } from './socket.module.js';

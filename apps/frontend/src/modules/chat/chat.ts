@@ -9,7 +9,7 @@ const chatApi = new ChatApi({
 });
 
 export { chatApi };
-export { ChatApiPath, ChatPayloadKey, ChatType } from './libs/enums/enums.js';
+export { ChatPayloadKey, ChatType } from './libs/enums/enums.js';
 export {
   chatCreationValidationSchema,
   chatUpdateValidationSchema

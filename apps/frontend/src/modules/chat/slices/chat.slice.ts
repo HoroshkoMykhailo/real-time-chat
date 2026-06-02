@@ -1,4 +1,4 @@
-import { type PayloadAction, createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { createSlice, isAnyOf, type PayloadAction } from '@reduxjs/toolkit';
 
 import {
   MINUS_ONE_VALUE,
@@ -34,7 +34,7 @@ import {
 } from './actions.js';
 
 const sortChats = (chats: Chats): Chats => {
-  return chats.sort((a, b) => {
+  return chats.toSorted((a, b) => {
     const aDate = a.draft?.createdAt ?? a.lastMessage?.createdAt ?? null;
     const bDate = b.draft?.createdAt ?? b.lastMessage?.createdAt ?? null;
 
@@ -66,6 +66,15 @@ const initialState: State = {
   createdChat: null,
   dataStatus: DataStatus.IDLE,
   selectedChat: null
+};
+
+const removeChatFromClientState = (state: State, chatId: string): void => {
+  leaveChatRoom(chatId);
+  state.chats = state.chats.filter(chat => chat.id !== chatId);
+
+  if (state.selectedChat?.id === chatId) {
+    state.selectedChat = null;
+  }
 };
 
 const { actions, reducer } = createSlice({
@@ -100,15 +109,27 @@ const { actions, reducer } = createSlice({
         state.dataStatus = DataStatus.REJECTED;
       })
       .addMatcher(isAnyOf(getChat.fulfilled), (state, action) => {
-        if (state.selectedChat) {
+        const requestedId = action.meta.arg.id;
+        const listChat = state.chats.find(
+          chatItem => chatItem.id === requestedId
+        );
+
+        if (state.selectedChat?.id === requestedId) {
           state.selectedChat = {
             ...state.selectedChat,
             ...action.payload
           };
+        } else if (listChat) {
+          state.selectedChat = {
+            ...listChat,
+            ...action.payload
+          };
         }
       })
-      .addMatcher(isAnyOf(getChat.rejected), state => {
-        state.selectedChat = null;
+      .addMatcher(isAnyOf(getChat.rejected), (state, action) => {
+        if (state.selectedChat?.id === action.meta.arg.id) {
+          state.selectedChat = null;
+        }
       })
       .addMatcher(isAnyOf(leaveChat.fulfilled), (state, action) => {
         leaveChatRoom(action.payload);
@@ -130,8 +151,14 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(createGroup.fulfilled), (state, action) => {
         state.createdChat = action.payload;
-        joinChat(action.payload.id);
-        state.chats = [action.payload, ...state.chats];
+        const chatExists = state.chats.some(
+          chat => chat.id === action.payload.id
+        );
+
+        if (!chatExists) {
+          joinChat(action.payload.id);
+          state.chats = [action.payload, ...state.chats];
+        }
       })
       .addMatcher(isAnyOf(createGroup.rejected), state => {
         state.createdChat = null;
@@ -150,11 +177,7 @@ const { actions, reducer } = createSlice({
       })
       .addMatcher(isAnyOf(deleteGroup.fulfilled), (state, action) => {
         if (action.payload) {
-          state.chats = state.chats.filter(chat => chat.id !== action.payload);
-
-          if (state.selectedChat?.id === action.payload) {
-            state.selectedChat = null;
-          }
+          removeChatFromClientState(state, action.payload);
         }
       })
       .addMatcher(isAnyOf(deleteGroup.rejected), state => {
@@ -237,7 +260,10 @@ const { actions, reducer } = createSlice({
         const updatedChat = {
           ...oldChat,
           lastMessage: {
-            content: message.content,
+            content:
+              message.type === 'system'
+                ? 'Video call started'
+                : message.content,
             createdAt: message.createdAt,
             fileUrl: message.fileUrl,
             id: message.id,
@@ -294,16 +320,32 @@ const { actions, reducer } = createSlice({
           );
 
           if (insertIndex === MINUS_ONE_VALUE) {
-            state.chats.push(updatedChat as ChatsResponseDto[number]);
+            state.chats.push(updatedChat);
           } else {
-            state.chats.splice(
-              insertIndex,
-              ZERO_VALUE,
-              updatedChat as ChatsResponseDto[number]
-            );
+            state.chats.splice(insertIndex, ZERO_VALUE, updatedChat);
           }
         }
       }
+
+      if (state.selectedChat?.id === chatId && state.selectedChat.draft) {
+        delete state.selectedChat.draft;
+      }
+    },
+    mergeRealtimeChat: (
+      state,
+      action: PayloadAction<ChatCreationResponseDto>
+    ) => {
+      const incomingChat = action.payload;
+
+      if (state.chats.some(chatItem => chatItem.id === incomingChat.id)) {
+        return;
+      }
+
+      joinChat(incomingChat.id);
+      state.chats = [incomingChat, ...state.chats];
+    },
+    removeChatById: (state, action: PayloadAction<string>) => {
+      removeChatFromClientState(state, action.payload);
     },
     resetCreatedChat: state => {
       state.createdChat = null;
@@ -325,7 +367,7 @@ const { actions, reducer } = createSlice({
           );
 
           if (insertIndex === MINUS_ONE_VALUE) {
-            state.chats.push(updatedChat as ChatsResponseDto[number]);
+            state.chats.push(updatedChat);
           } else {
             state.chats.splice(
               insertIndex,
@@ -364,27 +406,41 @@ const { actions, reducer } = createSlice({
       if (chatIndex >= ZERO_VALUE && state.chats[chatIndex]) {
         const chat = state.chats[chatIndex];
 
-        if (chat) {
-          state.chats.splice(chatIndex, ONE_VALUE);
+        state.chats.splice(chatIndex, ONE_VALUE);
 
-          state.chats.unshift({
-            ...chat,
-            draft: action.payload.draft
-          });
-        }
+        state.chats.unshift({
+          ...chat,
+          draft: action.payload.draft
+        });
       }
     },
     setSelectedChat: (state, action: { payload: State['selectedChat'] }) => {
       const draftsJson = storageApi.get(StorageKey.DRAFTS);
       const drafts = draftsJson ? (JSON.parse(draftsJson) as Drafts) : {};
 
-      if (action.payload) {
-        const draft = drafts[action.payload.id];
-        state.selectedChat = {
-          ...action.payload,
-          ...(draft && { draft })
-        };
+      const { payload } = action;
+
+      if (!payload) {
+        return;
       }
+
+      const draft = drafts[payload.id];
+      const previous = state.selectedChat;
+      const merged: State['selectedChat'] = {
+        ...payload,
+        ...(draft && { draft })
+      };
+
+      if (
+        previous &&
+        previous.id === payload.id &&
+        previous.lastPinnedMessage !== undefined &&
+        !Object.hasOwn(payload, 'lastPinnedMessage')
+      ) {
+        merged.lastPinnedMessage = previous.lastPinnedMessage;
+      }
+
+      state.selectedChat = merged;
     },
     updateLastMessage(
       state,
@@ -420,7 +476,7 @@ const { actions, reducer } = createSlice({
         );
 
         if (insertIndex === MINUS_ONE_VALUE) {
-          state.chats.push(updatedChat as ChatsResponseDto[number]);
+          state.chats.push(updatedChat);
         } else {
           state.chats.splice(
             insertIndex,

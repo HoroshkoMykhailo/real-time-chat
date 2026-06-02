@@ -2,7 +2,7 @@ import { ServerErrorType, StorageKey } from '~/libs/enums/enums.js';
 import { type ServerErrorResponse, type ValueOf } from '~/libs/types/types.js';
 
 import { type StorageApi } from '../storage/storage.js';
-import { HTTPCode, HTTPMethod, HttpHeader } from './libs/enums/enums.js';
+import { HTTPCode, HttpHeader, HTTPMethod } from './libs/enums/enums.js';
 import { HTTPError, UnauthorizedError } from './libs/exceptions/exceptions.js';
 import { getStringifiedQuery } from './libs/helpers/helpers.js';
 import { type HttpApi, type HttpOptions } from './libs/types/types.js';
@@ -12,9 +12,77 @@ type Constructor = {
 };
 
 class Http implements HttpApi {
-  #getUrl = <T extends Record<string, unknown>>(
+  #storageApi: StorageApi;
+
+  public constructor({ storageApi }: Constructor) {
+    this.#storageApi = storageApi;
+  }
+
+  public async load<T>(
     url: string,
-    query: T | undefined
+    options: Partial<HttpOptions> = {}
+  ): never | Promise<T> {
+    const {
+      contentType,
+      hasAuth = true,
+      method = HTTPMethod.GET,
+      payload = null,
+      query
+    } = options;
+    const headers = this.#getHeaders({
+      contentType,
+      hasAuth
+    });
+
+    const response = await fetch(this.#getUrl(url, query), {
+      body: payload,
+      headers,
+      method
+    });
+
+    return (await this.#checkResponse(response)) as T;
+  }
+
+  async #checkResponse(response: Response): Promise<Response> {
+    if (!response.ok) {
+      await this.#handleError(response);
+    }
+
+    const contentType = response.headers.get('Content-Type');
+
+    if (
+      contentType &&
+      contentType.startsWith('application/') &&
+      !contentType.includes('json')
+    ) {
+      return await this.#parseBlob(response);
+    }
+
+    return await this.#parseJSON(response);
+  }
+
+  #getHeaders({
+    contentType,
+    hasAuth
+  }: Partial<Pick<HttpOptions, 'contentType' | 'hasAuth'>>): Headers {
+    const headers = new Headers();
+
+    if (contentType) {
+      headers.append(HttpHeader.CONTENT_TYPE, contentType);
+    }
+
+    if (hasAuth) {
+      const token = this.#storageApi.get(StorageKey.TOKEN);
+
+      headers.append(HttpHeader.AUTHORIZATION, `Bearer ${token}`);
+    }
+
+    return headers;
+  }
+
+  #getUrl = (
+    url: string,
+    query: Record<string, unknown> | undefined
   ): string => {
     if (query) {
       return `${url}?${getStringifiedQuery(query)}`;
@@ -61,74 +129,6 @@ class Http implements HttpApi {
   #parseJSON = <T>(response: Response): Promise<T> => {
     return response.json() as Promise<T>;
   };
-
-  #storageApi: StorageApi;
-
-  public constructor({ storageApi }: Constructor) {
-    this.#storageApi = storageApi;
-  }
-
-  async #checkResponse(response: Response): Promise<Response> {
-    if (!response.ok) {
-      await this.#handleError(response);
-    }
-
-    const contentType = response.headers.get('Content-Type');
-
-    if (
-      contentType &&
-      contentType.startsWith('application/') &&
-      !contentType.includes('json')
-    ) {
-      return await this.#parseBlob(response);
-    }
-
-    return await this.#parseJSON(response);
-  }
-
-  #getHeaders({
-    contentType,
-    hasAuth
-  }: Partial<Pick<HttpOptions, 'contentType' | 'hasAuth'>>): Headers {
-    const headers = new Headers();
-
-    if (contentType) {
-      headers.append(HttpHeader.CONTENT_TYPE, contentType);
-    }
-
-    if (hasAuth) {
-      const token = this.#storageApi.get(StorageKey.TOKEN);
-
-      headers.append(HttpHeader.AUTHORIZATION, `Bearer ${token}`);
-    }
-
-    return headers;
-  }
-
-  public async load<T>(
-    url: string,
-    options: Partial<HttpOptions> = {}
-  ): Promise<T> | never {
-    const {
-      contentType,
-      hasAuth = true,
-      method = HTTPMethod.GET,
-      payload = null,
-      query
-    } = options;
-    const headers = this.#getHeaders({
-      contentType,
-      hasAuth
-    });
-
-    const response = await fetch(this.#getUrl(url, query), {
-      body: payload,
-      headers,
-      method
-    });
-
-    return (await this.#checkResponse(response)) as T;
-  }
 }
 
 export { Http };

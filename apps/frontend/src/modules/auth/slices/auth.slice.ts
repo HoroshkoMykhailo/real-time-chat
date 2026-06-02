@@ -9,7 +9,7 @@ import { getAuthenticatedUser, logout, signIn, signUp } from './actions.js';
 
 type State = {
   dataStatus: ValueOf<typeof DataStatus>;
-  user: User | null;
+  user: null | User;
 };
 
 const initialState: State = {

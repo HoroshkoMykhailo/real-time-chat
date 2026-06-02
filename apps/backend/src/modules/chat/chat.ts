@@ -1,18 +1,27 @@
+import { type Server } from 'socket.io';
+
 import { APIPath } from '~/libs/enums/enums.js';
 import { logger } from '~/libs/modules/logger/logger.js';
+import { socketManager } from '~/libs/modules/socket/socket.js';
 
 import { chatToUserRepository } from '../chat-to-user/chat-to-user.js';
-import { chatRepository } from '../initializations/repositories.js';
-import { messageRepository } from '../message/message.js';
+import {
+  chatRepository,
+  messageRepository
+} from '../initializations/repositories.js';
 import { profileRepository } from '../profile/profile.js';
+import { summaryService } from '../summary/summary.js';
 import { Chat as ChatController } from './chat.controller.js';
 import { Chat as ChatService } from './chat.service.js';
 
 const chatService = new ChatService({
   chatRepository,
   chatToUserRepository,
+  getIo: (): Server => socketManager.getIo(),
+  logger,
   messageRepository,
-  profileRepository
+  profileRepository,
+  summaryService
 });
 
 const chatController = new ChatController({
@@ -21,11 +30,4 @@ const chatController = new ChatController({
   logger
 });
 
-export { chatController };
-export { chatRepository } from '../initializations/repositories.js';
-export { type Chat as ChatService } from './chat.service.js';
-export {
-  ChatValidationMessage,
-  ChatValidationRule
-} from './libs/enums/enums.js';
-export { type Chat } from './libs/types/types.js';
+export { chatController, chatService };

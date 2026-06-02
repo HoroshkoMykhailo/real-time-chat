@@ -49,7 +49,7 @@ const MessageHistory = ({
   const [afterMessageTime, setAfterMessageTime] = useState<null | string>(null);
   const [isHidden, setIsHidden] = useState<boolean>(false);
   const messagesListReference = useRef<HTMLDivElement | null>(null);
-  const scrollTimeoutReference = useRef<ReturnType<typeof setTimeout> | null>(
+  const scrollTimeoutReference = useRef<null | ReturnType<typeof setTimeout>>(
     null
   );
   const hasScrolledToUnreadReference = useRef<boolean>(false);
@@ -67,6 +67,7 @@ const MessageHistory = ({
     lastViewedTime,
     loadDataStatus,
     messages,
+    pinnedDataStatus,
     pinnedMessages,
     writeDataStatus
   } = useAppSelector(state => state.message);
@@ -369,6 +370,22 @@ const MessageHistory = ({
   ]);
 
   useEffect(() => {
+    if (writeDataStatus !== DataStatus.PENDING) {
+      return;
+    }
+
+    const lastMessage = messages.at(MINUS_ONE_VALUE);
+
+    if (lastMessage?.id.startsWith('optimistic:')) {
+      const element = messagesListReference.current;
+
+      if (element) {
+        scrollToBottom();
+      }
+    }
+  }, [messages, scrollToBottom, writeDataStatus]);
+
+  useEffect(() => {
     const element = messagesListReference.current;
     setIsHidden(true);
 
@@ -388,7 +405,9 @@ const MessageHistory = ({
 
   const historyMessages = isPinned ? pinnedMessages : messages;
 
-  if (dataStatus === DataStatus.PENDING) {
+  const historyLoadStatus = isPinned ? pinnedDataStatus : dataStatus;
+
+  if (historyLoadStatus === DataStatus.PENDING) {
     return <Loader />;
   }
 

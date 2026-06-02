@@ -1,10 +1,4 @@
-export {
-  UserApiPath,
-  UserPayloadKey,
-  UserRole,
-  UserValidationMessage,
-  UserValidationRule
-} from './libs/enums/enums.js';
+export { UserApiPath, UserPayloadKey, UserRole } from './libs/enums/enums.js';
 export {
   type User,
   type UserProfileCreationRequestDto,

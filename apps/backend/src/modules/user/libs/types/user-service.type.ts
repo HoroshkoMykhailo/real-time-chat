@@ -10,6 +10,11 @@ import {
 type UserService = {
   create(payload: UserSignUpRequestDto): Promise<User>;
   find(id: string): Promise<User>;
+  findOrCreateFromGoogleOAuth(payload: {
+    email: string;
+    googleSub: string;
+    name: string;
+  }): Promise<{ isNewGoogleRegistration: boolean; user: User }>;
   getByEmail(email: string): Promise<UserDocument>;
   getMyProfile(user: User): Promise<UserProfileCreationResponseDto>;
   getUsersByUsername(

@@ -28,6 +28,47 @@ type Constructor = {
 class User extends Controller implements UserController {
   #userService: UserService;
 
+  public constructor({ apiPath, logger, userService }: Constructor) {
+    super({ apiPath, logger });
+    this.#userService = userService;
+
+    this.addRoute({
+      handler: this.updateMyProfile as ControllerAPIHandler,
+      method: HTTPMethod.PUT,
+      schema: {
+        body: profileValidationSchema
+      },
+      url: UserApiPath.PROFILE
+    });
+
+    this.addRoute({
+      handler: this.updateOtherProfile as ControllerAPIHandler,
+      method: HTTPMethod.PUT,
+      schema: {
+        body: profileValidationSchema
+      },
+      url: UserApiPath.$PROFILE_ID
+    });
+
+    this.addRoute({
+      handler: this.getMyProfile as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: UserApiPath.PROFILE
+    });
+
+    this.addRoute({
+      handler: this.getUser as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: UserApiPath.ROOT
+    });
+
+    this.addRoute({
+      handler: this.getUsersByUsername as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: UserApiPath.USERNAME
+    });
+  }
+
   public getMyProfile = async (
     options: ControllerAPIHandlerOptions<{ user: TUser }>
   ): Promise<ControllerAPIHandlerResponse<UserProfileCreationResponseDto>> => {
@@ -93,47 +134,6 @@ class User extends Controller implements UserController {
       status: HTTPCode.OK
     };
   };
-
-  public constructor({ apiPath, logger, userService }: Constructor) {
-    super({ apiPath, logger });
-    this.#userService = userService;
-
-    this.addRoute({
-      handler: this.updateMyProfile as ControllerAPIHandler,
-      method: HTTPMethod.PUT,
-      schema: {
-        body: profileValidationSchema
-      },
-      url: UserApiPath.PROFILE
-    });
-
-    this.addRoute({
-      handler: this.updateOtherProfile as ControllerAPIHandler,
-      method: HTTPMethod.PUT,
-      schema: {
-        body: profileValidationSchema
-      },
-      url: UserApiPath.$PROFILE_ID
-    });
-
-    this.addRoute({
-      handler: this.getMyProfile as ControllerAPIHandler,
-      method: HTTPMethod.GET,
-      url: UserApiPath.PROFILE
-    });
-
-    this.addRoute({
-      handler: this.getUser as ControllerAPIHandler,
-      method: HTTPMethod.GET,
-      url: UserApiPath.ROOT
-    });
-
-    this.addRoute({
-      handler: this.getUsersByUsername as ControllerAPIHandler,
-      method: HTTPMethod.GET,
-      url: UserApiPath.USERNAME
-    });
-  }
 }
 
 export { User };

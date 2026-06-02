@@ -1,9 +1,7 @@
 import {
   type Control,
   type FieldPath,
-  type FieldValues,
-  type Path,
-  type PathValue
+  type FieldValues
 } from 'react-hook-form';
 import ReactSelect, { type MultiValue, type SingleValue } from 'react-select';
 
@@ -26,6 +24,8 @@ type Properties<TFieldValues extends FieldValues, TOptionValue> = {
   isMulti?: boolean;
   isSearchable?: boolean;
   name: FieldPath<TFieldValues>;
+  /** Invoked after the field updates; only used when `isMulti` is false. */
+  onSingleValueChange?: (value: null | TOptionValue) => void;
   options: SelectOption<TOptionValue>[];
   placeholder?: string;
   size?: 'default' | 'small';
@@ -38,6 +38,7 @@ const Select = <TFieldValues extends FieldValues, TOptionValue>({
   isMulti = false,
   isSearchable = false,
   name,
+  onSingleValueChange,
   options,
   placeholder,
   size = 'default'
@@ -58,7 +59,7 @@ const Select = <TFieldValues extends FieldValues, TOptionValue>({
 
     return isMulti
       ? matchedOptions
-      : matchedOptions[FIRST_OPTION_INDEX] ?? null;
+      : (matchedOptions[FIRST_OPTION_INDEX] ?? null);
   }, [field.value, options, isMulti]);
 
   const handleChange = useCallback(
@@ -76,10 +77,13 @@ const Select = <TFieldValues extends FieldValues, TOptionValue>({
         const singleValue = (
           selectedOptions as SingleValue<SelectOption<TOptionValue>>
         )?.value;
-        field.onChange(singleValue ?? null);
+        const nextValue = singleValue ?? null;
+
+        field.onChange(nextValue);
+        onSingleValueChange?.(nextValue);
       }
     },
-    [isMulti, field]
+    [isMulti, field, onSingleValueChange]
   );
 
   return (
@@ -124,7 +128,7 @@ const Select = <TFieldValues extends FieldValues, TOptionValue>({
       isSearchable={isSearchable}
       name={name}
       onChange={handleChange}
-      options={options as PathValue<TFieldValues, Path<TFieldValues>>}
+      options={options}
       placeholder={placeholder}
       styles={{
         control: base => ({
@@ -134,7 +138,7 @@ const Select = <TFieldValues extends FieldValues, TOptionValue>({
         }),
         menu: base => ({
           ...base,
-          zIndex: 3
+          zIndex: 100
         }),
         option: base => ({
           ...base,

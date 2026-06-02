@@ -2,9 +2,5 @@ export {
   MessageApiParams,
   MessageApiPath,
   MessageLanguage,
-  MessagePayloadKey,
-  MessageStatus,
-  MessageType,
-  MessageValidationMessage,
-  MessageValidationRule
+  MessageType
 } from '@team-link/shared';

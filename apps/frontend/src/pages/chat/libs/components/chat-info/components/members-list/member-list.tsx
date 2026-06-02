@@ -81,7 +81,7 @@ const MembersList = ({ onOpenAddMembers }: Properties): JSX.Element => {
       void dispatch(messageActions.getMessages({ chatId: createdChat.id }));
       void dispatch(chatActions.getChat({ id: createdChat.id }));
 
-      navigate(`${AppRoute.CHATS}/${createdChat.id}`);
+      void navigate(`${AppRoute.CHATS}/${createdChat.id}`);
       dispatch(chatActions.setSelectedChat(createdChat));
     }
   }, [navigate, dispatch, createdChat]);

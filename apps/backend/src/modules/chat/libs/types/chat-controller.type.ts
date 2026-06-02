@@ -8,9 +8,11 @@ import {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatsResponseDto,
+  type ChatSummaryRequestDto,
+  type ChatSummaryResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto,
   type UpdateLastViewedTimeResponseDto
 } from './types.js';
 
@@ -63,6 +65,14 @@ type ChatController = {
       user: User;
     }>
   ) => Promise<ControllerAPIHandlerResponse<ChatGetResponseDto>>;
+
+  summarizeChatHistory: (
+    options: ControllerAPIHandlerOptions<{
+      body: ChatSummaryRequestDto;
+      params: { id: string };
+      user: User;
+    }>
+  ) => Promise<ControllerAPIHandlerResponse<ChatSummaryResponseDto>>;
 
   updateChat: (
     options: ControllerAPIHandlerOptions<{

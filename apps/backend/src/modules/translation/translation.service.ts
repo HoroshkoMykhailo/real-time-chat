@@ -32,7 +32,7 @@ class Translation implements TranslationService {
       const [response] = await this.#translationClient.translateText({
         contents: [text],
         parent: this.#parent,
-        targetLanguageCode: language as string
+        targetLanguageCode: language
       });
 
       const { translations } = response;

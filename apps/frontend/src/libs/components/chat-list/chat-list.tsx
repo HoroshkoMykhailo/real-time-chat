@@ -53,7 +53,7 @@ const ChatList = (): JSX.Element => {
 
           void dispatch(chatActions.getChat({ id: chat.id }));
 
-          navigate(`${AppRoute.CHATS}/${chat.id}`);
+          void navigate(`${AppRoute.CHATS}/${chat.id}`);
         }
       }
     },

@@ -1,4 +1,4 @@
-import { default as baseConfig } from '../../lint-staged.config.js';
+import baseConfig from '../../lint-staged.config.js';
 
 /** @type {import('lint-staged').Config} */
 const config = {

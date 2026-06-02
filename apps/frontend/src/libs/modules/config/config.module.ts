@@ -7,11 +7,11 @@ import {
 } from './libs/types/types.js';
 
 class Config implements ConfigModule {
-  #ENV: EnvironmentSchema;
-
-  public constructor() {
-    this.#ENV = this.envSchema;
+  public get ENV(): EnvironmentSchema {
+    return this.#ENV;
   }
+
+  #ENV: EnvironmentSchema;
 
   private get envSchema(): EnvironmentSchema {
     return {
@@ -31,8 +31,8 @@ class Config implements ConfigModule {
     };
   }
 
-  public get ENV(): EnvironmentSchema {
-    return this.#ENV;
+  public constructor() {
+    this.#ENV = this.envSchema;
   }
 }
 

@@ -10,7 +10,7 @@ import {
   useState
 } from '~/libs/hooks/hooks.js';
 import { translate } from '~/libs/modules/localization/translate.js';
-import { ChatType, chatActions } from '~/modules/chat/chat.js';
+import { chatActions, ChatType } from '~/modules/chat/chat.js';
 import { messageActions } from '~/modules/messages/message.js';
 import { userActions } from '~/modules/user/user.js';
 
@@ -68,7 +68,7 @@ const CreateChat = (): JSX.Element => {
       void dispatch(chatActions.getChat({ id: createdChat.id }));
 
       dispatch(chatActions.resetCreatedChat());
-      navigate(`${AppRoute.CHATS}/${createdChat.id}`);
+      void navigate(`${AppRoute.CHATS}/${createdChat.id}`);
     }
   }, [navigate, dispatch, createdChat]);
 

@@ -31,8 +31,5 @@ const messageController = new MessageController({
   messageService
 });
 
-export { messageController };
-export { messageRepository } from '../initializations/repositories.js';
+export { messageController, messageService };
 export { MessageLanguage } from './libs/enums/enums.js';
-export { type Message } from './libs/types/types.js';
-export { type Message as MessageService } from './message.service.js';

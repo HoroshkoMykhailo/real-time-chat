@@ -7,6 +7,7 @@ const ActionType = {
   GET_MY_CHATS: 'chat/get-my-chats',
   LEAVE_CHAT: 'chat/leave-chat',
   REMOVE_MEMBER: 'chat/remove-member',
+  SUMMARIZE_CHAT: 'chat/summarize-chat',
   UPDATE_GROUP: 'chat/update-group',
   UPDATE_LAST_VIEWED_TIME: 'chat/update-last-viewed-time'
 } as const;

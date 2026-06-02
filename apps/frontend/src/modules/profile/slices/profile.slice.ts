@@ -8,7 +8,7 @@ import { getProfile, updateOtherProfile, updateProfile } from './actions.js';
 
 type State = {
   dataStatus: ValueOf<typeof DataStatus>;
-  profile: Profile | null;
+  profile: null | Profile;
 };
 
 const initialState: State = {

@@ -1,5 +1,6 @@
 import { FileIcon } from '~/libs/components/components.js';
-import { DataStatus, ENV } from '~/libs/enums/enums.js';
+import { DataStatus } from '~/libs/enums/enums.js';
+import { resolveServerMediaUrl } from '~/libs/helpers/helpers.js';
 import {
   useAppDispatch,
   useAppSelector,
@@ -19,7 +20,7 @@ const FileMessage = ({ fileMessage }: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
   const { editDataStatus, fileBlob } = useAppSelector(state => state.message);
   const { content: fileName, fileUrl: file, id: messageId } = fileMessage;
-  const fileUrl = `${ENV.SERVER_URL}${file}`;
+  const fileUrl = resolveServerMediaUrl(file);
 
   const handleDownload = useCallback(
     (event: React.MouseEvent) => {
@@ -48,14 +49,14 @@ const FileMessage = ({ fileMessage }: Properties): JSX.Element => {
         type: 'application/octet-stream'
       });
 
-      const url = window.URL.createObjectURL(downloadBlob);
+      const url = globalThis.URL.createObjectURL(downloadBlob);
       const link = document.createElement('a');
       link.href = url;
       link.download = fileName;
       document.body.append(link);
       link.click();
       link.remove();
-      window.URL.revokeObjectURL(url);
+      globalThis.URL.revokeObjectURL(url);
       dispatch(messageActions.resetFileBlob());
     }
   }, [dispatch, editDataStatus, fileBlob, fileName, messageId]);

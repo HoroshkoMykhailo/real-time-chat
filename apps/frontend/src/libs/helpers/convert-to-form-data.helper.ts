@@ -1,6 +1,4 @@
-const convertToFormData = <T extends Record<string, unknown>>(
-  payload: T
-): FormData => {
+const convertToFormData = (payload: Record<string, unknown>): FormData => {
   const formData = new FormData();
 
   for (const [key, value] of Object.entries(payload)) {

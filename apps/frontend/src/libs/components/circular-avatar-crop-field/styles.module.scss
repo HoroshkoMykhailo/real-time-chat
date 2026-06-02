@@ -1,0 +1,86 @@
+.overlayRoot {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  cursor: default;
+  background: rgb(0 0 0 / 65%);
+}
+
+.dialog {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(480px, 100%);
+  max-height: 90vh;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: var(--white);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 25%);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--main-dark);
+  text-align: center;
+}
+
+.cropSurface {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-height: min(52vh, 360px);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.zoomRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.zoomLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--main-dark);
+}
+
+.zoomRange {
+  width: 100%;
+  accent-color: var(--teal);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.actions > * {
+  flex: 1;
+  min-width: 120px;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.cameraIcon {
+  pointer-events: none;
+}

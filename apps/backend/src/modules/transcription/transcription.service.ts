@@ -1,9 +1,6 @@
-import fs from 'node:fs';
-
 import { ExceptionMessage } from '~/libs/enums/enums.js';
-import { staticPath } from '~/libs/modules/constants/constants.js';
+import { readUploadedMediaBuffer } from '~/libs/modules/helpers/read-uploaded-media-buffer/read-uploaded-media-buffer.helper.js';
 import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
-import { joinPath } from '~/libs/modules/path/path.js';
 
 import {
   type TranscriptionService,
@@ -11,7 +8,6 @@ import {
 } from './libs/types/types.js';
 
 const DEFAULT_VALUE = 0;
-const RATE_HERTZ = 48_000;
 
 type Constructor = {
   transcriptionClient: TranscriptionServiceClient;
@@ -26,9 +22,8 @@ class Transcription implements TranscriptionService {
 
   public async transcribe(audioFilePath: string): Promise<string> {
     try {
-      const fullPath = joinPath([staticPath, audioFilePath]);
-
-      const audioContent = fs.readFileSync(fullPath).toString('base64');
+      const audioBuffer = await readUploadedMediaBuffer(audioFilePath);
+      const audioContent = audioBuffer.toString('base64');
 
       const request = {
         audio: {
@@ -36,9 +31,7 @@ class Transcription implements TranscriptionService {
         },
         config: {
           alternativeLanguageCodes: ['uk-UA'],
-          encoding: 9,
-          languageCode: 'en-US',
-          rateHertz: RATE_HERTZ
+          languageCode: 'en-US'
         }
       };
 
@@ -54,7 +47,11 @@ class Transcription implements TranscriptionService {
       }
 
       const transcription = results
-        .map(result => result.alternatives?.[DEFAULT_VALUE]?.transcript ?? '')
+        .map(result => {
+          const alternative = result.alternatives?.[DEFAULT_VALUE];
+
+          return alternative?.transcript ?? '';
+        })
         .join(' ')
         .trim();
 
@@ -66,7 +63,11 @@ class Transcription implements TranscriptionService {
       }
 
       return transcription;
-    } catch {
+    } catch (error) {
+      if (error instanceof HTTPError) {
+        throw error;
+      }
+
       throw new HTTPError({
         message: ExceptionMessage.TRANSCRIPTION_ERROR,
         status: HTTPCode.INTERNAL_SERVER_ERROR

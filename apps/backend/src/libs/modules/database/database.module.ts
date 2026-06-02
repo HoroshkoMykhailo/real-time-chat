@@ -13,7 +13,24 @@ type Constructor = {
 };
 
 class Database implements DatabaseModule {
+  public get environmentConfig(): string {
+    return this.environmentsConfig[this.#config.ENV.APP.ENVIRONMENT];
+  }
+  public get environmentsConfig(): Record<
+    ValueOf<typeof AppEnvironment>,
+    string
+  > {
+    const { MONGO_TEST_URI, MONGO_URI } = this.#config.ENV.DB;
+
+    return {
+      [AppEnvironment.DEVELOPMENT]: MONGO_URI,
+      [AppEnvironment.PRODUCTION]: MONGO_URI,
+      [AppEnvironment.TEST]: MONGO_TEST_URI
+    };
+  }
+
   readonly #config: ConfigModule;
+
   readonly #logger: LoggerModule;
 
   public constructor({ config, logger }: Constructor) {
@@ -30,23 +47,6 @@ class Database implements DatabaseModule {
     } catch {
       this.#logger.error('Failed to connect to MongoDB');
     }
-  }
-
-  public get environmentConfig(): string {
-    return this.environmentsConfig[this.#config.ENV.APP.ENVIRONMENT];
-  }
-
-  public get environmentsConfig(): Record<
-    ValueOf<typeof AppEnvironment>,
-    string
-  > {
-    const { MONGO_TEST_URI, MONGO_URI } = this.#config.ENV.DB;
-
-    return {
-      [AppEnvironment.DEVELOPMENT]: MONGO_URI,
-      [AppEnvironment.PRODUCTION]: MONGO_URI,
-      [AppEnvironment.TEST]: MONGO_TEST_URI
-    };
   }
 }
 

@@ -44,7 +44,6 @@ const Main: React.FC = () => {
   useEffect(() => {
     void dispatch(profileActions.getProfile());
     void dispatch(chatActions.getMyChats());
-    dispatch(chatActions.resetSelectedChat());
   }, [dispatch]);
 
   const handleMouseEnter = useCallback((): void => {
@@ -68,7 +67,11 @@ const Main: React.FC = () => {
 
   const handleCancelClick = useCallback((): void => {
     if (activeView === ActiveSideView.ChatList) {
-      isCreateChatOpened ? onCreateChatClose() : onCreateChatOpen();
+      if (isCreateChatOpened) {
+        onCreateChatClose();
+      } else {
+        onCreateChatOpen();
+      }
     } else {
       setActiveView(ActiveSideView.ChatList);
       onCreateChatClose();

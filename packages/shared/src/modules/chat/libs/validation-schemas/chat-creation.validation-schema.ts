@@ -13,18 +13,14 @@ const chatCreation = Joi.object({
     'object.base': ChatValidationMessage.GROUP_PICTURE_VALIDATION_ERROR
   }),
 
-  members: Joi.array()
-    .items(
-      Joi.object({
-        ...multipartValueSchema,
-        value: Joi.string().trim().required()
-      })
-    )
-    .min(ChatValidationRule.MEMBERS_MIN_COUNT)
+  // Multipart (`attachFieldsToBody`): one field whose `value` is a JSON array string (see `convertToFormData`).
+  members: Joi.object({
+    ...multipartValueSchema,
+    value: Joi.string().trim().required()
+  })
     .required()
     .messages({
-      'array.includesRequiredUnknowns': ChatValidationMessage.MEMBERS_INVALID,
-      'array.min': ChatValidationMessage.MEMBERS_REQUIRED
+      'object.base': ChatValidationMessage.MEMBERS_INVALID
     }),
 
   name: Joi.object({

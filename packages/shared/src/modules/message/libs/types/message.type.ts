@@ -8,6 +8,7 @@ type Message = {
   createdAt: string;
   fileUrl?: string;
   id: string;
+  isContentEdited: boolean;
   isPinned: boolean;
   senderId: string;
   status: ValueOf<typeof MessageStatus>;

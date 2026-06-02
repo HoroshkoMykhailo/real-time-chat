@@ -7,6 +7,7 @@ import {
   useRef,
   useState
 } from '~/libs/hooks/hooks.js';
+import { toastNotifier } from '~/libs/modules/toast-notifier/toast-notifier.js';
 import { messageActions } from '~/modules/messages/message.js';
 
 import styles from './styles.module.scss';
@@ -14,6 +15,7 @@ import styles from './styles.module.scss';
 const VoiceInput = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { selectedChat: chat } = useAppSelector(state => state.chat);
+  const { profile } = useAppSelector(state => state.profile);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const mediaRecorderReference = useRef<MediaRecorder | null>(null);
   const audioChunksReference = useRef<Blob[]>([]);
@@ -35,6 +37,10 @@ const VoiceInput = (): JSX.Element => {
     };
 
     mediaRecorder.onstop = (): void => {
+      if (!profile) {
+        return;
+      }
+
       const audioBlob = new Blob(audioChunksReference.current, {
         type: 'audio/webm'
       });
@@ -42,19 +48,27 @@ const VoiceInput = (): JSX.Element => {
         type: 'audio/webm'
       });
 
+      const clientMessageId = crypto.randomUUID();
+
       void dispatch(
         messageActions.writeAudioMessage({
           chatId: chat.id,
+          clientMessageId,
           payload: {
             file: audioFile
-          }
+          },
+          sender: profile
         })
-      );
+      )
+        .unwrap()
+        .catch(() => {
+          toastNotifier.showError('Failed to send message');
+        });
     };
 
     mediaRecorder.start();
     setIsRecording(true);
-  }, [chat, dispatch, isRecording]);
+  }, [chat, dispatch, profile, isRecording]);
 
   const handleStopRecording = useCallback(() => {
     if (mediaRecorderReference.current) {

@@ -1,5 +1,9 @@
 import { FileIcon, Icon, Image } from '~/libs/components/components.js';
+import { useAppSelector } from '~/libs/hooks/hooks.js';
+import { translate } from '~/libs/modules/localization/translate.js';
 import { type Chats } from '~/modules/chat/libs/types/types.js';
+import { MessageType } from '~/modules/messages/message.js';
+import { ProfileLanguage } from '~/modules/profile/libs/types/types.js';
 
 const MESSAGE_CONTENT = 'message-content';
 
@@ -24,8 +28,20 @@ const MessagePreviewContent = ({
   message,
   videoUrl
 }: Properties): JSX.Element => {
+  const language = useAppSelector(state => {
+    return state.profile.profile?.language ?? ProfileLanguage.ENGLISH;
+  });
+
   if (!message) {
     return <></>;
+  }
+
+  if (message.type === MessageType.SYSTEM) {
+    return (
+      <span className={styles[MESSAGE_CONTENT]}>
+        {translate.translate('videoCallStartedChat', language)}
+      </span>
+    );
   }
 
   const renderItems = [

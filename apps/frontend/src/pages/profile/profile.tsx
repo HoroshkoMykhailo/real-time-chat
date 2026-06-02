@@ -35,9 +35,9 @@ const Profile: React.FC = () => {
       setIsEditing(false);
 
       if (ifNewProfile) {
-        navigate(AppRoute.ROOT);
+        void navigate(AppRoute.ROOT);
       } else {
-        navigate(AppRoute.PROFILE);
+        void navigate(AppRoute.PROFILE);
       }
     },
     [dispatch, ifNewProfile, navigate]
@@ -48,7 +48,7 @@ const Profile: React.FC = () => {
   }, []);
 
   const onBackClick = useCallback((): void => {
-    navigate(AppRoute.ROOT);
+    void navigate(AppRoute.ROOT);
   }, [navigate]);
 
   const onCancel = useCallback((): void => {

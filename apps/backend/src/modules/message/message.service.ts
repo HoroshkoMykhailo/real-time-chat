@@ -13,8 +13,10 @@ import { HTTPCode, HTTPError } from '~/libs/modules/http/http.js';
 import { SocketEvents } from '~/libs/modules/socket/socket.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
-import { type Chat as ChatRepository } from '../chat/chat.repository.js';
 import { type ChatToUser as ChatToUserRepository } from '../chat-to-user/chat-to-user.repository.js';
+import { type Chat as ChatRepository } from '../chat/chat.repository.js';
+import { ChatType } from '../chat/libs/enums/enums.js';
+import { ProfileLanguage } from '../profile/libs/enums/enums.js';
 import { type Profile as ProfileRepository } from '../profile/profile.repository.js';
 import { type TranscriptionService } from '../transcription/transcription.js';
 import { type TranslationService } from '../translation/translation.js';
@@ -36,8 +38,6 @@ import {
 } from './libs/types/types.js';
 import { type Message as MessageRepository } from './message.repository.js';
 
-type IoGetter = () => Server;
-
 type Constructor = {
   chatRepository: ChatRepository;
   chatToUserRepository: ChatToUserRepository;
@@ -48,26 +48,12 @@ type Constructor = {
   translationService: TranslationService;
 };
 
+type IoGetter = () => Server;
+
 class Message implements MessageService {
   #chatRepository: ChatRepository;
   #chatToUserRepository: ChatToUserRepository;
   #getIo: IoGetter;
-  #isUserChatMember = async (user: User, chatId: string): Promise<boolean> => {
-    const relation = await this.#chatToUserRepository.get(
-      chatId,
-      user.profileId
-    );
-
-    if (!relation) {
-      throw new HTTPError({
-        message: ExceptionMessage.FORBIDDEN,
-        status: HTTPCode.FORBIDDEN
-      });
-    }
-
-    return true;
-  };
-
   #messageRepository: MessageRepository;
 
   #profileRepository: ProfileRepository;
@@ -120,6 +106,7 @@ class Message implements MessageService {
       chatId,
       content: '',
       fileUrl,
+      isContentEdited: false,
       isPinned: false,
       senderId: userId,
       status: MessageStatus.SENT,
@@ -167,6 +154,7 @@ class Message implements MessageService {
       chatId,
       content: file.filename,
       fileUrl,
+      isContentEdited: false,
       isPinned: false,
       senderId: userId,
       status: MessageStatus.SENT,
@@ -214,6 +202,7 @@ class Message implements MessageService {
       chatId,
       content: file.filename,
       fileUrl,
+      isContentEdited: false,
       isPinned: false,
       senderId: userId,
       status: MessageStatus.SENT,
@@ -258,6 +247,7 @@ class Message implements MessageService {
     const message = await this.#messageRepository.create({
       chatId,
       content: text,
+      isContentEdited: false,
       isPinned: false,
       senderId: userId,
       status: MessageStatus.SENT,
@@ -305,6 +295,7 @@ class Message implements MessageService {
       chatId,
       content: file.filename,
       fileUrl,
+      isContentEdited: false,
       isPinned: false,
       senderId: userId,
       status: MessageStatus.SENT,
@@ -464,6 +455,68 @@ class Message implements MessageService {
     };
   }
 
+  public async getMessagesByChatIdForAdmin(
+    chatId: string,
+    query: {
+      after?: string;
+      before?: string;
+      limit?: number;
+    }
+  ): Promise<GetMessagesResponseDto> {
+    let { after, before, limit = DEFAULT_LIMIT * LIMIT_DIVISOR } = query;
+
+    if (!Types.ObjectId.isValid(chatId)) {
+      throw new HTTPError({
+        message: ExceptionMessage.INVALID_CHAT_ID,
+        status: HTTPCode.UNPROCESSED_ENTITY
+      });
+    }
+
+    const chat = await this.#chatRepository.getById(chatId);
+
+    if (!chat) {
+      throw new HTTPError({
+        message: ExceptionMessage.CHAT_NOT_FOUND,
+        status: HTTPCode.NOT_FOUND
+      });
+    }
+
+    const messages = await this.#messageRepository.getMessagesByChatId({
+      chatId,
+      ...(after && { after }),
+      ...(before && { before }),
+      limit
+    });
+
+    return {
+      messages: await Promise.all(
+        messages.map(async message => {
+          const senderProfile = await this.#profileRepository.getById(
+            message.senderId
+          );
+
+          if (!senderProfile) {
+            return {
+              ...message,
+              sender: {
+                createdAt: message.createdAt,
+                id: message.senderId,
+                language: ProfileLanguage.ENGLISH,
+                updatedAt: message.updatedAt,
+                username: 'Невідомий відправник'
+              }
+            };
+          }
+
+          return {
+            ...message,
+            sender: senderProfile
+          };
+        })
+      )
+    };
+  }
+
   public async getPinMessagesByChatId(
     user: User,
     chatId: string
@@ -502,6 +555,50 @@ class Message implements MessageService {
       )
     };
   }
+
+  public async recordGroupVideoCallStarted(payload: {
+    chatId: string;
+    starterProfileId: string;
+  }): Promise<void> {
+    const { chatId, starterProfileId } = payload;
+
+    const chat = await this.#chatRepository.getById(chatId);
+
+    if (!chat || chat.type !== ChatType.GROUP) {
+      return;
+    }
+
+    if (!chat.members.includes(starterProfileId)) {
+      return;
+    }
+
+    const senderProfile =
+      await this.#profileRepository.getById(starterProfileId);
+
+    if (!senderProfile) {
+      return;
+    }
+
+    const message = await this.#messageRepository.create({
+      chatId,
+      content: '__VIDEO_CALL_STARTED__',
+      isContentEdited: false,
+      isPinned: false,
+      senderId: starterProfileId,
+      status: MessageStatus.SENT,
+      type: MessageType.SYSTEM
+    });
+
+    await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    const io = this.#getIo();
+
+    io.to(chatId).emit(SocketEvents.MESSAGE, {
+      ...message,
+      sender: senderProfile
+    });
+  }
+
   public async transcribeMessage(
     user: User,
     messageId: string
@@ -569,7 +666,6 @@ class Message implements MessageService {
       sender: senderProfile
     };
   }
-
   public async translateMessage(
     user: User,
     messageId: string,
@@ -649,7 +745,8 @@ class Message implements MessageService {
     const text = data.content;
 
     const updatedMessage = await this.#messageRepository.updateById(messageId, {
-      content: text
+      content: text,
+      isContentEdited: true
     });
 
     if (!updatedMessage) {
@@ -664,6 +761,22 @@ class Message implements MessageService {
       sender
     };
   }
+
+  #isUserChatMember = async (user: User, chatId: string): Promise<boolean> => {
+    const relation = await this.#chatToUserRepository.get(
+      chatId,
+      user.profileId
+    );
+
+    if (!relation) {
+      throw new HTTPError({
+        message: ExceptionMessage.FORBIDDEN,
+        status: HTTPCode.FORBIDDEN
+      });
+    }
+
+    return true;
+  };
 }
 
 export { Message };

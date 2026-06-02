@@ -1,1 +1,1 @@
-export { UserApiPath, UserPayloadKey } from '@team-link/shared';
+export { UserApiPath } from '@team-link/shared';

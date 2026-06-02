@@ -26,3 +26,4 @@ ignore:
   - apps/frontend/node_modules
   - apps/backend/build
   - apps/backend/node_modules
+  - apps/backend/public

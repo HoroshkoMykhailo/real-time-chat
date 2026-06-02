@@ -8,9 +8,10 @@ import {
   type ChatCreationRequestDto,
   type ChatCreationResponseDto,
   type ChatGetResponseDto,
+  type ChatsResponseDto,
+  type ChatSummaryResponseDto,
   type ChatUpdateRequestDto,
   type ChatUpdateResponseDto,
-  type ChatsResponseDto,
   type UpdateLastViewedTimeResponseDto
 } from '../libs/types/types.js';
 import { ActionType } from './common.js';
@@ -150,6 +151,17 @@ const updateLastViewedTime = createAsyncThunk<
   }
 );
 
+const summarizeChat = createAsyncThunk<
+  ChatSummaryResponseDto,
+  { endTime: string; id: string; startTime: string },
+  AsyncThunkConfig
+>(
+  ActionType.SUMMARIZE_CHAT,
+  async ({ endTime, id, startTime }, { extra: { chatApi } }) => {
+    return await chatApi.summarizeChat(id, { endTime, startTime });
+  }
+);
+
 export {
   addMembers,
   createGroup,
@@ -159,6 +171,7 @@ export {
   getMyChats,
   leaveChat,
   removeMember,
+  summarizeChat,
   updateGroup,
   updateLastViewedTime
 };

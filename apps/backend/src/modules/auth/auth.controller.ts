@@ -32,28 +32,6 @@ type Constructor = {
 class Auth extends Controller implements AuthController {
   #authService: AuthService;
 
-  public register = async (
-    options: ControllerAPIHandlerOptions<{
-      body: UserSignUpRequestDto;
-    }>
-  ): Promise<ControllerAPIHandlerResponse<UserSignUpResponseDto>> => {
-    return {
-      payload: await this.#authService.register(options.body),
-      status: HTTPCode.CREATED
-    };
-  };
-
-  public signIn = async (
-    options: ControllerAPIHandlerOptions<{
-      body: UserSignInRequestDto;
-    }>
-  ): Promise<ControllerAPIHandlerResponse<UserSignInResponseDto>> => {
-    return {
-      payload: await this.#authService.signIn(options.body),
-      status: HTTPCode.OK
-    };
-  };
-
   public constructor({ apiPath, authService, logger }: Constructor) {
     super({ apiPath, logger });
     this.#authService = authService;
@@ -75,7 +53,76 @@ class Auth extends Controller implements AuthController {
       },
       url: AuthApiPath.SIGN_IN
     });
+
+    this.addRoute({
+      handler: this.googleOAuthInit,
+      method: HTTPMethod.GET,
+      url: AuthApiPath.GOOGLE
+    });
+
+    this.addRoute({
+      handler: this.googleOAuthCallback as ControllerAPIHandler,
+      method: HTTPMethod.GET,
+      url: AuthApiPath.GOOGLE_CALLBACK
+    });
   }
+
+  public googleOAuthCallback = async (
+    options: ControllerAPIHandlerOptions<{
+      query: {
+        code?: string;
+        error?: string;
+        error_description?: string;
+        state?: string;
+      };
+    }>
+  ): Promise<ControllerAPIHandlerResponse<undefined>> => {
+    const redirectTo = await this.#authService.handleGoogleOAuthCallback(
+      options.query
+    );
+
+    return { redirectTo, status: HTTPCode.FOUND };
+  };
+
+  public googleOAuthInit = async (): Promise<
+    ControllerAPIHandlerResponse<undefined>
+  > => {
+    if (!this.#authService.isGoogleOAuthConfigured()) {
+      return {
+        redirectTo: this.#authService.getGoogleMisconfigurationRedirect(),
+        status: HTTPCode.FOUND
+      };
+    }
+
+    const state = await this.#authService.createGoogleOAuthState();
+
+    return {
+      redirectTo: this.#authService.buildGoogleAuthorizationUrl(state),
+      status: HTTPCode.FOUND
+    };
+  };
+
+  public register = async (
+    options: ControllerAPIHandlerOptions<{
+      body: UserSignUpRequestDto;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<UserSignUpResponseDto>> => {
+    return {
+      payload: await this.#authService.register(options.body),
+      status: HTTPCode.CREATED
+    };
+  };
+
+  public signIn = async (
+    options: ControllerAPIHandlerOptions<{
+      body: UserSignInRequestDto;
+    }>
+  ): Promise<ControllerAPIHandlerResponse<UserSignInResponseDto>> => {
+    return {
+      payload: await this.#authService.signIn(options.body),
+      status: HTTPCode.OK
+    };
+  };
 }
 
 export { Auth };

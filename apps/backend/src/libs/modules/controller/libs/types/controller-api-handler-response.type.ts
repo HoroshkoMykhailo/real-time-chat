@@ -2,7 +2,8 @@ import { type HTTPCode } from '~/libs/modules/http/http.js';
 import { type ValueOf } from '~/libs/types/types.js';
 
 type ControllerAPIHandlerResponse<T = unknown> = {
-  payload: T;
+  payload?: T;
+  redirectTo?: string;
   status: ValueOf<typeof HTTPCode>;
 };
 

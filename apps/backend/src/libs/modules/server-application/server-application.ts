@@ -1,10 +1,15 @@
-import { type ParsedQs, parse } from 'qs';
+import { parse, type ParsedQs } from 'qs';
 
+import { AppEnvironment } from '~/libs/enums/enums.js';
 import { config } from '~/libs/modules/config/config.js';
 import { database } from '~/libs/modules/database/database.js';
+import { adminController } from '~/modules/admin/admin.js';
 import { authController } from '~/modules/auth/auth.js';
 import { chatController } from '~/modules/chat/chat.js';
-import { messageController } from '~/modules/message/message.js';
+import {
+  messageController,
+  messageService
+} from '~/modules/message/message.js';
 import { userController, userService } from '~/modules/user/user.js';
 
 import { logger } from '../logger/logger.js';
@@ -14,11 +19,12 @@ import {
   MAXIMUM_MEGABYTE,
   WHITE_ROUTES
 } from './libs/constants/constants.js';
-import { ServerApp } from './server-app.js';
 import { ServerAppApi } from './server-app-api.js';
+import { ServerApp } from './server-app.js';
 
 const serverAppApiV1 = new ServerAppApi({
   routes: [
+    ...adminController.routes,
     ...authController.routes,
     ...userController.routes,
     ...chatController.routes,
@@ -34,23 +40,21 @@ const serverApp = new ServerApp({
   logger,
   maximumFileSize: MAXIMUM_MEGABYTE * KILOBYTE * KILOBYTE,
   options: {
-    ignoreTrailingSlash: true,
-    logger: {
-      transport: {
-        target: 'pino-pretty'
+    logger:
+      config.ENV.APP.ENVIRONMENT === AppEnvironment.DEVELOPMENT
+        ? { transport: { target: 'pino-pretty' } }
+        : true,
+    routerOptions: {
+      ignoreTrailingSlash: true,
+      querystringParser: (stringToParse: string): ParsedQs => {
+        return parse(stringToParse, { comma: true });
       }
-    },
-    querystringParser: (stringToParse: string): ParsedQs => {
-      return parse(stringToParse, { comma: true });
     }
   },
-  services: {
-    userService
-  },
+  services: { messageService, userService },
   token,
   whiteRoutes: WHITE_ROUTES
 });
 
 export { serverApp };
 export { type ServerApplicationRouteParameters } from './libs/types/types.js';
-export { ServerApp } from './server-app.js';

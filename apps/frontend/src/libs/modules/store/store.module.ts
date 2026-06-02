@@ -9,6 +9,7 @@ import { messageApi, messageReducer } from '~/modules/messages/message.js';
 import { profileApi, profileReducer } from '~/modules/profile/profile.js';
 import { storageApi } from '~/modules/storage/storage.js';
 import { userApi, userReducer } from '~/modules/user/user.js';
+import { videoCallReducer } from '~/modules/video-call/video-call.js';
 
 import {
   handleErrorMiddleware,
@@ -21,6 +22,22 @@ import {
 } from './libs/types/types.js';
 
 class Store implements StoreModule {
+  public get extraArguments(): ExtraArguments {
+    return {
+      authApi,
+      chatApi,
+      messageApi,
+      profileApi,
+      storageApi,
+      toastNotifier,
+      userApi
+    };
+  }
+
+  public get instance(): StoreInstance {
+    return this.#instance;
+  }
+
   #instance: StoreInstance;
 
   public constructor(config: ConfigModule) {
@@ -45,25 +62,10 @@ class Store implements StoreModule {
         chat: chatReducer,
         message: messageReducer,
         profile: profileReducer,
-        user: userReducer
+        user: userReducer,
+        videoCall: videoCallReducer
       }
     });
-  }
-
-  public get extraArguments(): ExtraArguments {
-    return {
-      authApi,
-      chatApi,
-      messageApi,
-      profileApi,
-      storageApi,
-      toastNotifier,
-      userApi
-    };
-  }
-
-  public get instance(): StoreInstance {
-    return this.#instance;
   }
 }
 

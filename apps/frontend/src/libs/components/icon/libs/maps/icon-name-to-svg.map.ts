@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 
-import Arrow from '~/assets/images/icons/arrow.svg?react';
 import ArrowLeft from '~/assets/images/icons/arrow-left.svg?react';
+import Arrow from '~/assets/images/icons/arrow.svg?react';
 import Camera from '~/assets/images/icons/camera.svg?react';
 import Cancel from '~/assets/images/icons/cancel.svg?react';
 import Copy from '~/assets/images/icons/copy.svg?react';
@@ -11,8 +11,8 @@ import Eye from '~/assets/images/icons/eye.svg?react';
 import File from '~/assets/images/icons/file.svg?react';
 import Group from '~/assets/images/icons/group.svg?react';
 import Image from '~/assets/images/icons/image.svg?react';
-import Microphone from '~/assets/images/icons/microphone.svg?react';
 import MicrophonePreview from '~/assets/images/icons/microphone-preview.svg?react';
+import Microphone from '~/assets/images/icons/microphone.svg?react';
 import PaperClip from '~/assets/images/icons/paper-clip.svg?react';
 import Pencil from '~/assets/images/icons/pencil.svg?react';
 import Person from '~/assets/images/icons/person.svg?react';
