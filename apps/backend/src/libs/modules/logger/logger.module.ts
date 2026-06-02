@@ -2,11 +2,17 @@ import { type Logger as LibraryLogger, pino } from 'pino';
 
 import { type LoggerModule } from './libs/types/types.js';
 
+const usePrettyTransport = process.env['NODE_ENV'] === 'development';
+
 class Logger implements LoggerModule {
   private logger: LibraryLogger;
 
   public constructor() {
-    this.logger = pino({ transport: { target: 'pino-pretty' } });
+    this.logger = pino(
+      usePrettyTransport
+        ? { transport: { target: 'pino-pretty' } }
+        : { level: 'info' }
+    );
 
     this.logger.info('Logger is created');
   }

@@ -44,8 +44,8 @@ class Config implements ConfigModule {
       },
       DB: {
         MONGO_TEST_URI: {
-          default: null,
-          doc: 'MongoDB test connection URI',
+          default: '',
+          doc: 'MongoDB test connection URI (unused when NODE_ENV is production)',
           env: 'MONGO_TEST_URI',
           format: String
         },
@@ -58,13 +58,13 @@ class Config implements ConfigModule {
       },
       ENCRYPTION: {
         ALGORITHM: {
-          default: null,
+          default: 'aes-128-ecb',
           doc: 'Data encryption algorithm',
           env: 'ENCRYPTION_ALGORITHM',
           format: String
         },
         SALT_ROUNDS: {
-          default: null,
+          default: 10,
           doc: 'Data encryption salt rounds',
           env: 'ENCRYPTION_SALT_ROUNDS',
           format: Number
@@ -130,13 +130,13 @@ class Config implements ConfigModule {
       },
       JWT: {
         ALGORITHM: {
-          default: null,
+          default: 'HS256',
           doc: 'JWT encryption algorithm',
           env: 'JWT_ALGORITHM',
           format: String
         },
         EXPIRATION_TIME: {
-          default: null,
+          default: '24h',
           doc: 'JWT expiration time',
           env: 'JWT_EXPIRATION_TIME',
           format: String

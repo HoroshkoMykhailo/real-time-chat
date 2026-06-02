@@ -1,5 +1,6 @@
 import { parse, type ParsedQs } from 'qs';
 
+import { AppEnvironment } from '~/libs/enums/enums.js';
 import { config } from '~/libs/modules/config/config.js';
 import { database } from '~/libs/modules/database/database.js';
 import { adminController } from '~/modules/admin/admin.js';
@@ -39,7 +40,10 @@ const serverApp = new ServerApp({
   logger,
   maximumFileSize: MAXIMUM_MEGABYTE * KILOBYTE * KILOBYTE,
   options: {
-    logger: { transport: { target: 'pino-pretty' } },
+    logger:
+      config.ENV.APP.ENVIRONMENT === AppEnvironment.DEVELOPMENT
+        ? { transport: { target: 'pino-pretty' } }
+        : true,
     routerOptions: {
       ignoreTrailingSlash: true,
       querystringParser: (stringToParse: string): ParsedQs => {

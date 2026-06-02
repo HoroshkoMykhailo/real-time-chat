@@ -1,4 +1,5 @@
 import { jwtVerify, SignJWT } from 'jose';
+import { createSecretKey } from 'node:crypto';
 
 import { ExceptionMessage } from '~/libs/enums/enums.js';
 import { type ConfigModule } from '~/libs/modules/config/config.js';
@@ -66,7 +67,7 @@ class Auth implements AuthService {
   };
 
   public createGoogleOAuthState = async (): Promise<string> => {
-    const secret = new TextEncoder().encode(this.#config.ENV.JWT.SECRET);
+    const secret = createSecretKey(this.#config.ENV.JWT.SECRET, 'utf8');
 
     return await new SignJWT({ purpose: GOOGLE_OAUTH_STATE_PURPOSE })
       .setProtectedHeader({ alg: this.#config.ENV.JWT.ALGORITHM })
@@ -238,7 +239,7 @@ class Auth implements AuthService {
   };
 
   #verifyGoogleOAuthState = async (state: string): Promise<void> => {
-    const secret = new TextEncoder().encode(this.#config.ENV.JWT.SECRET);
+    const secret = createSecretKey(this.#config.ENV.JWT.SECRET, 'utf8');
     const { payload } = await jwtVerify(state, secret);
 
     if (payload['purpose'] !== GOOGLE_OAUTH_STATE_PURPOSE) {
