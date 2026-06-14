@@ -37,9 +37,14 @@ const MessagePreviewContent = ({
   }
 
   if (message.type === MessageType.SYSTEM) {
+    const systemCallLabelKey =
+      message.content === '__VIDEO_CALL_ENDED__'
+        ? 'videoCallEndedChat'
+        : 'videoCallStartedChat';
+
     return (
       <span className={styles[MESSAGE_CONTENT]}>
-        {translate.translate('videoCallStartedChat', language)}
+        {translate.translate(systemCallLabelKey, language)}
       </span>
     );
   }

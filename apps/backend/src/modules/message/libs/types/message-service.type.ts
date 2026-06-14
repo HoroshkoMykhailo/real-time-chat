@@ -69,6 +69,11 @@ type MessageService = {
     chatId: string
   ): Promise<GetMessagesResponseDto>;
 
+  recordGroupVideoCallEnded(payload: {
+    chatId: string;
+    endedByProfileId: string;
+  }): Promise<void>;
+
   recordGroupVideoCallStarted(payload: {
     chatId: string;
     starterProfileId: string;

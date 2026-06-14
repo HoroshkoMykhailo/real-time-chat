@@ -1,5 +1,5 @@
-import { ONE_VALUE } from '~/libs/common/constants.js';
-import { ChatPicture } from '~/libs/components/components.js';
+import { ONE_VALUE, ZERO_VALUE } from '~/libs/common/constants.js';
+import { ChatPicture, Loader } from '~/libs/components/components.js';
 import { AppRoute } from '~/libs/enums/enums.js';
 import {
   useAppDispatch,
@@ -39,9 +39,13 @@ const ChatInfo = ({
     }
   }, [chat, dispatch, navigate]);
 
-  if (!chat?.members || !profile) {
+  if (!chat || !profile) {
     return <></>;
   }
+
+  const hasMembers = Boolean(chat.members && chat.members.length > ZERO_VALUE);
+  const membersCountForLabel =
+    chat.members?.length ?? chat.memberCount ?? ZERO_VALUE;
 
   const isAdmin = chat.adminId === profile.id;
 
@@ -51,12 +55,12 @@ const ChatInfo = ({
       : translate.translate('userInfo', profile.language);
 
   const otherMember =
-    chat.type === ChatType.PRIVATE
+    chat.type === ChatType.PRIVATE && hasMembers && chat.members
       ? chat.members.find(member => member.id !== profile.id)
       : null;
 
   const membersLabel =
-    chat.members.length === ONE_VALUE
+    membersCountForLabel === ONE_VALUE
       ? translate.translate('member', profile.language)
       : translate.translate('members', profile.language);
 
@@ -80,7 +84,7 @@ const ChatInfo = ({
           <h2 className={styles['chat-name']}>{chat.name}</h2>
           {chat.type === ChatType.GROUP && (
             <span className={styles['member-count']}>
-              {chat.members.length} {membersLabel}
+              {membersCountForLabel} {membersLabel}
             </span>
           )}
         </div>
@@ -126,9 +130,14 @@ const ChatInfo = ({
           </div>
         )}
       </div>
-      {chat.type === ChatType.GROUP && (
-        <MembersList onOpenAddMembers={onOpenAddMembers} />
-      )}
+      {chat.type === ChatType.GROUP &&
+        (hasMembers ? (
+          <MembersList onOpenAddMembers={onOpenAddMembers} />
+        ) : (
+          <div className={styles['members-loading']}>
+            <Loader />
+          </div>
+        ))}
     </div>
   );
 };

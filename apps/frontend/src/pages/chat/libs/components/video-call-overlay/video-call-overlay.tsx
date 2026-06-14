@@ -5,7 +5,7 @@ import { emitCallJoin } from '~/libs/modules/socket/socket.js';
 import { type ValueOf } from '~/libs/types/types.js';
 import { type ProfileLanguage } from '~/modules/profile/libs/types/types.js';
 
-import { useVideoCallSession } from '../../hooks/use-video-call-session.js';
+import { type UseVideoCallSessionResult } from '../../hooks/use-video-call-session.js';
 import styles from './styles.module.scss';
 
 type MemberLabel = {
@@ -13,7 +13,7 @@ type MemberLabel = {
   name: string;
 };
 
-type Properties = {
+type Properties = UseVideoCallSessionResult & {
   chatId: string;
   isOpen: boolean;
   language: ValueOf<typeof ProfileLanguage>;
@@ -23,32 +23,52 @@ type Properties = {
   participantProfileIds: string[];
 };
 
+type RemoteCallVideoProperties = {
+  stream: MediaStream | null;
+};
+
+const RemoteCallVideo = ({
+  stream
+}: RemoteCallVideoProperties): JSX.Element => {
+  const reference = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const element = reference.current;
+
+    if (element && stream) {
+      element.srcObject = stream;
+    }
+
+    return (): void => {
+      if (element) {
+        element.srcObject = null;
+      }
+    };
+  }, [stream]);
+
+  return (
+    <video autoPlay className={styles['video']} playsInline ref={reference} />
+  );
+};
+
 const VideoCallOverlay = ({
   chatId,
+  isAudioEnabled,
   isOpen,
+  isVideoEnabled,
   language,
   localProfileId,
+  localStream,
+  mediaAccessStatus,
   memberLabels,
   onLeave,
-  participantProfileIds
+  participantProfileIds,
+  remoteStreams,
+  toggleAudio,
+  toggleVideo
 }: Properties): JSX.Element | null => {
   const joinEmittedReference = useRef(false);
   const localVideoReference = useRef<HTMLVideoElement>(null);
-
-  const {
-    isAudioEnabled,
-    isVideoEnabled,
-    localStream,
-    mediaAccessStatus,
-    remoteStreams,
-    toggleAudio,
-    toggleVideo
-  } = useVideoCallSession({
-    chatId,
-    isSessionActive: isOpen,
-    localProfileId,
-    participantProfileIds
-  });
 
   const nameById = useMemo(() => {
     return new Map(memberLabels.map(member => [member.id, member.name]));
@@ -83,6 +103,12 @@ const VideoCallOverlay = ({
     if (element && localStream) {
       element.srcObject = localStream;
     }
+
+    return (): void => {
+      if (element) {
+        element.srcObject = null;
+      }
+    };
   }, [localStream]);
 
   if (!isOpen) {
@@ -91,6 +117,10 @@ const VideoCallOverlay = ({
 
   const localDisplayName = nameById.get(localProfileId) ?? '';
   const youLabel = translate.translate('videoYou', language);
+  const unknownParticipantLabel = translate.translate(
+    'videoParticipant',
+    language
+  );
 
   return (
     <div aria-modal className={styles['overlay']} role="dialog">
@@ -121,18 +151,9 @@ const VideoCallOverlay = ({
 
             return (
               <div className={styles['tile']} key={profileId}>
-                <video
-                  autoPlay
-                  className={styles['video']}
-                  playsInline
-                  ref={element => {
-                    if (element) {
-                      element.srcObject = stream;
-                    }
-                  }}
-                />
+                <RemoteCallVideo stream={stream} />
                 <div className={styles['label']}>
-                  {nameById.get(profileId) ?? profileId}
+                  {nameById.get(profileId) ?? unknownParticipantLabel}
                 </div>
                 {stream ? null : (
                   <div className={styles['placeholder']}>

@@ -556,6 +556,53 @@ class Message implements MessageService {
     };
   }
 
+  public async recordGroupVideoCallEnded(payload: {
+    chatId: string;
+    endedByProfileId: string;
+  }): Promise<void> {
+    const { chatId, endedByProfileId } = payload;
+
+    if (!endedByProfileId) {
+      return;
+    }
+
+    const chat = await this.#chatRepository.getById(chatId);
+
+    if (!chat || chat.type !== ChatType.GROUP) {
+      return;
+    }
+
+    if (!chat.members.includes(endedByProfileId)) {
+      return;
+    }
+
+    const senderProfile =
+      await this.#profileRepository.getById(endedByProfileId);
+
+    if (!senderProfile) {
+      return;
+    }
+
+    const message = await this.#messageRepository.create({
+      chatId,
+      content: '__VIDEO_CALL_ENDED__',
+      isContentEdited: false,
+      isPinned: false,
+      senderId: endedByProfileId,
+      status: MessageStatus.SENT,
+      type: MessageType.SYSTEM
+    });
+
+    await this.#chatRepository.setLastMessage(chatId, message.id);
+
+    const io = this.#getIo();
+
+    io.to(chatId).emit(SocketEvents.MESSAGE, {
+      ...message,
+      sender: senderProfile
+    });
+  }
+
   public async recordGroupVideoCallStarted(payload: {
     chatId: string;
     starterProfileId: string;

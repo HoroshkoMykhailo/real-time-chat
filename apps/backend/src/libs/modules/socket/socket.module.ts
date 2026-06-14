@@ -353,6 +353,16 @@ class SocketModule {
 
     if (call.sockets.size === DEFAULT_VALUE) {
       this.#callsByChatId.delete(chatId);
+      void this.#messageService
+        .recordGroupVideoCallEnded({
+          chatId,
+          endedByProfileId: leftProfileId
+        })
+        .catch((error: unknown) => {
+          this.#logger.error('recordGroupVideoCallEnded failed', {
+            ...(error instanceof Error && { message: error.message })
+          });
+        });
       this.#io.to(chatId).emit(SocketEvents.CALL_ENDED, { chatId });
 
       return;

@@ -106,10 +106,15 @@ const MessageItem = ({
       return <></>;
     }
 
+    const systemCallLabelKey =
+      message.content === '__VIDEO_CALL_ENDED__'
+        ? 'videoCallEndedChat'
+        : 'videoCallStartedChat';
+
     return (
       <div className={styles['system-message']} role="note">
         <p className={styles['system-message-text']}>
-          {translate.translate('videoCallStartedChat', profile.language)}
+          {translate.translate(systemCallLabelKey, profile.language)}
           <span className={styles['system-message-sender']}>
             {' — '}
             {message.sender.username}

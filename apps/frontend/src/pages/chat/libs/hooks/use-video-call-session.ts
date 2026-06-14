@@ -3,6 +3,7 @@ import { type WebRtcSignalRelayPayload } from '@team-link/shared';
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState
@@ -79,11 +80,43 @@ const useVideoCallSession = ({
   const iceQueuesReference = useRef(new Map<string, RTCIceCandidateInit[]>());
   const makingOfferReference = useRef(new Set<string>());
   const gUMCancelledReference = useRef(false);
+  const isSessionActiveReference = useRef(isSessionActive);
   const localStreamReference = useRef<MediaStream | null>(null);
+  const remoteStreamsReference = useRef(new Map<string, MediaStream>());
+
+  isSessionActiveReference.current = isSessionActive;
 
   useEffect(() => {
-    localStreamReference.current = localStream;
+    if (localStream) {
+      localStreamReference.current = localStream;
+    }
   }, [localStream]);
+
+  useEffect(() => {
+    remoteStreamsReference.current = remoteStreams;
+  }, [remoteStreams]);
+
+  const stopLocalCapture = useCallback((): void => {
+    const stream = localStreamReference.current;
+
+    if (stream) {
+      for (const track of stream.getTracks()) {
+        track.stop();
+      }
+    }
+
+    localStreamReference.current = null;
+  }, []);
+
+  const stopAllRemotePlayback = useCallback((): void => {
+    for (const stream of remoteStreamsReference.current.values()) {
+      for (const track of stream.getTracks()) {
+        track.stop();
+      }
+    }
+
+    remoteStreamsReference.current = new Map();
+  }, []);
 
   useEffect(() => {
     return (): void => {
@@ -97,17 +130,10 @@ const useVideoCallSession = ({
       iceQueuesReference.current.clear();
       makingOfferReference.current.clear();
 
-      const stream = localStreamReference.current;
-
-      if (stream) {
-        for (const track of stream.getTracks()) {
-          track.stop();
-        }
-      }
-
-      localStreamReference.current = null;
+      stopAllRemotePlayback();
+      stopLocalCapture();
     };
-  }, []);
+  }, [stopAllRemotePlayback, stopLocalCapture]);
 
   const participantKey = useMemo(
     () =>
@@ -150,6 +176,14 @@ const useVideoCallSession = ({
     makingOfferReference.current.delete(remoteProfileId);
     setRemoteStreams(previous => {
       const next = new Map(previous);
+      const stream = next.get(remoteProfileId);
+
+      if (stream) {
+        for (const track of stream.getTracks()) {
+          track.stop();
+        }
+      }
+
       next.delete(remoteProfileId);
 
       return next;
@@ -330,7 +364,7 @@ const useVideoCallSession = ({
     localProfileId
   ]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isSessionActive) {
       return;
     }
@@ -339,19 +373,13 @@ const useVideoCallSession = ({
       removePeer(remoteId);
     }
 
-    setLocalStream(previous => {
-      if (previous) {
-        for (const track of previous.getTracks()) {
-          track.stop();
-        }
-      }
-
-      return null;
-    });
+    stopLocalCapture();
+    setLocalStream(null);
+    setRemoteStreams(new Map());
     setIsAudioEnabled(true);
     setIsVideoEnabled(true);
     setMediaAccessStatus('acquiring');
-  }, [isSessionActive, removePeer]);
+  }, [isSessionActive, removePeer, stopLocalCapture]);
 
   useEffect(() => {
     if (!isSessionActive) {
@@ -369,7 +397,10 @@ const useVideoCallSession = ({
           video: true
         });
 
-        if (gUMCancelledReference.current) {
+        if (
+          gUMCancelledReference.current ||
+          !isSessionActiveReference.current
+        ) {
           for (const track of stream.getTracks()) {
             track.stop();
           }
@@ -395,8 +426,9 @@ const useVideoCallSession = ({
 
     return (): void => {
       gUMCancelledReference.current = true;
+      stopLocalCapture();
     };
-  }, [isSessionActive]);
+  }, [isSessionActive, stopLocalCapture]);
 
   useEffect(() => {
     if (!isSessionActive) {
@@ -480,4 +512,4 @@ const useVideoCallSession = ({
   };
 };
 
-export { useVideoCallSession };
+export { useVideoCallSession, type UseVideoCallSessionResult };

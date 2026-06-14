@@ -29,6 +29,7 @@ import { PinnedHeader } from './libs/components/pinned-header/pinned-header.js';
 import { VideoCallOverlay } from './libs/components/video-call-overlay/video-call-overlay.js';
 import { ActiveChatView } from './libs/enums/active-chat-view.js';
 import { useChatRoomVideoCall } from './libs/hooks/use-chat-room-video-call.js';
+import { useVideoCallSession } from './libs/hooks/use-video-call-session.js';
 import styles from './styles.module.scss';
 
 /* eslint-disable sonarjs/cognitive-complexity -- chat shell composes messages, summary, video, and pinned views */
@@ -50,17 +51,32 @@ const Chat: React.FC = () => {
       ? (state.videoCall.callsByChatId[chatId]?.participantProfileIds ?? [])
       : []
   );
+  const chatMessages = useAppSelector(state => state.message.messages);
   const memberLabels = useMemo(() => {
-    if (!chat?.members) {
-      return [];
+    const byId = new Map<string, string>();
+
+    if (chat?.members) {
+      for (const member of chat.members) {
+        const typedMember = member as { id: string; username: string };
+
+        byId.set(typedMember.id, typedMember.username);
+      }
     }
 
-    return chat.members.map(member => {
-      const typedMember = member as { id: string; username: string };
+    for (const message of chatMessages) {
+      const { sender } = message;
 
-      return { id: typedMember.id, name: typedMember.username };
-    });
-  }, [chat?.members]);
+      if (sender.id && sender.username && !byId.has(sender.id)) {
+        byId.set(sender.id, sender.username);
+      }
+    }
+
+    if (profile?.id && profile.username) {
+      byId.set(profile.id, profile.username);
+    }
+
+    return [...byId.entries()].map(([id, name]) => ({ id, name }));
+  }, [chat?.members, chatMessages, profile?.id, profile?.username]);
   const {
     handleJoinCallFromBanner,
     handleLeaveVideoCall,
@@ -74,6 +90,12 @@ const Chat: React.FC = () => {
     isGroupChat: chat?.type === ChatType.GROUP,
     localCallChatId,
     profileId: profile?.id
+  });
+  const videoCallSession = useVideoCallSession({
+    chatId: chatId ?? '',
+    isSessionActive: Boolean(profile && chatId && isVideoCallOpen),
+    localProfileId: profile?.id ?? '',
+    participantProfileIds: callParticipantIds
   });
   const [activeChatView, setActiveChatView] = useState<
     ValueOf<typeof ActiveChatView>
@@ -315,6 +337,7 @@ const Chat: React.FC = () => {
       {renderContent()}
       {isVideoCallOpen && chatId && profile ? (
         <VideoCallOverlay
+          {...videoCallSession}
           chatId={chatId}
           isOpen
           language={profile.language}
