@@ -1,5 +1,6 @@
 import { type CSSProperties } from 'react';
 
+import { ZERO_VALUE } from '~/libs/common/constants.js';
 import { Icon, Popover } from '~/libs/components/components.js';
 import { type GetPortalStyleArguments } from '~/libs/components/popover/popover.js';
 import { NotificationMessage } from '~/libs/enums/enums.js';
@@ -7,8 +8,6 @@ import {
   useAppDispatch,
   useAppSelector,
   useCallback,
-  useEffect,
-  useRef,
   useState
 } from '~/libs/hooks/hooks.js';
 import { translate } from '~/libs/modules/localization/translate.js';
@@ -24,11 +23,11 @@ import { LanguageSelector } from './components/language-selector/language-select
 import styles from './styles.module.scss';
 
 const POPOVER_CLASS = 'message-popover';
-const POPOVER_OFFSET = 80;
-const MESSAGE_POPOVER_UP_CLASS = 'message-popover-up';
 const HORIZONTAL_OFFSET_REM = 8;
 const VERTICAL_ANCHOR_OFFSET_REM = 3;
 const PORTAL_BELOW_ANCHOR_GAP_PX = 4;
+const VIEWPORT_EDGE_MARGIN_PX = 12;
+const ESTIMATED_POPOVER_HEIGHT_PX = 220;
 
 type Properties = {
   children: React.ReactNode;
@@ -46,11 +45,9 @@ const MessagePopover = ({
   setEditingMessageId
 }: Properties): JSX.Element => {
   const dispatch = useAppDispatch();
-  const popoverReference = useRef<HTMLDivElement | null>(null);
   const { selectedChat: chat } = useAppSelector(state => state.chat);
   const { profile } = useAppSelector(state => state.profile);
   const { messages } = useAppSelector(state => state.message);
-  const [popoverClass, setPopoverClass] = useState<string>(POPOVER_CLASS);
   const [isLanguageSelectorOpened, setIsLanguageSelectorOpened] =
     useState<boolean>(false);
 
@@ -59,7 +56,6 @@ const MessagePopover = ({
   const handleClose = useCallback((): void => {
     onClose();
     setIsLanguageSelectorOpened(false);
-    setPopoverClass(POPOVER_CLASS);
   }, [onClose]);
 
   const handleDeleteClick = useCallback((): void => {
@@ -149,18 +145,41 @@ const MessagePopover = ({
   }, [handleClose, message, setEditingMessageId]);
 
   const getPortalStyle = useCallback(
-    ({ anchorRect }: GetPortalStyleArguments): CSSProperties => {
+    ({ anchorRect, contentRect }: GetPortalStyleArguments): CSSProperties => {
       const rootFontSize = Number.parseFloat(
         getComputedStyle(document.documentElement).fontSize
       );
       const left = anchorRect.left + HORIZONTAL_OFFSET_REM * rootFontSize;
+      const verticalNudgePx = VERTICAL_ANCHOR_OFFSET_REM * rootFontSize;
 
-      if (popoverClass === MESSAGE_POPOVER_UP_CLASS) {
+      const contentHeight =
+        contentRect.height > ZERO_VALUE
+          ? contentRect.height
+          : ESTIMATED_POPOVER_HEIGHT_PX;
+
+      const viewportLimitBottom =
+        globalThis.innerHeight - VIEWPORT_EDGE_MARGIN_PX;
+      const spaceBelow =
+        viewportLimitBottom - anchorRect.bottom - PORTAL_BELOW_ANCHOR_GAP_PX;
+      const spaceAbove =
+        anchorRect.top - VIEWPORT_EDGE_MARGIN_PX - PORTAL_BELOW_ANCHOR_GAP_PX;
+
+      const fitsBelow = spaceBelow >= contentHeight;
+      const fitsAbove = spaceAbove >= contentHeight;
+
+      let openUpward: boolean;
+
+      if (fitsBelow) {
+        openUpward = false;
+      } else if (fitsAbove) {
+        openUpward = true;
+      } else {
+        openUpward = spaceAbove > spaceBelow;
+      }
+
+      if (openUpward) {
         return {
-          bottom:
-            globalThis.innerHeight -
-            anchorRect.bottom +
-            VERTICAL_ANCHOR_OFFSET_REM * rootFontSize,
+          bottom: globalThis.innerHeight - anchorRect.bottom + verticalNudgePx,
           left
         };
       }
@@ -170,17 +189,8 @@ const MessagePopover = ({
         top: anchorRect.bottom + PORTAL_BELOW_ANCHOR_GAP_PX
       };
     },
-    [popoverClass]
+    []
   );
-
-  useEffect(() => {
-    if (popoverReference.current) {
-      const rect = popoverReference.current.getBoundingClientRect();
-      const isNearBottom = rect.bottom > window.innerHeight - POPOVER_OFFSET;
-
-      setPopoverClass(isNearBottom ? MESSAGE_POPOVER_UP_CLASS : POPOVER_CLASS);
-    }
-  }, [isOpened]);
 
   if (!message || !chat || !profile) {
     return <></>;
@@ -188,9 +198,9 @@ const MessagePopover = ({
 
   return (
     <Popover
-      className={popoverClass}
+      className={POPOVER_CLASS}
       content={
-        <div className={styles[POPOVER_CLASS]} ref={popoverReference}>
+        <div className={styles[POPOVER_CLASS]}>
           <div className={styles['buttons']}>
             <button
               className={styles['pin-button']}

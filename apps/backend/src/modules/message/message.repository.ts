@@ -10,6 +10,7 @@ import {
 import { type MessageDocument, type MessageModel } from './message.model.js';
 
 const POSITIVE_VALUE = 1;
+const ZERO_VALUE = 0;
 
 type Constructor = Record<'messageModel', typeof MessageModel>;
 
@@ -72,19 +73,31 @@ class Message extends AbstractRepository<MessageDocument, TMessage> {
     const queryFilter: FilterType = { chatId: chatObjectId };
 
     if (after && before && after === before) {
+      const fullLimit = limit ?? DEFAULT_LIMIT * LIMIT_DIVISOR;
       const halfLimit = limit
         ? Math.floor(limit / LIMIT_DIVISOR)
         : Math.floor(DEFAULT_LIMIT / LIMIT_DIVISOR);
       const centerDate = new Date(after);
 
-      const messagesBefore = await this.model
-        .find({ chatId: chatObjectId, createdAt: { $lte: centerDate } })
-        .sort({ createdAt: -1 })
-        .limit(halfLimit);
-
       const messagesAfter = await this.model
         .find({ chatId: chatObjectId, createdAt: { $gt: centerDate } })
         .sort({ createdAt: 1 })
+        .limit(halfLimit);
+
+      if (messagesAfter.length === ZERO_VALUE) {
+        const messagesOlderOnly = await this.model
+          .find({ chatId: chatObjectId, createdAt: { $lte: centerDate } })
+          .sort({ createdAt: -1 })
+          .limit(fullLimit);
+
+        return messagesOlderOnly
+          .toReversed()
+          .map(message => this.mapToBusinessLogic(message));
+      }
+
+      const messagesBefore = await this.model
+        .find({ chatId: chatObjectId, createdAt: { $lte: centerDate } })
+        .sort({ createdAt: -1 })
         .limit(halfLimit);
 
       const combinedMessages = [
