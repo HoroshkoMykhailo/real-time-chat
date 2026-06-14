@@ -15,6 +15,7 @@ import {
   useAppSelector,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useScrollManager,
   useState
@@ -54,8 +55,17 @@ const MessageHistory = ({
   );
   const hasScrolledToUnreadReference = useRef<boolean>(false);
   const lastViewedMessageTimeReference = useRef<null | string>(null);
+  const pendingHistoryLoadKindReference = useRef<'after' | 'before' | null>(
+    null
+  );
+  const loadBeforeScrollSnapshotReference = useRef<null | {
+    scrollHeight: number;
+    scrollTop: number;
+  }>(null);
 
-  const { scrollToBottom } = useScrollManager(messagesListReference);
+  const { isAtBottom, scrollToBottom } = useScrollManager(
+    messagesListReference
+  );
 
   const {
     addDataStatus,
@@ -201,6 +211,7 @@ const MessageHistory = ({
         const message = messages.at(ZERO_VALUE);
 
         if (message) {
+          pendingHistoryLoadKindReference.current = 'before';
           setBeforeMessageTime(message.createdAt);
         }
       }
@@ -214,6 +225,7 @@ const MessageHistory = ({
         const message = messages.at(MINUS_ONE_VALUE);
 
         if (message) {
+          pendingHistoryLoadKindReference.current = 'after';
           setAfterMessageTime(message.createdAt);
         }
       }
@@ -249,6 +261,8 @@ const MessageHistory = ({
       setFirstUnreadMessageId(null);
       setBeforeMessageTime(null);
       setAfterMessageTime(null);
+      pendingHistoryLoadKindReference.current = null;
+      loadBeforeScrollSnapshotReference.current = null;
       updateLastViewedMessage();
 
       setTimeout(() => {
@@ -265,21 +279,13 @@ const MessageHistory = ({
 
   useEffect(() => {
     if (addDataStatus === DataStatus.FULFILLED) {
-      const element = messagesListReference.current;
-
       dispatch(messageActions.resetAddDataStatus());
 
-      if (element) {
-        const isAtBottom =
-          element.scrollTop + element.clientHeight >=
-          element.scrollHeight - ONE_HUNDRED;
-
-        if (isAtBottom) {
-          scrollToBottom();
-        }
+      if (isAtBottom()) {
+        scrollToBottom();
       }
     }
-  }, [addDataStatus, dispatch, scrollToBottom]);
+  }, [addDataStatus, dispatch, isAtBottom, scrollToBottom]);
 
   useEffect(() => {
     if (editDataStatus === DataStatus.FULFILLED) {
@@ -320,10 +326,56 @@ const MessageHistory = ({
   }, [chat?.id]);
 
   useEffect(() => {
-    if (loadDataStatus === DataStatus.FULFILLED) {
-      dispatch(messageActions.resetLoadDataStatus());
+    if (loadDataStatus !== DataStatus.PENDING) {
+      return;
     }
-  }, [dispatch, loadDataStatus]);
+
+    const element = messagesListReference.current;
+
+    if (!element || pendingHistoryLoadKindReference.current !== 'before') {
+      return;
+    }
+
+    loadBeforeScrollSnapshotReference.current = {
+      scrollHeight: element.scrollHeight,
+      scrollTop: element.scrollTop
+    };
+  }, [loadDataStatus]);
+
+  useLayoutEffect(() => {
+    if (loadDataStatus !== DataStatus.FULFILLED) {
+      return;
+    }
+
+    const element = messagesListReference.current;
+    const loadKind = pendingHistoryLoadKindReference.current;
+
+    if (element && loadKind === 'before') {
+      const snapshot = loadBeforeScrollSnapshotReference.current;
+
+      if (snapshot) {
+        const heightDelta = element.scrollHeight - snapshot.scrollHeight;
+
+        element.scrollTop = snapshot.scrollTop + heightDelta;
+      }
+
+      loadBeforeScrollSnapshotReference.current = null;
+    } else if (element && loadKind === 'after') {
+      scrollToBottom();
+    }
+
+    pendingHistoryLoadKindReference.current = null;
+    dispatch(messageActions.resetLoadDataStatus());
+  }, [dispatch, loadDataStatus, scrollToBottom]);
+
+  useEffect(() => {
+    if (loadDataStatus !== DataStatus.REJECTED) {
+      return;
+    }
+
+    pendingHistoryLoadKindReference.current = null;
+    loadBeforeScrollSnapshotReference.current = null;
+  }, [loadDataStatus]);
 
   useEffect(() => {
     if (!chat) {
@@ -354,19 +406,25 @@ const MessageHistory = ({
   }, [dispatch, beforeMessageTime, chat, afterMessageTime]);
 
   useEffect(() => {
-    if (writeDataStatus === DataStatus.FULFILLED || isTranscribedFirst) {
-      const element = messagesListReference.current;
+    const shouldScrollOwnSend = writeDataStatus === DataStatus.FULFILLED;
+    const shouldScrollTranscription = isTranscribedFirst && isAtBottom();
 
-      if (element) {
-        scrollToBottom();
-        setTimeout(updateLastViewedMessage, ONE_HUNDRED);
-      }
+    if (!shouldScrollOwnSend && !shouldScrollTranscription) {
+      return;
+    }
+
+    const element = messagesListReference.current;
+
+    if (element) {
+      scrollToBottom();
+      setTimeout(updateLastViewedMessage, ONE_HUNDRED);
     }
   }, [
-    writeDataStatus,
-    updateLastViewedMessage,
+    isAtBottom,
     isTranscribedFirst,
-    scrollToBottom
+    scrollToBottom,
+    updateLastViewedMessage,
+    writeDataStatus
   ]);
 
   useEffect(() => {
